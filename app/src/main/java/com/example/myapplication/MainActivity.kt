@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        // 设置按钮点击事件，跳转到 SecondActivity 页面
+        //ss 设置按钮点击事件，跳转到 SecondActivity 页面
         val gotoFormButton = binding.gotoFormButton
         gotoFormButton.setOnClickListener {
 //            val intent = Intent(
