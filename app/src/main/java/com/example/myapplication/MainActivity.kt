@@ -1,10 +1,7 @@
 package com.example.myapplication
 
-import android.R
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -32,7 +29,7 @@ class MainActivity : AppCompatActivity() {
 
 
         // 获取 TableLayout 组件
-        val tableLayout =  binding.tableLayout;
+        val table1 =  binding.tableLayout;
 
 
         // 构建表头
@@ -47,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         dataHeader.setPadding(16, 16, 16, 16)
         headerRow.addView(dataHeader)
 
-        tableLayout.addView(headerRow)
+        table1.addView(headerRow)
 
 
         val dataList=initData();
@@ -64,13 +61,16 @@ class MainActivity : AppCompatActivity() {
             dataText.setPadding(16, 16, 16, 16)
             dataRow.addView(dataText)
 
-            tableLayout.addView(dataRow)
+            table1.addView(dataRow)
         }
 
 
-        //ss 设置按钮点击事件，跳转到 SecondActivity 页面
+        //ssss 设置按钮点击事件，跳转到 SecondActivity 页面
         val gotoFormButton = binding.gotoFormButton
         gotoFormButton.setOnClickListener {
+            // 创建一个 Intent 对象，用于启动 SecondActivity
+            val intent = Intent(this, SecondActivity::class.java)
+            startActivity(intent)  // 启动 SecondActivity
 //            val intent = Intent(
 //                this@MainActivity,
 //               // SecondActivity::class.java
