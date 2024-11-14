@@ -3,14 +3,65 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="3dp">
 
-    <TableLayout
-        android:id="@+id/tableLayout"
+
+
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/txtbx1"
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="请输入文字" android:inputType="text" />
+        <Button
+            android:id="@+id/srchBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="srch .srch."
+            android:layout_marginTop="3dp"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/delBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="del....."
+            android:layout_marginTop="3dp"/>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+    </LinearLayout>
+
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:stretchColumns="1"
-        android:paddingTop="8dp"/>
+        >
+
+        <TableLayout
+            android:id="@+id/tableLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1"
+            android:paddingTop="8dp"/>
+    </ScrollView>
+
+
+
 
     <Button
         android:id="@+id/gotoFormButton"
@@ -18,5 +69,7 @@
         android:layout_height="wrap_content"
         android:text="Go to Form"
         android:layout_marginTop="20dp"/>
+
+
 
 </LinearLayout>
