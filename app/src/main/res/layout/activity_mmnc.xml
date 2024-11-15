@@ -18,15 +18,48 @@
         android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="请输入文字" android:inputType="text" />
 
 
+    <TextView
+        android:id="@+id/tttttt2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="basewd" />
+
+    <EditText
+        android:id="@+id/nnnTxbx"
+        android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="请输入文字" android:inputType="text" />
+
+
+
+
+    <TextView
+        android:id="@+id/tttttt3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="basewd" />
+
+    <EditText
+        android:id="@+id/saltTxbx"
+        android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="请输入文字" android:inputType="text" />
+
+
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
          <Button
-            android:id="@+id/srchBtn"
+            android:id="@+id/geneBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="gene..."
+            android:layout_marginTop="3dp"/>
+
+
+        <Button
+            android:id="@+id/copyBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="copy..."
             android:layout_marginTop="3dp"/>
 
 
@@ -39,7 +72,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/textViewOtpt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView" />
