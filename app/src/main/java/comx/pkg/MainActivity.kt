@@ -8,6 +8,7 @@ import android.app.AlertDialog
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -23,8 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.ui.AppBarConfiguration
-import comx.pkg.Util.Companion.getFileNameWithCurrentTime
-import comx.pkg.Util.Companion.showToast
+
 import comx.pkg.databinding.ActivityMainBinding
 import org.json.JSONArray
 import org.json.JSONObject
@@ -42,38 +42,52 @@ class MainActivity : AppCompatActivity() {
     private val tagLog = "MainActivity1114"
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(tagLog, "fun onCrt()"  )
 
-        super.onCreate(savedInstanceState)
+        try { Log.d(tagLog, "funx onCrt()")
 
-        // 初始化 ViewBinding
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        // setContentView(R.layout.activity_main)  // 确保这一行调用
+            // 设置全局异常捕获
+//            Thread.setDefaultUncaughtExceptionHandler { thread: Thread, throwable: Throwable? ->
+//                // 这里可以做一些日志记录或错误上报
+//                Log.e("UncaughtException", "Thread: " + thread.name, throwable)
+//            }
+
+            //            // 创建一个 Intent 对象，用于启动 SecondActivity
+//            val intent = Intent(this, MmncActivity::class.java)
+//            startActivity(intent)  // 启动 SecondActivity
 
 
-        //----reg sms writefile auth
-        //检查并请求权限
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_SMS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            val permissions = arrayOf(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.READ_SMS,
 
-            )
-            ActivityCompat.requestPermissions(
-                this,
-                permissions,
-                REQUEST_SMS_PERMISSION
-            )
-        }
-        // 检查是否已获得写入外部存储权限
-        //requestCode 是自定义的整数，用于在权限回调中识别请求。
+
+            super.onCreate(savedInstanceState)
+
+            // 初始化 ViewBinding
+            binding = ActivityMainBinding.inflate(layoutInflater)
+            setContentView(binding.root)
+            // setContentView(R.layout.activity_main)  // 确保这一行调用
+
+
+            //----reg sms writefile auth
+            //检查并请求权限
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_SMS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                val permissions = arrayOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.READ_SMS,
+
+                    )
+                ActivityCompat.requestPermissions(
+                    this,
+                    permissions,
+                    REQUEST_SMS_PERMISSION
+                )
+            }
+            // 检查是否已获得写入外部存储权限
+            //requestCode 是自定义的整数，用于在权限回调中识别请求。
 //        var requestCode4wrt = 111
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
 //            != PackageManager.PERMISSION_GRANTED
@@ -88,67 +102,68 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
+            binding.srchBtn.setOnClickListener {
+                // 创建一个 Intent 对象，用于启动 SecondActivity
+                try {
+                    var smsList = searchSms(binding.txtbx1.text)
+                    Log.d(tagLog, "smslist.size:" + smsList.size)
+                    binding.textView.text = "cnt:" + smsList.size
+                    showList(smsList);
 
-        binding.srchBtn.setOnClickListener {
-            // 创建一个 Intent 对象，用于启动 SecondActivity
-            try {
-                var smsList = searchSms(binding.txtbx1.text)
-                Log.d(tagLog, "smslist.size:" + smsList.size)
-                binding.textView.text = "cnt:" + smsList.size
-                showList(smsList);
-
-            } catch (e: Exception) {
-                Log.e(tagLog, "Error while searching SMS or showing list", e)
-            }
-        }
-
-        binding.exptBtn.setOnClickListener {
-
-            try {
-               var f=  exportAllSms(applicationContext)
-               // val toast = Toast.makeText(this, "save file:"+f, Toast.LENGTH_LONG)
-              //  toast.show()
-                showToast(this, "save file:"+f,15)
-            } catch (e: Exception) {
-                Log.e(tagLog, "Error while searching SMS or showing list", e)
+                } catch (e: Exception) {
+                    Log.e(tagLog, "Error while searching SMS or showing list", e)
+                }
             }
 
-        }
+            binding.exptBtn.setOnClickListener {
+
+                try {
+                    var f = exportAllSms(applicationContext)
+                    // val toast = Toast.makeText(this, "save file:"+f, Toast.LENGTH_LONG)
+                    //  toast.show()
+                    showToast(this, "save file:" + f, 15)
+                } catch (e: Exception) {
+                    Log.e(tagLog, "Error while searching SMS or showing list", e)
+                }
+
+            }
 
 
-        // 获取 CheckBox 的选中状态并打印到日志中
-        binding.delBtn.setOnClickListener {
-             showDeleteConfirmationDialog()
+            // 获取 CheckBox 的选中状态并打印到日志中
+            binding.delBtn.setOnClickListener {
+                showDeleteConfirmationDialog()
 
-        }
+            }
 
 
-        // val intent = Intent(this, SecondActivity::class.java)
-        // startActivity(intent)
+            // val intent = Intent(this, SecondActivity::class.java)
+            // startActivity(intent)
 
 //end   设置点击事件监听器
 
-        // 初始化数据
-        // initData()
+            // 初始化数据
+            // initData()
 
 
-        //   showList()
+            //   showList()
 
 
-        //ssss 设置按钮点击事件，跳转到 SecondActivity 页面
-//        val gotoFormButton = binding.gotoFormButton
-//        gotoFormButton.setOnClickListener {
-//            // 创建一个 Intent 对象，用于启动 SecondActivity
-//            val intent = Intent(this, SecondActivity::class.java)
-//            startActivity(intent)  // 启动 SecondActivity
-////            val intent = Intent(
-////                this@MainActivity,
-////               // SecondActivity::class.java
-////            )
-////            startActivity(intent)
-//        }
+            //ssss 设置按钮点击事件，跳转到 SecondActivity 页面
+            val gotoFormButton = binding.gotoFormButton
+            gotoFormButton.setOnClickListener {
+                // 创建一个 Intent 对象，用于启动 SecondActivity
+                val java = MmncActivity::class.java
+                val intent = Intent(this, java)
+                startActivity(intent)  // 启动 SecondActivity
 
-        Log.d(tagLog, "endfun onCrt()"  )
+            }
+
+            Log.d(tagLog, "endfun onCrt()")
+
+        } catch (e: Exception) {
+            // 处理异常
+            Log.e(tagLog, "Caught exception", e)
+        }
 
     }
 
@@ -175,7 +190,7 @@ class MainActivity : AppCompatActivity() {
                 )
                 smsObject.put("body", it.getString(it.getColumnIndexOrThrow(Telephony.Sms.BODY)))
                 smsObject.put("date", it.getString(it.getColumnIndexOrThrow(Telephony.Sms.DATE)))
-               // smsObject.put("type", it.getString(it.getColumnIndexOrThrow(Telephony.Sms.TYPE)))
+                // smsObject.put("type", it.getString(it.getColumnIndexOrThrow(Telephony.Sms.TYPE)))
                 smsArray.put(smsObject)
             }
         }
@@ -201,16 +216,16 @@ class MainActivity : AppCompatActivity() {
 //        }
 //
 //        startActivityForResult(intent, REQUEST_CREATE_FILE)
-       // val file = wrtFilToAppdir(context, jsonString)
+        // val file = wrtFilToAppdir(context, jsonString)
 
-        var fname="sms_export" + getFileNameWithCurrentTime() + ".json";
-        val fldr="/aasms/"
-        val file = wrtFilToDocumentDir(context, jsonString,fldr,fname)
+        var fname = "sms_export" + getFileNameWithCurrentTime() + ".json";
+        val fldr = "/aasms/"
+        val file = wrtFilToDocumentDir(context, jsonString, fldr, fname)
 
 
 
         Log.d(tagLog, "expt ok..." + file.toString())
-   return "document"+fldr+fname;
+        return "document" + fldr + fname;
     }
 
 
@@ -234,19 +249,20 @@ class MainActivity : AppCompatActivity() {
             val contentResolver = context.contentResolver
 
             // 设置文件名和 MIME 类型
-         //   val fileName = "sms_export.json"
+            //   val fileName = "sms_export.json"
             val mimeType = "application/json"
 
             // 创建 ContentValues
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, fileName) // 文件名
                 put(MediaStore.MediaColumns.MIME_TYPE, mimeType)    // MIME 类型
-                put(MediaStore.MediaColumns.RELATIVE_PATH, "Documents"+fldr)  // 文件存储路径
+                put(MediaStore.MediaColumns.RELATIVE_PATH, "Documents" + fldr)  // 文件存储路径
             }
 
             // 使用 MediaStore 创建文件
-            val uri = contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
-                ?: return "Failed to create file in MediaStore"
+            val uri =
+                contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
+                    ?: return "Failed to create file in MediaStore"
 
             // 打开输出流写入文件内容
             val outputStream: OutputStream? = uri?.let {
@@ -291,7 +307,7 @@ class MainActivity : AppCompatActivity() {
      * 根据传入的sms id删除指定的短信
      */
     private fun delSms(context: Context, smsid: CharSequence?) {
-        Log.d(tagLog, "fun delsms("+smsid)
+        Log.d(tagLog, "fun delsms(" + smsid)
         Log.d(tagLog, ")))")
         // 检查 smsid 是否为空
         if (smsid.isNullOrEmpty()) {
@@ -308,7 +324,7 @@ class MainActivity : AppCompatActivity() {
             Log.d(tagLog, smsUri.toString())
             // 执行删除操作
             val rowsDeleted = contentResolver.delete(smsUri, null, null)
-            Log.d(tagLog, "检查删除结果rowsDeleted:"+rowsDeleted.toString())
+            Log.d(tagLog, "检查删除结果rowsDeleted:" + rowsDeleted.toString())
             // 检查删除结果
             if (rowsDeleted > 0) {
                 Toast.makeText(context, "短信删除成功", Toast.LENGTH_SHORT).show()
@@ -330,7 +346,7 @@ class MainActivity : AppCompatActivity() {
             .setMessage("确定要删除吗？")
             .setPositiveButton("确定") { dialog, which ->
                 // 用户点击“确定”，调用删除方法
-               // del()
+                // del()
                 dialog.dismiss()
                 //del smss
                 checkBoxList.forEach { smsWithCheckBox ->
@@ -339,7 +355,7 @@ class MainActivity : AppCompatActivity() {
 
                         //showDeleteConfirmationDialog
                         Log.d(tagLog, " checkBoxList.forEach#SMS ID: ${smsWithCheckBox.text} ")
-                        delSms(this,smsid)
+                        delSms(this, smsid)
                     }
 
                 }
@@ -505,9 +521,9 @@ class MainActivity : AppCompatActivity() {
             grantResults
         )
         Log.d(tagLog, "fun onRequestPermissionsResult(")
-        Log.d(tagLog, "requestCode:"+requestCode.toString())
-        Log.d(tagLog, "permissions:"+permissions.toString())
-        Log.d(tagLog, "grantResults:"+grantResults.toString())
+        Log.d(tagLog, "requestCode:" + requestCode.toString())
+        Log.d(tagLog, "permissions:" + permissions.toString())
+        Log.d(tagLog, "grantResults:" + grantResults.toString())
         Log.d(tagLog, " )))")
 
 

@@ -38,9 +38,11 @@ android {
     }
 }
 
+//build.gradle.kts
 dependencies {
-
-    implementation(libs.androidx.core.ktx)
+    implementation("org.bitcoinj:bitcoinj-core:0.15.10")
+    implementation("org.bouncycastle:bcprov-jdk15to18:1.70")
+     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
