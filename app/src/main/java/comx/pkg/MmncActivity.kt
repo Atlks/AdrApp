@@ -71,7 +71,7 @@ class MmncActivity : AppCompatActivity() {
 
         val hexSeed = encodeMd5(seed)
         Log.d(tagLog, "seed:" + hexSeed);
-        val generateMnemonic = generateMnemonic(hexSeed)
+        val generateMnemonic = geneMmncCrpt(hexSeed)
         Log.d(tagLog, generateMnemonic)
         var textView = findViewById<TextView>(R.id.textViewOtpt)
         textView.text = generateMnemonic
