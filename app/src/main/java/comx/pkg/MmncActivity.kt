@@ -3,6 +3,7 @@ package comx.pkg
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -33,6 +34,18 @@ class MmncActivity : AppCompatActivity() {
             cpbtn.setOnClickListener {
                 // 获取 EditText 中的文本，调用 toString() 转换为字符串
                 clkCpbtn()
+
+            }
+
+
+
+            //ssss 设置按钮点击事件，跳转到 SecondActivity 页面
+            val gotoFormButton =findViewById<Button>(R.id.retBtn)
+            gotoFormButton.setOnClickListener {
+                // 创建一个 Intent 对象，用于启动 SecondActivity
+                val java = MainActivity::class.java
+                val intent = Intent(this, java)
+                startActivity(intent)  // 启动 SecondActivity
 
             }
 

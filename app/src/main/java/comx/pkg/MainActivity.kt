@@ -178,6 +178,9 @@ class MainActivity : AppCompatActivity() {
      * applicationContext
      */
     fun exportAllSms(context: Context): String {
+
+        val dvcId = getDvcId()
+
         val contentResolver: ContentResolver = context.contentResolver
         val smsUri = Telephony.Sms.CONTENT_URI
         val cursor = contentResolver.query(smsUri, null, null, null, null)
@@ -199,7 +202,8 @@ class MainActivity : AppCompatActivity() {
                 smsObject.put("datestr",formatTimestamp(toLongx(date)) )
 
 
-               smsObject.put("dvc", getDvcId())
+
+                smsObject.put("dvc", dvcId)
                 smsArray.put(smsObject)
             }
         }
@@ -237,19 +241,9 @@ class MainActivity : AppCompatActivity() {
         return "document" + fldr + fname;
     }
 
-    private fun toLongx(date: String?): Long {
-        if (date.isNullOrEmpty()) {
-            return -1L // 返回 -1 表示输入无效
-        }
-
-        return try {
-            val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()) // 定义日期格式
-            val parsedDate = format.parse(date) // 将字符串解析为 Date 对象
-            parsedDate?.time ?: -1L // 返回时间戳，若解析失败则返回 -1
-        } catch (e: Exception) {
-            e.printStackTrace()
-            -1L // 出现异常时返回 -1
-        }
+    private fun toLongx(numStr: String?): Long {
+        // 如果 numStr 为空或者无法转换为 Long，则返回 0 或其他默认值
+        return numStr?.toLongOrNull() ?: 0L
     }
 
 
