@@ -1,5 +1,6 @@
 package comx.pkg
-
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 //import comx.databinding.ActivityMainBinding
 //import comx.pkg.databinding.ActivityMainBinding
 import android.Manifest
@@ -32,6 +33,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.io.OutputStreamWriter
+import java.io.Serializable
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 class MainActivity : AppCompatActivity() {
@@ -158,6 +162,7 @@ class MainActivity : AppCompatActivity() {
 
             }
 
+            Log.d(tagLog,getDvcId())
             Log.d(tagLog, "endfun onCrt()")
 
         } catch (e: Exception) {
@@ -189,8 +194,12 @@ class MainActivity : AppCompatActivity() {
                     it.getString(it.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
                 )
                 smsObject.put("body", it.getString(it.getColumnIndexOrThrow(Telephony.Sms.BODY)))
-                smsObject.put("date", it.getString(it.getColumnIndexOrThrow(Telephony.Sms.DATE)))
-                // smsObject.put("type", it.getString(it.getColumnIndexOrThrow(Telephony.Sms.TYPE)))
+                val date = it.getString(it.getColumnIndexOrThrow(Telephony.Sms.DATE))
+                smsObject.put("date", date)
+                smsObject.put("datestr",formatTimestamp(toLongx(date)) )
+
+
+               smsObject.put("dvc", getDvcId())
                 smsArray.put(smsObject)
             }
         }
@@ -218,7 +227,7 @@ class MainActivity : AppCompatActivity() {
 //        startActivityForResult(intent, REQUEST_CREATE_FILE)
         // val file = wrtFilToAppdir(context, jsonString)
 
-        var fname = "sms_export" + getFileNameWithCurrentTime() + ".json";
+        var fname = "smsExpt.${getDvcIdFlFrg()}." + getFileNameWzTime4FlNmFrg() + ".json";
         val fldr = "/aasms/"
         val file = wrtFilToDocumentDir(context, jsonString, fldr, fname)
 
@@ -226,6 +235,21 @@ class MainActivity : AppCompatActivity() {
 
         Log.d(tagLog, "expt ok..." + file.toString())
         return "document" + fldr + fname;
+    }
+
+    private fun toLongx(date: String?): Long {
+        if (date.isNullOrEmpty()) {
+            return -1L // 返回 -1 表示输入无效
+        }
+
+        return try {
+            val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()) // 定义日期格式
+            val parsedDate = format.parse(date) // 将字符串解析为 Date 对象
+            parsedDate?.time ?: -1L // 返回时间戳，若解析失败则返回 -1
+        } catch (e: Exception) {
+            e.printStackTrace()
+            -1L // 出现异常时返回 -1
+        }
     }
 
 
@@ -371,12 +395,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun searchSms(text: Editable?): List<Sms> {
         Log.d(tagLog, "fun srchSms((")
-        Log.d(tagLog, text.toString())
+        val txt = text.toString()
+        Log.d(tagLog, txt)
         Log.d(tagLog, ")))")
         val smsList = mutableListOf<Sms>()
         val projection = arrayOf("address", "body", "date", "_id")
-        val selection = "body LIKE ?"
-        val selectionArgs = arrayOf("%${text.toString()}%")
+      //  val selectionArgs = arrayOf("%aaa%", "%bbb%")
+       // var arr= txt.split(" ");
+      //  val selection = "body LIKE ? AND body LIKE ?"
+        val selection =  toBodyLikeStr(txt);
+        Log.d(tagLog, "selection="+selection)
+        val selectionArgs =to_arrayOf(txt)
+        Log.d(tagLog, "selectionArgs="+encodeJson(selectionArgs))
         val cursor = contentResolver.query(
             Uri.parse("content://sms/inbox"),
             projection,
@@ -401,6 +431,34 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return smsList
+    }
+
+
+
+    private fun toBodyLikeStr(txt: String): String {
+        if (txt.isBlank()) return "" // 如果输入为空或全是空格，返回空数组 // 如果输入为空，返回 null
+        val toTypedArray = txt.split(" ") // 按空格分割字符串
+            .filter { it.isNotBlank() } // 过滤掉空白项
+            .map { "body LIKE ? " } // 添加 '%' 符号
+            .toTypedArray()
+        return  joinToStr(toTypedArray, " and " ) // 转为 Array
+    }
+
+    private fun joinToStr(toTypedArray: Array<String>, separator: String): String {
+        // 使用 joinToString 方法将数组元素连接为一个字符串，并用指定的分隔符分隔
+        return toTypedArray.joinToString(separator )
+    }
+
+    /**
+     * txt: aaa bbb
+     * 希望可以返回  arrayOf("%aaa%", "%bbb%")
+     */
+    private fun to_arrayOf(txt: String): Array<String>? {
+        if (txt.isBlank()) return emptyArray() // 如果输入为空或全是空格，返回空数组 // 如果输入为空，返回 null
+        return txt.split(" ") // 按空格分割字符串
+            .filter { it.isNotBlank() } // 过滤掉空白项
+            .map { "%$it%" } // 添加 '%' 符号
+            .toTypedArray() // 转为 Array
     }
 
     data class Sms(val address: String, val body: String, val date: Long, val id: Long)

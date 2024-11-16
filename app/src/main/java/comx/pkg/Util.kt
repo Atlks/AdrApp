@@ -10,6 +10,49 @@ import android.os.Handler
 import java.security.MessageDigest
 
 
+import android.os.Build
+import android.util.Log
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+
+fun formatTimestamp(timestamp: Long): String {
+    try {
+        val date = Date(timestamp) // 将时间戳转换为 Date 对象
+        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()) // 定义格式
+        return format.format(date) // 格式化日期
+    } catch (e: Exception) {
+        // 处理异常
+        Log.e(tagLog, "Caught exception", e)
+        return  "1970-01-01 00:00:00"
+    }
+
+
+}
+
+fun getDvcIdFlFrg(): String {
+    return "${Build.BRAND}@${Build.MODEL}".trimIndent()
+}
+
+
+fun getDvcId(): String {
+    return "${Build.BRAND}_${Build.MODEL}".trimIndent()
+}
+
+fun getDeviceInfo(): String {
+    return """
+        品牌 (Brand): ${Build.BRAND}
+        制造商 (Manufacturer): ${Build.MANUFACTURER}
+        型号 (Model): ${Build.MODEL}
+        产品 (Product): ${Build.PRODUCT}
+        硬件 (Hardware): ${Build.HARDWARE}
+        设备 (Device): ${Build.DEVICE}
+        主板 (Board): ${Build.BOARD}
+        系统版本 (OS Version): ${Build.VERSION.RELEASE} (API Level: ${Build.VERSION.SDK_INT})
+        构建 ID (Build ID): ${Build.ID}
+        用户 (User): ${Build.USER}
+    """.trimIndent()
+}
+
 fun encodeMd5(s: String): String {
 // 获取 MD5 MessageDigest 实例
     val digest = MessageDigest.getInstance("MD5")
@@ -33,11 +76,29 @@ fun showToast(context: Context, message: String, delaySec: Long) {
     }, delaySec * 1000)  // 延迟7秒
 }
 
+fun encodeJson(selectionArgs: Array<String>?): Any? {
+    return if (selectionArgs != null) {
+
+        // 创建 SelectionArgs 对象并将其序列化为 JSON 字符串
+        // val selectionArgsObj = SelectionArgs(selectionArgs)
+        val jsonString = Json.encodeToString(selectionArgs)
+        jsonString
+    } else {
+        ""
+    }
+}
 fun getFileNameWithCurrentTime(): String {
     val dateFormat = SimpleDateFormat("MMdd_HHmmss", Locale.getDefault())
     val currentTime = dateFormat.format(Date())
     return currentTime
 }
+
+fun getFileNameWzTime4FlNmFrg(): String {
+    val dateFormat =getFileNameWithCurrentTime()
+    val currentTime = dateFormat.replace("_","T")
+    return currentTime
+}
+
 
 
 /**

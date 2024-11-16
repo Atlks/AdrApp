@@ -7,25 +7,19 @@
 
 
 
+    <EditText
+        android:id="@+id/txtbx1"
+        android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="请输入文字" android:inputType="text" />
 
 
 
-    <LinearLayout
+
+    <Button
+        android:id="@+id/srchBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <EditText
-            android:id="@+id/txtbx1"
-            android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="请输入文字" android:inputType="text" />
-        <Button
-            android:id="@+id/srchBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="srch .srch."
-            android:layout_marginTop="3dp"/>
-
-    </LinearLayout>
-
+        android:text="srch .srch."
+        android:layout_marginTop="3dp"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
