@@ -164,6 +164,15 @@ class SmsmngActivity : AppCompatActivity() {
 
             }
 
+            var gohmBtn = findViewById<Button>(R.id.gohm)
+            gohmBtn.setOnClickListener {
+                // 创建一个 Intent 对象，用于启动 SecondActivity
+                val java = MainActivity::class.java
+                val intent = Intent(this, java)
+                startActivity(intent)  // 启动 SecondActivity
+
+            }
+
             Log.d(tagLog,getDvcId())
             Log.d(tagLog, "endfun onCrt()")
 

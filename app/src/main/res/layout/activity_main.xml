@@ -38,13 +38,13 @@
 
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#D3D3D3"
+
         >
 
         <TableLayout
             android:id="@+id/tableLayout"
             android:layout_width="match_parent"
-            android:background="#ff0000"
+
             android:layout_height="wrap_content"
             android:stretchColumns="1"
             android:paddingTop="8dp"/>
@@ -56,18 +56,31 @@
         android:id="@+id/txtbx1"
         android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="请输入文字" android:inputType="text" />
 
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="3dp"
 
+
+
+        >
     <Button
         android:id="@+id/sendBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="srch .srch."
+        android:text="send..."
         android:layout_marginTop="3dp"/>
 
 
+    <Button
+        android:id="@+id/setNtfyAuth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="set ntfy auth"
+        android:layout_marginTop="3dp"/>
 
-
-
+    </LinearLayout>
 
 
 

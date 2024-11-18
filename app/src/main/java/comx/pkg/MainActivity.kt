@@ -139,6 +139,12 @@ class MainActivity : AppCompatActivity() {
 
             }
 
+            binding.setNtfyAuth.setOnClickListener{
+                // 创建一个 Intent 对象，用于启动 SecondActivity
+                val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+                startActivity(intent)
+            }
+
             var btn11= binding.gotoSmsBtn;
             binding.gotoSmsBtn.setOnClickListener{
 
@@ -162,6 +168,21 @@ class MainActivity : AppCompatActivity() {
                 Log.d(tagLog, "end startListening ..")
                 //  insertDB(jsonObj["devicename"], jsonObj["msg"]);
 
+            }
+
+
+
+            //block show list
+            var smsList = ListSms()
+            Log.d(tagLog, "smslist.size:" + smsList.size)
+            // binding.textView.text = "cnt:" + smsList.size
+            showList(smsList);
+            binding.txtbx1.setText("")
+
+            //滚动到底部
+            var scrollView=binding.scrvw;
+            scrollView.post {
+                scrollView.fullScroll(View.FOCUS_DOWN)
             }
             Log.d(tagLog, "endfun onCrt()")
 
