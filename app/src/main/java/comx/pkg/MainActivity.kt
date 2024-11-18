@@ -15,6 +15,7 @@ import android.provider.MediaStore
 import android.provider.Telephony
 import android.text.Editable
 import android.util.Log
+import android.view.View
 import android.widget.CheckBox
 import android.widget.TableRow
 import android.widget.TextView
@@ -29,12 +30,14 @@ import comx.pkg.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.io.OutputStreamWriter
+import java.lang.Thread.sleep
 
 
 class MainActivity : AppCompatActivity() {
@@ -108,22 +111,7 @@ class MainActivity : AppCompatActivity() {
             val deviceName1 = getDeviceName(this)
             binding.sendBtn.setOnClickListener {
                 // 创建一个 Intent 对象，用于启动 SecondActivity
-                try {
-                    var msg=binding.txtbx1.text.toString()
-
-                    val time = System.currentTimeMillis()
-                    val sms = Msg(deviceName1, msg, time,time)
-
-                    sendMsg(encodeJson(sms).toString())
-                    insertDB(deviceName1, msg.toString());
-                    var smsList = ListSms(binding.txtbx1.text)
-                    Log.d(tagLog, "smslist.size:" + smsList.size)
-                   // binding.textView.text = "cnt:" + smsList.size
-                    showList(smsList);
-
-                } catch (e: Exception) {
-                    Log.e(tagLog, "Error while searching SMS or showing list", e)
-                }
+                sendBtnClik(deviceName1)
             }
 
 
@@ -166,7 +154,12 @@ class MainActivity : AppCompatActivity() {
             val udpListener = UdpListener(18888)
             udpListener.startListening { message ->
                 // 这里是处理接收到的消息的地方
+                Log.d(tagLog, "startListening msg rcv ..")
+                sleep(300);
+                Log.d(tagLog, "startListening msg rcv after 3sec")
+
                 msgRecv(message)
+                Log.d(tagLog, "end startListening ..")
                 //  insertDB(jsonObj["devicename"], jsonObj["msg"]);
 
             }
@@ -179,13 +172,56 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun sendBtnClik(deviceName1: String) {
+        val deviceName2 = getDeviceName(this)
+        try {
+            //----block send
+            var msg = binding.txtbx1.text.toString()
+            val time = System.currentTimeMillis()
+            val msg1 = Msg(deviceName1, msg, time, time)
+
+            val encodeJson = encodeJson(msg1)
+            sendMsg(encodeJson.toString())
+
+
+
+            //block insert
+            insertDB(deviceName1, msg.toString());
+
+
+
+            //block show list
+            var smsList = ListSms()
+            Log.d(tagLog, "smslist.size:" + smsList.size)
+            // binding.textView.text = "cnt:" + smsList.size
+            showList(smsList);
+            binding.txtbx1.setText("")
+
+            //滚动到底部
+            var scrollView=binding.scrvw;
+            scrollView.post {
+                scrollView.fullScroll(View.FOCUS_DOWN)
+            }
+
+
+        } catch (e: Exception) {
+            Log.e(tagLog, "Error while searching SMS or showing list", e)
+        }
+    }
+
     private fun msgRecv(message: String) {
+        Log.d(tagLog,"fun msgrecv((")
+        Log.d(tagLog,"message="+message);
+        Log.d(tagLog,")))")
         Log.d(tagLog, "Message received: $message")
         // 例如，更新 UI 或保存消息
         var jsonObj = decodeJson(message)
+
         // 检查 jsonObj 是否为 null，并确保 devicename 和 msg 键存在
         if (jsonObj != null) {
             val deviceName = jsonObj.optString("dvcnm")  // 使用 optString 来安全获取值
+           if(deviceName.equals(getDeviceName(this)))
+               return
             val msg = jsonObj.optString("msg")
 
             if (deviceName.isNotEmpty() && msg.isNotEmpty()) {
@@ -193,13 +229,25 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Log.e("JsonParsing", "Missing device name or message in JSON.")
             }
-            var smsList = ListSms(binding.txtbx1.text)
+            var smsList = ListSms()
             Log.d(tagLog, "smslist.size:" + smsList.size)
             // binding.textView.text = "cnt:" + smsList.size
-            showList(smsList);
+
+            // 切换到主线程更新 UI
+            runOnUiThread {
+                showList(smsList);
+                //滚动到底部
+                var scrollView=binding.scrvw;
+                scrollView.post {
+                    scrollView.fullScroll(View.FOCUS_DOWN)
+                }
+            }
+
+
         } else {
             Log.e("JsonParsing", "Failed to decode JSON message.")
         }
+        Log.d(tagLog,"endfun msgrecv()#ret=")
     }
 
 
@@ -445,12 +493,12 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    @Serializable
     data class Msg(val dvcnm: String, val msg: String, val time: Long, val id: Long)
 
-    private fun ListSms(text: Editable?):  List<Msg> {
+    private fun ListSms():  List<Msg> {
         Log.d(tagLog, "fun ListSms((")
-        val txt = text.toString()
-        Log.d(tagLog, txt)
+
         Log.d(tagLog, ")))")
 
 

@@ -12,6 +12,8 @@ import java.security.MessageDigest
 import android.provider.Settings
 import android.os.Build
 import android.util.Log
+import com.google.gson.Gson
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
@@ -91,17 +93,41 @@ fun decodeJson(message: String): JSONObject? {
     }
 }
 
-fun encodeJson(selectionArgs: Any): String {
-    return if (selectionArgs != null) {
 
-        // 创建 SelectionArgs 对象并将其序列化为 JSON 字符串
-        // val selectionArgsObj = SelectionArgs(selectionArgs)
-        val jsonString = Json.encodeToString(selectionArgs)
-        jsonString
-    } else {
-        ""
-    }
+/**
+ * 使用 Gson 将对象编码为 JSON 字符串
+ * @param obj 要编码的对象
+ * @return 对象的 JSON 字符串表示形式
+ */
+fun encodeJson(obj: Any): String {
+    val gson = Gson()
+    return gson.toJson(obj)
 }
+
+/**
+ * 使用gson来实现
+ */
+//fun encodeJson(obj: Any): String {
+//    // Ensure the object is serializable
+//    if (obj is Serializable) {
+//        val jsonString = Json.encodeToString(obj)
+//        println(jsonString)
+//        return jsonString
+//    } else {
+//        throw IllegalArgumentException("Object must be serializable")
+//    }
+//}
+//fun encodeJson(selectionArgs: Any): String {
+//    return if (selectionArgs != null) {
+//
+//        // 创建 SelectionArgs 对象并将其序列化为 JSON 字符串
+//        // val selectionArgsObj = SelectionArgs(selectionArgs)
+//        val jsonString = Json.encodeToString(selectionArgs)
+//        jsonString
+//    } else {
+//        ""
+//    }
+//}
 fun getFileNameWithCurrentTime(): String {
     val dateFormat = SimpleDateFormat("MMdd_HHmmss", Locale.getDefault())
     val currentTime = dateFormat.format(Date())

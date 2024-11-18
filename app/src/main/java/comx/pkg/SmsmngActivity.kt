@@ -404,7 +404,7 @@ class SmsmngActivity : AppCompatActivity() {
         val selection =  toBodyLikeStr(txt);
         Log.d(tagLog, "selection="+selection)
         val selectionArgs =to_arrayOf(txt)
-        Log.d(tagLog, "selectionArgs="+encodeJson(selectionArgs))
+        Log.d(tagLog, "selectionArgs="+ selectionArgs?.let { encodeJson(it) })
         val cursor = contentResolver.query(
                 Uri.parse("content://sms/inbox"),
                 projection,
