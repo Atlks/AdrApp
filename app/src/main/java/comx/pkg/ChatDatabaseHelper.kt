@@ -73,7 +73,8 @@ fun getAllMessages(context: Context): List<Message> {
         arrayOf( // 要查询的列
             ChatDatabaseHelper.COLUMN_DEVICE_NAME,
             ChatDatabaseHelper.COLUMN_MESSAGE,
-            ChatDatabaseHelper.COLUMN_TIME
+            ChatDatabaseHelper.COLUMN_TIME,
+            ChatDatabaseHelper.COLUMN_ID
         ),
         null, // where 子句
         null, // where 参数

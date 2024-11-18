@@ -1,8 +1,6 @@
 package comx.pkg;
 
 
-import kotlinx.serialization.*
-        import kotlinx.serialization.json.*
 //import comx.databinding.ActivityMainBinding
 //import comx.pkg.databinding.ActivityMainBinding
         import android.Manifest

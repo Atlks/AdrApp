@@ -14,6 +14,7 @@ import android.os.Build
 import android.util.Log
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.json.JSONObject
 
 fun formatTimestamp(timestamp: Long): String {
     try {
@@ -79,7 +80,18 @@ fun showToast(context: Context, message: String, delaySec: Long) {
     }, delaySec * 1000)  // 延迟7秒
 }
 
-fun encodeJson(selectionArgs: Array<String>?): Any? {
+
+fun decodeJson(message: String): JSONObject? {
+    return try {
+        // 使用 JSONObject 解析 JSON 字符串
+        JSONObject(message)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
+
+fun encodeJson(selectionArgs: Any): String {
     return if (selectionArgs != null) {
 
         // 创建 SelectionArgs 对象并将其序列化为 JSON 字符串

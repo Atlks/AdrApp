@@ -26,6 +26,9 @@ import androidx.navigation.ui.AppBarConfiguration
 
 
 import comx.pkg.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -102,11 +105,17 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
+            val deviceName1 = getDeviceName(this)
             binding.sendBtn.setOnClickListener {
                 // 创建一个 Intent 对象，用于启动 SecondActivity
                 try {
-                    var msg=binding.txtbx1.text
-                    insertDB(getDeviceName(this), msg.toString());
+                    var msg=binding.txtbx1.text.toString()
+
+                    val time = System.currentTimeMillis()
+                    val sms = Msg(deviceName1, msg, time,time)
+
+                    sendMsg(encodeJson(sms).toString())
+                    insertDB(deviceName1, msg.toString());
                     var smsList = ListSms(binding.txtbx1.text)
                     Log.d(tagLog, "smslist.size:" + smsList.size)
                    // binding.textView.text = "cnt:" + smsList.size
@@ -151,13 +160,57 @@ class MainActivity : AppCompatActivity() {
 
             }
 
-            val deviceName = getDeviceName(this)
+            val deviceName = deviceName1
             Log.d(tagLog, deviceName)
+
+            val udpListener = UdpListener(18888)
+            udpListener.startListening { message ->
+                // 这里是处理接收到的消息的地方
+                msgRecv(message)
+                //  insertDB(jsonObj["devicename"], jsonObj["msg"]);
+
+            }
             Log.d(tagLog, "endfun onCrt()")
 
         } catch (e: Exception) {
             // 处理异常
             Log.e(tagLog, "Caught exception", e)
+        }
+
+    }
+
+    private fun msgRecv(message: String) {
+        Log.d(tagLog, "Message received: $message")
+        // 例如，更新 UI 或保存消息
+        var jsonObj = decodeJson(message)
+        // 检查 jsonObj 是否为 null，并确保 devicename 和 msg 键存在
+        if (jsonObj != null) {
+            val deviceName = jsonObj.optString("dvcnm")  // 使用 optString 来安全获取值
+            val msg = jsonObj.optString("msg")
+
+            if (deviceName.isNotEmpty() && msg.isNotEmpty()) {
+                insertDB(deviceName, msg)
+            } else {
+                Log.e("JsonParsing", "Missing device name or message in JSON.")
+            }
+            var smsList = ListSms(binding.txtbx1.text)
+            Log.d(tagLog, "smslist.size:" + smsList.size)
+            // binding.textView.text = "cnt:" + smsList.size
+            showList(smsList);
+        } else {
+            Log.e("JsonParsing", "Failed to decode JSON message.")
+        }
+    }
+
+
+    private fun sendMsg(msg: String) {
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val message =msg.toString()
+            val address = "255.255.255.255" // 或广播地址 "255.255.255.255"
+            val port = 18888
+
+            send(message, address, port)
         }
 
     }
@@ -392,7 +445,7 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    data class Msg(val address: String, val body: String, val date: Long, val id: Long)
+    data class Msg(val dvcnm: String, val msg: String, val time: Long, val id: Long)
 
     private fun ListSms(text: Editable?):  List<Msg> {
         Log.d(tagLog, "fun ListSms((")
@@ -506,7 +559,7 @@ class MainActivity : AppCompatActivity() {
                 TableRow.LayoutParams.WRAP_CONTENT
             )
             //dataText.width="wrap_content"
-            dataText.text = item.id.toString() + " " + item.body
+            dataText.text = item.id.toString() +" "+ item.dvcnm+ ":" + item.msg
             dataText.setPadding(0, 3, 46, 3)
             dataRow.addView(dataText)
 
