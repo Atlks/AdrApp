@@ -1,7 +1,11 @@
-package comx.pkg
+package comx.pkg;
+
+
+import kotlinx.serialization.*
+        import kotlinx.serialization.json.*
 //import comx.databinding.ActivityMainBinding
 //import comx.pkg.databinding.ActivityMainBinding
-import android.Manifest
+        import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ContentResolver
@@ -15,6 +19,7 @@ import android.provider.MediaStore
 import android.provider.Telephony
 import android.text.Editable
 import android.util.Log
+import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TableRow
 import android.widget.TextView
@@ -23,7 +28,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.ui.AppBarConfiguration
-
 
 import comx.pkg.databinding.ActivityMainBinding
 import org.json.JSONArray
@@ -34,7 +38,7 @@ import java.io.OutputStream
 import java.io.OutputStreamWriter
 
 
-class MainActivity : AppCompatActivity() {
+class SmsmngActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -62,7 +66,7 @@ class MainActivity : AppCompatActivity() {
 
             // 初始化 ViewBinding
             binding = ActivityMainBinding.inflate(layoutInflater)
-            setContentView(binding.root)
+            setContentView(R.layout.activity_smsmng) // 确保这个布局包含 srchBtn
             // setContentView(R.layout.activity_main)  // 确保这一行调用
 
 
@@ -71,19 +75,19 @@ class MainActivity : AppCompatActivity() {
             if (ContextCompat.checkSelfPermission(
                     this,
                     Manifest.permission.READ_SMS
-                ) != PackageManager.PERMISSION_GRANTED
+            ) != PackageManager.PERMISSION_GRANTED
             ) {
                 val permissions = arrayOf(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.READ_SMS,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.READ_SMS,
 
-                    )
+                        )
                 ActivityCompat.requestPermissions(
-                    this,
-                    permissions,
-                    REQUEST_SMS_PERMISSION
+                        this,
+                        permissions,
+                        REQUEST_SMS_PERMISSION
                 )
             }
             // 检查是否已获得写入外部存储权限
@@ -100,16 +104,15 @@ class MainActivity : AppCompatActivity() {
 //                requestCode4wrt
 //            )
 //        }
+            var srchBtn = findViewById<Button>(R.id.srchBtn)
 
-
-            binding.sendBtn.setOnClickListener {
+            srchBtn.setOnClickListener {
                 // 创建一个 Intent 对象，用于启动 SecondActivity
                 try {
-                    var msg=binding.txtbx1.text
-                    insertDB(getDeviceName(this), msg.toString());
-                    var smsList = ListSms(binding.txtbx1.text)
+                    var smsList = searchSms(binding.txtbx1.text)
                     Log.d(tagLog, "smslist.size:" + smsList.size)
-                   // binding.textView.text = "cnt:" + smsList.size
+                    var textView = findViewById<TextView>(R.id.textView)
+                    textView.text = "cnt:" + smsList.size
                     showList(smsList);
 
                 } catch (e: Exception) {
@@ -117,7 +120,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+            var exptBtn = findViewById<Button>(R.id.exptBtn)
 
+            exptBtn.setOnClickListener {
+
+                try {
+                    var f = exportAllSms(applicationContext)
+                    // val toast = Toast.makeText(this, "save file:"+f, Toast.LENGTH_LONG)
+                    //  toast.show()
+                    showToast(this, "save file:" + f, 15)
+                } catch (e: Exception) {
+                    Log.e(tagLog, "Error while searching SMS or showing list", e)
+                }
+
+            }
+
+
+            // 获取 CheckBox 的选中状态并打印到日志中
+            var delBtn = findViewById<Button>(R.id.delBtn)
+            delBtn.setOnClickListener {
+                showDeleteConfirmationDialog()
+
+            }
 
 
             // val intent = Intent(this, SecondActivity::class.java)
@@ -142,17 +166,7 @@ class MainActivity : AppCompatActivity() {
 
             }
 
-            var btn11= binding.gotoSmsBtn;
-            binding.gotoSmsBtn.setOnClickListener{
-
-                val java = SmsmngActivity::class.java
-                val intent = Intent(this, java)
-                startActivity(intent)  // 启动 SecondActivity
-
-            }
-
-            val deviceName = getDeviceName(this)
-            Log.d(tagLog, deviceName)
+            Log.d(tagLog,getDvcId())
             Log.d(tagLog, "endfun onCrt()")
 
         } catch (e: Exception) {
@@ -160,19 +174,6 @@ class MainActivity : AppCompatActivity() {
             Log.e(tagLog, "Caught exception", e)
         }
 
-    }
-
-    private fun insertDB(deviceName: String, msg: String) {
-        val deviceName = deviceName // 设备名称，可以通过 Settings.Secure 或 Build.MODEL 获取
-       // val msg = msg// 消息内容
-        val time = System.currentTimeMillis() // 当前时间戳
-
-        val rowId = insertMessage(this, deviceName, msg, time)
-        if (rowId != -1L) {
-            println("消息插入成功，ID: $rowId")
-        } else {
-            println("消息插入失败")
-        }
     }
 
 
@@ -198,8 +199,8 @@ class MainActivity : AppCompatActivity() {
                 // Telephony.Sms.
                 smsObject.put("id", it.getString(it.getColumnIndexOrThrow(Telephony.Sms._ID)))
                 smsObject.put(
-                    "address",
-                    it.getString(it.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
+                        "address",
+                        it.getString(it.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
                 )
                 smsObject.put("body", it.getString(it.getColumnIndexOrThrow(Telephony.Sms.BODY)))
                 val date = it.getString(it.getColumnIndexOrThrow(Telephony.Sms.DATE))
@@ -256,10 +257,10 @@ class MainActivity : AppCompatActivity() {
      * 使用 MediaStore 存储文件到公共目录
      */
     private fun wrtFilToDocumentDir(
-        context: Context,
-        jsonString: String?,
-        fldr: Any?,
-        fileName: String
+            context: Context,
+            jsonString: String?,
+            fldr: Any?,
+            fileName: String
     ): Any {
         // 检查传入的 jsonString 是否为空
         if (jsonString.isNullOrEmpty()) {
@@ -284,8 +285,8 @@ class MainActivity : AppCompatActivity() {
 
             // 使用 MediaStore 创建文件
             val uri =
-                contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
-                    ?: return "Failed to create file in MediaStore"
+                    contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
+                            ?: return "Failed to create file in MediaStore"
 
             // 打开输出流写入文件内容
             val outputStream: OutputStream? = uri?.let {
@@ -320,7 +321,7 @@ class MainActivity : AppCompatActivity() {
         // val file = File(context.getExternalFilesDir(null), f)
         //val file = File(f);
         FileOutputStream(file).use { outputStream ->
-            outputStream.write(jsonString.toByteArray())
+                outputStream.write(jsonString.toByteArray())
         }
         return file
     }
@@ -365,52 +366,70 @@ class MainActivity : AppCompatActivity() {
     // 显示删除确认对话框
     private fun showDeleteConfirmationDialog() {
         val dialog = AlertDialog.Builder(this)
-            .setTitle("确认删除")
-            .setMessage("确定要删除吗？")
-            .setPositiveButton("确定") { dialog, which ->
+                .setTitle("确认删除")
+                .setMessage("确定要删除吗？")
+                .setPositiveButton("确定") { dialog, which ->
                 // 用户点击“确定”，调用删除方法
                 // del()
                 dialog.dismiss()
-                //del smss
-                checkBoxList.forEach { smsWithCheckBox ->
-                    if (smsWithCheckBox.isChecked) {
-                        var smsid = smsWithCheckBox.text
+            //del smss
+            checkBoxList.forEach { smsWithCheckBox ->
+                if (smsWithCheckBox.isChecked) {
+                    var smsid = smsWithCheckBox.text
 
-                        //showDeleteConfirmationDialog
-                        Log.d(tagLog, " checkBoxList.forEach#SMS ID: ${smsWithCheckBox.text} ")
-                        delSms(this, smsid)
-                    }
-
+                    //showDeleteConfirmationDialog
+                    Log.d(tagLog, " checkBoxList.forEach#SMS ID: ${smsWithCheckBox.text} ")
+                    delSms(this, smsid)
                 }
+
             }
+        }
             .setNegativeButton("取消") { dialog, which ->
                 // 用户点击“取消”，什么都不做
                 dialog.dismiss()
-            }
+        }
             .create()
 
         dialog.show()
     }
 
-    data class Msg(val address: String, val body: String, val date: Long, val id: Long)
-
-    private fun ListSms(text: Editable?):  List<Msg> {
-        Log.d(tagLog, "fun ListSms((")
+    private fun searchSms(text: Editable?): List<Sms> {
+        Log.d(tagLog, "fun srchSms((")
         val txt = text.toString()
         Log.d(tagLog, txt)
         Log.d(tagLog, ")))")
+        val smsList = mutableListOf<Sms>()
+        val projection = arrayOf("address", "body", "date", "_id")
+        //  val selectionArgs = arrayOf("%aaa%", "%bbb%")
+        // var arr= txt.split(" ");
+        //  val selection = "body LIKE ? AND body LIKE ?"
+        val selection =  toBodyLikeStr(txt);
+        Log.d(tagLog, "selection="+selection)
+        val selectionArgs =to_arrayOf(txt)
+        Log.d(tagLog, "selectionArgs="+encodeJson(selectionArgs))
+        val cursor = contentResolver.query(
+                Uri.parse("content://sms/inbox"),
+                projection,
+                selection,
+                selectionArgs,
+                "date DESC"
+        )
 
+        cursor?.use {
+            val addressIndex = cursor.getColumnIndexOrThrow("address")
+            val bodyIndex = cursor.getColumnIndexOrThrow("body")
+            val dateIndex = cursor.getColumnIndexOrThrow("date")
+            val idIndex = cursor.getColumnIndexOrThrow("_id")
 
-        val smsList = mutableListOf<Msg>()
-        val messages = getAllMessages(this) // 传入 Context
-        messages.forEach { message ->
-            val sms = Msg(message.deviceName, message.msg, message.time, message.id)
-            smsList.add(sms)
-
-           // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
+            while (cursor.moveToNext()) {
+                val address = cursor.getString(addressIndex)
+                val body = cursor.getString(bodyIndex)
+                val date = cursor.getLong(dateIndex)
+                val id = cursor.getLong(idIndex)
+                val sms = Sms(address, body, date, id)
+                smsList.add(sms)
+            }
         }
-
-
         return smsList
     }
 
@@ -419,7 +438,7 @@ class MainActivity : AppCompatActivity() {
     private fun toBodyLikeStr(txt: String): String {
         if (txt.isBlank()) return "" // 如果输入为空或全是空格，返回空数组 // 如果输入为空，返回 null
         val toTypedArray = txt.split(" ") // 按空格分割字符串
-            .filter { it.isNotBlank() } // 过滤掉空白项
+                .filter { it.isNotBlank() } // 过滤掉空白项
             .map { "body LIKE ? " } // 添加 '%' 符号
             .toTypedArray()
         return  joinToStr(toTypedArray, " and " ) // 转为 Array
@@ -437,18 +456,18 @@ class MainActivity : AppCompatActivity() {
     private fun to_arrayOf(txt: String): Array<String>? {
         if (txt.isBlank()) return emptyArray() // 如果输入为空或全是空格，返回空数组 // 如果输入为空，返回 null
         return txt.split(" ") // 按空格分割字符串
-            .filter { it.isNotBlank() } // 过滤掉空白项
+                .filter { it.isNotBlank() } // 过滤掉空白项
             .map { "%$it%" } // 添加 '%' 符号
             .toTypedArray() // 转为 Array
     }
 
     data class Sms(val address: String, val body: String, val date: Long, val id: Long)
 
-    // 用于存储数据行的 CheckBox 引用
+            // 用于存储数据行的 CheckBox 引用
     var checkBoxList = mutableListOf<CheckBox>()
 
     @SuppressLint("SetTextI18n")
-    private fun showList(dataList: List<Msg>) {
+    private fun showList(dataList: List<Sms>) {
         // 获取 TableLayout 组件
         val table1 = binding.tableLayout;
 // 清空现有的表格内容
@@ -477,7 +496,7 @@ class MainActivity : AppCompatActivity() {
 
         // val dataList = initData();
         // 填充表格数据
-        for (item: Msg in dataList) {
+        for (item: Sms in dataList) {
             val dataRow = TableRow(this)
 
 
@@ -502,8 +521,8 @@ class MainActivity : AppCompatActivity() {
             val dataText = TextView(this)
             // 使用 LayoutParams 设置 TextView 的宽度
             dataText.layoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.WRAP_CONTENT
             )
             //dataText.width="wrap_content"
             dataText.text = item.id.toString() + " " + item.body
@@ -516,10 +535,10 @@ class MainActivity : AppCompatActivity() {
 
         // 设置全选 CheckBox 的点击事件
         checkBoxHeader.setOnCheckedChangeListener { _, isChecked ->
-            checkBoxList.forEach { checkBox ->
+                checkBoxList.forEach { checkBox ->
                 checkBox.isChecked = isChecked
-                //ischk from waimyer inpiut
-            }
+            //ischk from waimyer inpiut
+        }
         }
 
     }
@@ -549,15 +568,15 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<out String>,
+    grantResults: IntArray
     ) {
 
         super.onRequestPermissionsResult(
-            requestCode,
-            permissions,
-            grantResults
+                requestCode,
+                permissions,
+                grantResults
         )
         Log.d(tagLog, "fun onRequestPermissionsResult(")
         Log.d(tagLog, "requestCode:" + requestCode.toString())
@@ -605,5 +624,3 @@ class MainActivity : AppCompatActivity() {
 //        }
 //    }
 }
-
-

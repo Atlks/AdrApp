@@ -34,6 +34,10 @@
             <!-- SecondActivity 的相关配置 -->
         </activity>
 
+        <activity android:name=".SmsmngActivity">
+            <!-- SecondActivity 的相关配置 -->
+        </activity>
+
     </application>
 
 </manifest>

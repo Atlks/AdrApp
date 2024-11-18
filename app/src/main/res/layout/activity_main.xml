@@ -5,45 +5,26 @@
     android:orientation="vertical"
     android:padding="3dp">
 
-
-
-    <EditText
-        android:id="@+id/txtbx1"
-        android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="请输入文字" android:inputType="text" />
-
-
-
-
-    <Button
-        android:id="@+id/srchBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="srch .srch."
-        android:layout_marginTop="3dp"/>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:padding="3dp">
 
         <Button
-            android:id="@+id/exptBtn"
+            android:id="@+id/gotoFormButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="export....."
-            android:layout_marginTop="3dp"/>
-        <Button
-            android:id="@+id/delBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="del....."
-            android:layout_marginTop="3dp"/>
+            android:text="Go to MMNC"
+            android:layout_marginTop="20dp"/>
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
+
+        <Button
+            android:id="@+id/gotoSmsBtn"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:text="Go to Sms"
+            android:layout_marginTop="20dp"/>
     </LinearLayout>
 
 
@@ -62,13 +43,22 @@
 
 
 
+    <EditText
+        android:id="@+id/txtbx1"
+        android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="请输入文字" android:inputType="text" />
+
 
     <Button
-        android:id="@+id/gotoFormButton"
+        android:id="@+id/sendBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Go to MMNC"
-        android:layout_marginTop="20dp"/>
+        android:text="srch .srch."
+        android:layout_marginTop="3dp"/>
+
+
+
+
+
 
 
 

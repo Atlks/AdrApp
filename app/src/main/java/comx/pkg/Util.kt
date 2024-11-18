@@ -9,7 +9,7 @@ import java.util.Locale
 import android.os.Handler
 import java.security.MessageDigest
 
-
+import android.provider.Settings
 import android.os.Build
 import android.util.Log
 import kotlinx.serialization.encodeToString
@@ -38,6 +38,9 @@ fun getDvcId(): String {
     return "${Build.BRAND}_${Build.MODEL}".trimIndent()
 }
 
+fun getDeviceName(context: Context): String {
+    return Settings.Secure.getString(context.contentResolver, "bluetooth_name")
+}
 fun getDeviceInfo(): String {
     return """
         品牌 (Brand): ${Build.BRAND}
