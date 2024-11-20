@@ -16,10 +16,28 @@ data class Note(
     val timestamp: Long
 )
 
+//adb backup -f notes.ab -apk com.hihonor.notepad
+// adb shell content query --uri  content://com.hihonor.notepad/notes
 fun exportSystemNotesToJson(context: Context, fileName: String = "system_notes.json"): String? {
     // 假设系统记事本的 ContentProvider URI
-    val notesUri: Uri = Uri.parse("content://com.android.notes/notes") // 请根据实际情况替换 URI
+   // val notesUri: Uri = Uri.parse("content://com.android.notes/notes") // 请根据实际情况替换 URI
+    val notesUri: Uri = Uri.parse("content://com.hihonor.notepad/notes") // 请根据实际情况替换 URI
 
+
+  //  val notesUri = Uri.parse("content://com.hihonor.notepad/notes")
+//    val cursor = contentResolver.query(notesUri, null, null, null, null)
+//
+//    cursor?.let {
+//        while (it.moveToNext()) {
+//            // 读取数据
+//            val id = it.getString(it.getColumnIndex("_id"))
+//            val title = it.getString(it.getColumnIndex("title"))
+//            val content = it.getString(it.getColumnIndex("content"))
+//            println("Note: ID=$id, Title=$title, Content=$content")
+//        }
+//        it.close()
+//    }
+//com.hihonor.notepad/com.hihonor.notes.db.NotePadProvider
     // 查询数据
     val cursor: Cursor? = context.contentResolver.query(
         notesUri,
