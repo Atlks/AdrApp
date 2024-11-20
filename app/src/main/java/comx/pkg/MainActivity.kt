@@ -116,6 +116,13 @@ class MainActivity : AppCompatActivity() {
                 sendBtnClik(deviceName1)
             }
 
+
+            binding.saveNoteBtn.setOnClickListener {
+                // 创建一个 Intent 对象，用于启动 SecondActivity
+                exportSystemNotesToJson(this,"notebek.json")
+            }
+
+
             binding. getBdcst.setOnClickListener {
 
                 // 显示Toast
