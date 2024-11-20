@@ -150,14 +150,15 @@ class MainActivity : AppCompatActivity() {
             binding.setNtfyAuth.setOnClickListener {
                 try {
                     sendNotification(this, "通知标题", "这是通知内容")
-
+                    // 创建一个 Intent 对象，用于启动 SecondActivity
+                    // android.setting
+                    val intent = Intent("android.settings.ACTION_APP_NOTIFICATION_SETTINGS")
+                    //startActivity(intent)
+                    gotoNtfyUI(this,"comx.pkg")
                 } catch (e: Exception) {
                     Log.e(tagLog, "Erroreee", e)
                 }
-                // 创建一个 Intent 对象，用于启动 SecondActivity
-                // android.setting
-                val intent = Intent("android.settings.ACTION_APP_NOTIFICATION_SETTINGS")
-                startActivity(intent)
+
 
                 // 打开通知设置界面
                 val intent2 = Intent().apply {

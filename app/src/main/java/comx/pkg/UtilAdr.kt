@@ -1,11 +1,40 @@
 package comx.pkg
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import android.content.Intent
+import android.provider.Settings
+import android.widget.Toast
+fun gotoNtfyUI(context: Context, packageName: String){
+    try {
+
+        //例如 Build.VERSION_CODES.O 表示 Android 8.0（API 级别 26）。
+        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Android 8.0 及以上版本
+            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                 putExtra(Settings.EXTRA_APP_PACKAGE, packageName) // 当前应用包名
+              //  putExtra(Settings.EXTRA_CHANNEL_ID, "my_channel_id") // 如果有特定渠道 ID
+            }
+        } else {
+            // Android 8.0 以下版本
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+               // data = android.net.Uri.parse("package:$packageName") // 跳转到应用详情页
+            }
+        }
+
+        context.  startActivity(intent)
+    } catch (e: ActivityNotFoundException) {
+        // 如果设备不支持对应的 Intent，提示用户
+        Toast.makeText(context, "无法打开通知设置，请手动操作", Toast.LENGTH_LONG).show()
+        e.printStackTrace()
+    }
+}
+
 fun sendNotification(context: Context, title: String, message: String) {
     Log.d(tagLog, "fun sendNotification(")
     Log.d(tagLog, "tit="+title)
