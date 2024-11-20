@@ -1,9 +1,16 @@
 package comx.pkg
 
 import android.annotation.SuppressLint
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Intent
+import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.speech.tts.TextToSpeech
+import androidx.core.app.NotificationCompat
+import org.bouncycastle.asn1.x500.style.RFC4519Style.description
 import java.util.Locale
 
 class MyNotificationListenerService : NotificationListenerService(), TextToSpeech.OnInitListener {
@@ -12,7 +19,47 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
     override fun onCreate() {
         super.onCreate()
+        // 在这里不初始化 TextToSpeech，延迟到 onStartCommand
+       // textToSpeech = TextToSpeech(this, this)
+    }
+
+    @SuppressLint("ForegroundServiceType")
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
+        // 创建通知渠道 (仅适用于 Android 8.0 及以上版本)
+        createNotificationChannel()
+
+        // 显示前台通知
+        startForeground(1, buildNotification())
+
+
+
+        // 初始化 TextToSpeech，避免影响前台通知的启动
         textToSpeech = TextToSpeech(this, this)
+        // 执行你的业务逻辑
+        return START_STICKY
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelId = "your_channel_id"
+            val channelName = "My Foreground Service"
+            val channelDescription = "Notification Channel for Foreground Service"
+            val importance = NotificationManager.IMPORTANCE_LOW
+            val channel = NotificationChannel(channelId, channelName, importance).apply {
+                description = channelDescription
+            }
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun buildNotification(): Notification? {
+        return NotificationCompat.Builder(this, "your_channel_id")
+            .setContentTitle("服务正在运行")
+            .setContentText("这是前台服务")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .build()
     }
 
     override fun onDestroy() {
