@@ -85,7 +85,12 @@
         android:text="监听通知权限"
         android:layout_marginTop="3dp"/>
 
-
+        <Button
+            android:id="@+id/getBdcst"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取广播地址"
+            android:layout_marginTop="3dp"/>
 
     </LinearLayout>
 

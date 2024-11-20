@@ -49,7 +49,7 @@ fun insertMessage(context: Context, deviceName: String, msg: String, time: Long)
         put(ChatDatabaseHelper.COLUMN_DEVICE_NAME, deviceName)
         put(ChatDatabaseHelper.COLUMN_MESSAGE, msg)
         put(ChatDatabaseHelper.COLUMN_TIME, time)
-        put(ChatDatabaseHelper.COLUMN_msgidUnq, encodeMd5(ChatDatabaseHelper.COLUMN_DEVICE_NAME+ChatDatabaseHelper.COLUMN_MESSAGE+ChatDatabaseHelper.COLUMN_TIME))
+        put(ChatDatabaseHelper.COLUMN_msgidUnq, encodeMd5(deviceName+msg+time))
 
     }
 

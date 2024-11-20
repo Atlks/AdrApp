@@ -4,18 +4,11 @@ package comx.pkg
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.ContentResolver
-import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.provider.Settings
-import android.provider.Telephony
-import android.text.Editable
 import android.util.Log
 import android.view.View
 import android.widget.CheckBox
@@ -25,6 +18,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.ui.AppBarConfiguration
 
 
@@ -32,13 +26,8 @@ import comx.pkg.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
-import java.io.OutputStreamWriter
 import java.lang.Thread.sleep
 
 
@@ -53,6 +42,8 @@ class MainActivity : AppCompatActivity() {
 
         try {
             Log.d(tagLog, "funx onCrt()")
+
+            keeplive(this,MyNotificationListenerService::class.java)
 
             // 设置全局异常捕获
 //            Thread.setDefaultUncaughtExceptionHandler { thread: Thread, throwable: Throwable? ->
@@ -117,12 +108,20 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
+
+            //-----------------btn click
             val deviceName1 = getDeviceName(this)
             binding.sendBtn.setOnClickListener {
                 // 创建一个 Intent 对象，用于启动 SecondActivity
                 sendBtnClik(deviceName1)
             }
 
+            binding. getBdcst.setOnClickListener {
+
+                // 显示Toast
+                val toast = Toast.makeText(this, "bdcstIp="+ getDeviceBroadcastIP(), Toast.LENGTH_LONG)
+                toast.show()
+            }
 
             // val intent = Intent(this, SecondActivity::class.java)
             // startActivity(intent)
@@ -193,15 +192,15 @@ class MainActivity : AppCompatActivity() {
             Log.d(tagLog, deviceName)
 
 
-            //
-            setRcvMsg()
+            //-----------------otehr
+            setRcvMsgLsnr()
 
 
             //block show list
             var smsList = ListSms()
             Log.d(tagLog, "smslist.size:" + smsList.size)
             // binding.textView.text = "cnt:" + smsList.size
-            showList(smsList);
+            bindData2Table(smsList);
             binding.txtbx1.setText("")
 
             //滚动到底部
@@ -209,6 +208,9 @@ class MainActivity : AppCompatActivity() {
             scrollView.post {
                 scrollView.fullScroll(View.FOCUS_DOWN)
             }
+
+          //  keeplive(this)
+
             Log.d(tagLog, "endfun onCrt()")
 
         } catch (e: Exception) {
@@ -218,7 +220,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun setRcvMsg() {
+    private fun setRcvMsgLsnr() {
         val udpListener = UdpListener(18888)
         udpListener.startListening { message ->
             // 这里是处理接收到的消息的地方
@@ -226,7 +228,7 @@ class MainActivity : AppCompatActivity() {
             sleep(200);
             Log.d(tagLog, "startListening msg rcv after 3sec")
 
-            msgRecv(message)
+            RcvmsgHdlr(message)
             Log.d(tagLog, "end startListening ..")
             //  insertDB(jsonObj["devicename"], jsonObj["msg"]);
 
@@ -238,7 +240,7 @@ class MainActivity : AppCompatActivity() {
             sleep(400);
             Log.d(tagLog, "startListening msg rcv after 3sec")
 
-            msgRecv(message)
+            RcvmsgHdlr(message)
             Log.d(tagLog, "end startListening ..")
             //  insertDB(jsonObj["devicename"], jsonObj["msg"]);
 
@@ -254,25 +256,45 @@ class MainActivity : AppCompatActivity() {
             val msg1 = Msg(deviceName1, msg, time, time)
 
             val encodeJson = encodeJson(msg1)
+
+
             sendMsg(encodeJson.toString())
 
 
-            //block insert
-            insertDB(deviceName1, msg.toString());
+            lifecycleScope.launch(Dispatchers.IO) {
 
 
-            //block show list
-            var smsList = ListSms()
-            Log.d(tagLog, "smslist.size:" + smsList.size)
-            // binding.textView.text = "cnt:" + smsList.size
-            showList(smsList);
+
+                //----------block insert
+                insertDB(this@MainActivity,deviceName1, msg.toString());
+
+
+
+                //-----------block show list
+                var smsList = ListSms()
+                Log.d(tagLog, "smslist.size:" + smsList.size)
+                // binding.textView.text = "cnt:" + smsList.size
+
+
+                //goto main thrd updt ui
+                withContext(Dispatchers.Main) {
+
+                            bindData2Table(smsList);
+                            //滚动到底部
+                            var scrollView = binding.scrvw;
+                            scrollView.post {
+                                scrollView.fullScroll(View.FOCUS_DOWN)
+
+                            }
+                }
+            }
+
+
+
+
             binding.txtbx1.setText("")
 
-            //滚动到底部
-            var scrollView = binding.scrvw;
-            scrollView.post {
-                scrollView.fullScroll(View.FOCUS_DOWN)
-            }
+
 
 
         } catch (e: Exception) {
@@ -280,7 +302,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun msgRecv(message: String) {
+    private fun RcvmsgHdlr(message: String) {
         Log.d(tagLog, "fun msgrecv((")
         Log.d(tagLog, "message=" + message);
         Log.d(tagLog, ")))")
@@ -296,7 +318,7 @@ class MainActivity : AppCompatActivity() {
             val msg = jsonObj.optString("msg")
 
             if (deviceName.isNotEmpty() && msg.isNotEmpty()) {
-                insertDB(deviceName, msg)
+                insertDB(this,deviceName, msg)
             } else {
                 Log.e("JsonParsing", "Missing device name or message in JSON.")
             }
@@ -306,7 +328,7 @@ class MainActivity : AppCompatActivity() {
 
             // 切换到主线程更新 UI
             runOnUiThread {
-                showList(smsList);
+                bindData2Table(smsList);
                 //滚动到底部
                 var scrollView = binding.scrvw;
                 scrollView.post {
@@ -330,209 +352,16 @@ class MainActivity : AppCompatActivity() {
             val port = 18888
 
             send(message, address, port)
+            send(message, getDeviceBroadcastIP(), port)
+
         }
 
     }
 
-    private fun insertDB(deviceName: String, msg: String) {
-        val deviceName = deviceName // 设备名称，可以通过 Settings.Secure 或 Build.MODEL 获取
-        // val msg = msg// 消息内容
-        val time = System.currentTimeMillis() // 当前时间戳
-
-        val rowId = insertMessage(this, deviceName, msg, time)
-        if (rowId != -1L) {
-            println("消息插入成功，ID: $rowId")
-        } else {
-            println("消息插入失败")
-        }
-    }
-
-
-    /**
-     * 导出所有短信到   /sms_export.json文件
-     * applicationContext
-     */
-    fun exportAllSms(context: Context): String {
-
-        val dvcId = getDvcId()
-        // 在Activity或Fragment中使用
-        val deviceName = getDeviceName(this)
-
-        val contentResolver: ContentResolver = context.contentResolver
-        val smsUri = Telephony.Sms.CONTENT_URI
-        val cursor = contentResolver.query(smsUri, null, null, null, null)
-
-        val smsArray = JSONArray()
-
-        cursor?.use {
-            while (it.moveToNext()) {
-                val smsObject = JSONObject()
-                // Telephony.Sms.
-                smsObject.put("id", it.getString(it.getColumnIndexOrThrow(Telephony.Sms._ID)))
-                smsObject.put(
-                    "address",
-                    it.getString(it.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
-                )
-                smsObject.put("body", it.getString(it.getColumnIndexOrThrow(Telephony.Sms.BODY)))
-                val date = it.getString(it.getColumnIndexOrThrow(Telephony.Sms.DATE))
-                smsObject.put("date", date)
-                smsObject.put("datestr", formatTimestamp(toLongx(date)))
 
 
 
-                smsObject.put("dvc", dvcId)
-                smsArray.put(smsObject)
-            }
-        }
 
-        Log.d(tagLog, "sms size:" + smsArray.length())
-        ///aasms
-        val jsonString = smsArray.toString(4)
-//        val f = "/storage/emulated/0/sms_export" + getFileNameWithCurrentTime() + ".json"
-//        mkdir2024(f)
-//
-//
-
-//
-//        val directory = File("/storage/emulated/0/aasms")
-//        if (!directory.exists()) {
-//            directory.mkdirs()  // 创建目录
-//        }
-
-//        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-//            addCategory(Intent.CATEGORY_OPENABLE)
-//            type = "application/json"
-//            putExtra(Intent.EXTRA_TITLE, "sms_export.json")
-//        }
-//
-//        startActivityForResult(intent, REQUEST_CREATE_FILE)
-        // val file = wrtFilToAppdir(context, jsonString)
-
-        var fname = "smsExpt.${deviceName}." + getFileNameWzTime4FlNmFrg() + ".json";
-        val fldr = "/aasms/"
-        val file = wrtFilToDocumentDir(context, jsonString, fldr, fname)
-
-
-
-        Log.d(tagLog, "expt ok..." + file.toString())
-        return "document" + fldr + fname;
-    }
-
-    private fun toLongx(numStr: String?): Long {
-        // 如果 numStr 为空或者无法转换为 Long，则返回 0 或其他默认值
-        return numStr?.toLongOrNull() ?: 0L
-    }
-
-
-    /**
-     * 使用 MediaStore 存储文件到公共目录
-     */
-    private fun wrtFilToDocumentDir(
-        context: Context,
-        jsonString: String?,
-        fldr: Any?,
-        fileName: String
-    ): Any {
-        // 检查传入的 jsonString 是否为空
-        if (jsonString.isNullOrEmpty()) {
-            Log.e("wrtFilToDocumentDir", "JSON string is empty or null")
-            return "Invalid input: JSON string is null or empty"
-        }
-
-        try {
-            // 获取 ContentResolver
-            val contentResolver = context.contentResolver
-
-            // 设置文件名和 MIME 类型
-            //   val fileName = "sms_export.json"
-            val mimeType = "application/json"
-
-            // 创建 ContentValues
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName) // 文件名
-                put(MediaStore.MediaColumns.MIME_TYPE, mimeType)    // MIME 类型
-                put(MediaStore.MediaColumns.RELATIVE_PATH, "Documents" + fldr)  // 文件存储路径
-            }
-
-            // 使用 MediaStore 创建文件
-            val uri =
-                contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
-                    ?: return "Failed to create file in MediaStore"
-
-            // 打开输出流写入文件内容
-            val outputStream: OutputStream? = uri?.let {
-                contentResolver.openOutputStream(it)
-            }
-
-            outputStream?.use {
-                val writer = OutputStreamWriter(it)
-                writer.write(jsonString)
-                writer.flush()
-            }
-
-            return "File successfully saved to Documents/aasms/$fileName"
-        } catch (e: Exception) {
-            Log.e("wrtFilToDocumentDir", "Error saving file: ${e.message}")
-            return "Error saving file: ${e.message}"
-        }
-    }
-
-    private fun wrtFilToAppdir(context: Context, jsonString: String): File {
-        // 获取外部存储根目录  or doc dir..
-        val fldr = "aasms"
-        // val rootDir = File(Environment.getExternalStorageDirectory(), fldr)
-        val rootDir = File(context.getExternalFilesDir(null), fldr)
-
-        if (!rootDir.exists()) {
-            rootDir.mkdirs() // 创建文件夹
-        }
-        // 定义文件路径和内容
-        val file = File(rootDir, "sms_export.json")
-
-        // val file = File(context.getExternalFilesDir(null), f)
-        //val file = File(f);
-        FileOutputStream(file).use { outputStream ->
-            outputStream.write(jsonString.toByteArray())
-        }
-        return file
-    }
-
-
-    /**
-     * 根据传入的sms id删除指定的短信
-     */
-    private fun delSms(context: Context, smsid: CharSequence?) {
-        Log.d(tagLog, "fun delsms(" + smsid)
-        Log.d(tagLog, ")))")
-        // 检查 smsid 是否为空
-        if (smsid.isNullOrEmpty()) {
-            Toast.makeText(context, "短信ID无效", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        try {
-            // 获取 ContentResolver
-            val contentResolver: ContentResolver = context.contentResolver
-
-            // 构建短信的 URI  content://sms/2135
-            val smsUri: Uri = Uri.withAppendedPath(Telephony.Sms.CONTENT_URI, smsid.toString())
-            Log.d(tagLog, smsUri.toString())
-            // 执行删除操作
-            val rowsDeleted = contentResolver.delete(smsUri, null, null)
-            Log.d(tagLog, "检查删除结果rowsDeleted:" + rowsDeleted.toString())
-            // 检查删除结果
-            if (rowsDeleted > 0) {
-                Toast.makeText(context, "短信删除成功", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "未找到指定的短信", Toast.LENGTH_SHORT).show()
-            }
-            Log.d(tagLog, "endfun delsms()")
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(context, "删除短信失败", Toast.LENGTH_SHORT).show()
-        }
-    }
 
     // 显示删除确认对话框
     private fun showDeleteConfirmationDialog() {
@@ -587,31 +416,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun toBodyLikeStr(txt: String): String {
-        if (txt.isBlank()) return "" // 如果输入为空或全是空格，返回空数组 // 如果输入为空，返回 null
-        val toTypedArray = txt.split(" ") // 按空格分割字符串
-            .filter { it.isNotBlank() } // 过滤掉空白项
-            .map { "body LIKE ? " } // 添加 '%' 符号
-            .toTypedArray()
-        return joinToStr(toTypedArray, " and ") // 转为 Array
-    }
 
-    private fun joinToStr(toTypedArray: Array<String>, separator: String): String {
-        // 使用 joinToString 方法将数组元素连接为一个字符串，并用指定的分隔符分隔
-        return toTypedArray.joinToString(separator)
-    }
 
-    /**
-     * txt: aaa bbb
-     * 希望可以返回  arrayOf("%aaa%", "%bbb%")
-     */
-    private fun to_arrayOf(txt: String): Array<String>? {
-        if (txt.isBlank()) return emptyArray() // 如果输入为空或全是空格，返回空数组 // 如果输入为空，返回 null
-        return txt.split(" ") // 按空格分割字符串
-            .filter { it.isNotBlank() } // 过滤掉空白项
-            .map { "%$it%" } // 添加 '%' 符号
-            .toTypedArray() // 转为 Array
-    }
 
     data class Sms(val address: String, val body: String, val date: Long, val id: Long)
 
@@ -619,7 +425,7 @@ class MainActivity : AppCompatActivity() {
     var checkBoxList = mutableListOf<CheckBox>()
 
     @SuppressLint("SetTextI18n")
-    private fun showList(dataList: List<Msg>) {
+    private fun bindData2Table(dataList: List<Msg>) {
         // 获取 TableLayout 组件
         val table1 = binding.tableLayout;
 // 清空现有的表格内容

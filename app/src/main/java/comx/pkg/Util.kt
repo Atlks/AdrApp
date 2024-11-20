@@ -81,7 +81,27 @@ fun showToast(context: Context, message: String, delaySec: Long) {
         toast.cancel()  // 取消Toast
     }, delaySec * 1000)  // 延迟7秒
 }
+  fun toLongx(numStr: String?): Long {
+    // 如果 numStr 为空或者无法转换为 Long，则返回 0 或其他默认值
+    return numStr?.toLongOrNull() ?: 0L
+}
 
+  fun joinToStr(toTypedArray: Array<String>, separator: String): String {
+    // 使用 joinToString 方法将数组元素连接为一个字符串，并用指定的分隔符分隔
+    return toTypedArray.joinToString(separator)
+}
+
+/**
+ * txt: aaa bbb
+ * 希望可以返回  arrayOf("%aaa%", "%bbb%")
+ */
+  fun to_arrayOf(txt: String): Array<String>? {
+    if (txt.isBlank()) return emptyArray() // 如果输入为空或全是空格，返回空数组 // 如果输入为空，返回 null
+    return txt.split(" ") // 按空格分割字符串
+        .filter { it.isNotBlank() } // 过滤掉空白项
+        .map { "%$it%" } // 添加 '%' 符号
+        .toTypedArray() // 转为 Array
+}
 
 fun decodeJson(message: String): JSONObject? {
     return try {
