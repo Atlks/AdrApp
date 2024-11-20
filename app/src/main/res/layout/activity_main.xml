@@ -72,13 +72,20 @@
         android:text="send..."
         android:layout_marginTop="3dp"/>
 
-
+        <Button
+            android:id="@+id/setNtfyAuth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="通知权限"
+            android:layout_marginTop="3dp"/>
     <Button
-        android:id="@+id/setNtfyAuth"
+        android:id="@+id/setNtfyLsnAuth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="set ntfy auth"
+        android:text="监听通知权限"
         android:layout_marginTop="3dp"/>
+
+
 
     </LinearLayout>
 

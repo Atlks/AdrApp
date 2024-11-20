@@ -10,8 +10,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.Settings
 import android.provider.Telephony
 import android.text.Editable
 import android.util.Log
@@ -49,7 +51,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        try { Log.d(tagLog, "funx onCrt()")
+        try {
+            Log.d(tagLog, "funx onCrt()")
 
             // 设置全局异常捕获
 //            Thread.setDefaultUncaughtExceptionHandler { thread: Thread, throwable: Throwable? ->
@@ -60,8 +63,6 @@ class MainActivity : AppCompatActivity() {
             //            // 创建一个 Intent 对象，用于启动 SecondActivity
 //            val intent = Intent(this, MmncActivity::class.java)
 //            startActivity(intent)  // 启动 SecondActivity
-
-
 
 
             super.onCreate(savedInstanceState)
@@ -92,6 +93,14 @@ class MainActivity : AppCompatActivity() {
                     REQUEST_SMS_PERMISSION
                 )
             }
+
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
+                }
+            }
             // 检查是否已获得写入外部存储权限
             //requestCode 是自定义的整数，用于在权限回调中识别请求。
 //        var requestCode4wrt = 111
@@ -113,8 +122,6 @@ class MainActivity : AppCompatActivity() {
                 // 创建一个 Intent 对象，用于启动 SecondActivity
                 sendBtnClik(deviceName1)
             }
-
-
 
 
             // val intent = Intent(this, SecondActivity::class.java)
@@ -139,14 +146,41 @@ class MainActivity : AppCompatActivity() {
 
             }
 
-            binding.setNtfyAuth.setOnClickListener{
+            //打开通知设置界面
+            binding.setNtfyAuth.setOnClickListener {
+                try {
+                    sendNotification(this, "通知标题", "这是通知内容")
+
+                } catch (e: Exception) {
+                    Log.e(tagLog, "Erroreee", e)
+                }
                 // 创建一个 Intent 对象，用于启动 SecondActivity
+                // android.setting
+                val intent = Intent("android.settings.ACTION_APP_NOTIFICATION_SETTINGS")
+                startActivity(intent)
+
+                // 打开通知设置界面
+                val intent2 = Intent().apply {
+                    action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                    putExtra(Settings.EXTRA_APP_PACKAGE, packageName) // 传递当前应用的包名
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        putExtra(Settings.EXTRA_CHANNEL_ID, "my_channel_id") // 传递通知渠道 ID（如有需要）
+                    }
+                }
+            }
+            binding.setNtfyLsnAuth.setOnClickListener {
+
+                //  sendNotification(this, "通知标题", "这是通知内容")
+
+                // 创建一个 Intent 对象，用于启动 SecondActivity
+
                 val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
                 startActivity(intent)
             }
 
-            var btn11= binding.gotoSmsBtn;
-            binding.gotoSmsBtn.setOnClickListener{
+            var btn11 = binding.gotoSmsBtn;
+            binding.gotoSmsBtn.setOnClickListener {
+
 
                 val java = SmsmngActivity::class.java
                 val intent = Intent(this, java)
@@ -157,19 +191,9 @@ class MainActivity : AppCompatActivity() {
             val deviceName = deviceName1
             Log.d(tagLog, deviceName)
 
-            val udpListener = UdpListener(18888)
-            udpListener.startListening { message ->
-                // 这里是处理接收到的消息的地方
-                Log.d(tagLog, "startListening msg rcv ..")
-                sleep(300);
-                Log.d(tagLog, "startListening msg rcv after 3sec")
 
-                msgRecv(message)
-                Log.d(tagLog, "end startListening ..")
-                //  insertDB(jsonObj["devicename"], jsonObj["msg"]);
-
-            }
-
+            //
+            setRcvMsg()
 
 
             //block show list
@@ -180,7 +204,7 @@ class MainActivity : AppCompatActivity() {
             binding.txtbx1.setText("")
 
             //滚动到底部
-            var scrollView=binding.scrvw;
+            var scrollView = binding.scrvw;
             scrollView.post {
                 scrollView.fullScroll(View.FOCUS_DOWN)
             }
@@ -191,6 +215,33 @@ class MainActivity : AppCompatActivity() {
             Log.e(tagLog, "Caught exception", e)
         }
 
+    }
+
+    private fun setRcvMsg() {
+        val udpListener = UdpListener(18888)
+        udpListener.startListening { message ->
+            // 这里是处理接收到的消息的地方
+            Log.d(tagLog, "startListening msg rcv ..")
+            sleep(200);
+            Log.d(tagLog, "startListening msg rcv after 3sec")
+
+            msgRecv(message)
+            Log.d(tagLog, "end startListening ..")
+            //  insertDB(jsonObj["devicename"], jsonObj["msg"]);
+
+        }
+        val udpListener2 = UdpListener(28888)
+        udpListener2.startListening { message ->
+            // 这里是处理接收到的消息的地方
+            Log.d(tagLog, "startListening msg rcv ..")
+            sleep(400);
+            Log.d(tagLog, "startListening msg rcv after 3sec")
+
+            msgRecv(message)
+            Log.d(tagLog, "end startListening ..")
+            //  insertDB(jsonObj["devicename"], jsonObj["msg"]);
+
+        }
     }
 
     private fun sendBtnClik(deviceName1: String) {
@@ -205,10 +256,8 @@ class MainActivity : AppCompatActivity() {
             sendMsg(encodeJson.toString())
 
 
-
             //block insert
             insertDB(deviceName1, msg.toString());
-
 
 
             //block show list
@@ -219,7 +268,7 @@ class MainActivity : AppCompatActivity() {
             binding.txtbx1.setText("")
 
             //滚动到底部
-            var scrollView=binding.scrvw;
+            var scrollView = binding.scrvw;
             scrollView.post {
                 scrollView.fullScroll(View.FOCUS_DOWN)
             }
@@ -231,9 +280,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun msgRecv(message: String) {
-        Log.d(tagLog,"fun msgrecv((")
-        Log.d(tagLog,"message="+message);
-        Log.d(tagLog,")))")
+        Log.d(tagLog, "fun msgrecv((")
+        Log.d(tagLog, "message=" + message);
+        Log.d(tagLog, ")))")
         Log.d(tagLog, "Message received: $message")
         // 例如，更新 UI 或保存消息
         var jsonObj = decodeJson(message)
@@ -241,8 +290,8 @@ class MainActivity : AppCompatActivity() {
         // 检查 jsonObj 是否为 null，并确保 devicename 和 msg 键存在
         if (jsonObj != null) {
             val deviceName = jsonObj.optString("dvcnm")  // 使用 optString 来安全获取值
-           if(deviceName.equals(getDeviceName(this)))
-               return
+            if (deviceName.equals(getDeviceName(this)))
+                return
             val msg = jsonObj.optString("msg")
 
             if (deviceName.isNotEmpty() && msg.isNotEmpty()) {
@@ -258,7 +307,7 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread {
                 showList(smsList);
                 //滚动到底部
-                var scrollView=binding.scrvw;
+                var scrollView = binding.scrvw;
                 scrollView.post {
                     scrollView.fullScroll(View.FOCUS_DOWN)
                 }
@@ -268,14 +317,14 @@ class MainActivity : AppCompatActivity() {
         } else {
             Log.e("JsonParsing", "Failed to decode JSON message.")
         }
-        Log.d(tagLog,"endfun msgrecv()#ret=")
+        Log.d(tagLog, "endfun msgrecv()#ret=")
     }
 
 
     private fun sendMsg(msg: String) {
 
         CoroutineScope(Dispatchers.IO).launch {
-            val message =msg.toString()
+            val message = msg.toString()
             val address = "255.255.255.255" // 或广播地址 "255.255.255.255"
             val port = 18888
 
@@ -286,7 +335,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun insertDB(deviceName: String, msg: String) {
         val deviceName = deviceName // 设备名称，可以通过 Settings.Secure 或 Build.MODEL 获取
-       // val msg = msg// 消息内容
+        // val msg = msg// 消息内容
         val time = System.currentTimeMillis() // 当前时间戳
 
         val rowId = insertMessage(this, deviceName, msg, time)
@@ -326,7 +375,7 @@ class MainActivity : AppCompatActivity() {
                 smsObject.put("body", it.getString(it.getColumnIndexOrThrow(Telephony.Sms.BODY)))
                 val date = it.getString(it.getColumnIndexOrThrow(Telephony.Sms.DATE))
                 smsObject.put("date", date)
-                smsObject.put("datestr",formatTimestamp(toLongx(date)) )
+                smsObject.put("datestr", formatTimestamp(toLongx(date)))
 
 
 
@@ -517,7 +566,7 @@ class MainActivity : AppCompatActivity() {
     @Serializable
     data class Msg(val dvcnm: String, val msg: String, val time: Long, val id: Long)
 
-    private fun ListSms():  List<Msg> {
+    private fun ListSms(): List<Msg> {
         Log.d(tagLog, "fun ListSms((")
 
         Log.d(tagLog, ")))")
@@ -529,13 +578,12 @@ class MainActivity : AppCompatActivity() {
             val sms = Msg(message.deviceName, message.msg, message.time, message.id)
             smsList.add(sms)
 
-           // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
+            // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
         }
 
 
         return smsList
     }
-
 
 
     private fun toBodyLikeStr(txt: String): String {
@@ -544,12 +592,12 @@ class MainActivity : AppCompatActivity() {
             .filter { it.isNotBlank() } // 过滤掉空白项
             .map { "body LIKE ? " } // 添加 '%' 符号
             .toTypedArray()
-        return  joinToStr(toTypedArray, " and " ) // 转为 Array
+        return joinToStr(toTypedArray, " and ") // 转为 Array
     }
 
     private fun joinToStr(toTypedArray: Array<String>, separator: String): String {
         // 使用 joinToString 方法将数组元素连接为一个字符串，并用指定的分隔符分隔
-        return toTypedArray.joinToString(separator )
+        return toTypedArray.joinToString(separator)
     }
 
     /**
@@ -628,7 +676,7 @@ class MainActivity : AppCompatActivity() {
                 TableRow.LayoutParams.WRAP_CONTENT
             )
             //dataText.width="wrap_content"
-            dataText.text = item.id.toString() +" "+ item.dvcnm+ ":" + item.msg
+            dataText.text = item.id.toString() + " " + item.dvcnm + ":" + item.msg
             dataText.setPadding(0, 3, 46, 3)
             dataRow.addView(dataText)
 

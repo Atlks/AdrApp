@@ -8,15 +8,16 @@ import android.database.sqlite.SQLiteOpenHelper
 class ChatDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        private const val DATABASE_NAME = "chat.db"
+        private const val DATABASE_NAME = "chat2.db"
         private const val DATABASE_VERSION = 1
 
         // 表名和字段
-        const val TABLE_MESSAGES = "messages"
+        const val TABLE_MESSAGES = "msgTbl"
         const val COLUMN_ID = "id"
         const val COLUMN_DEVICE_NAME = "deviceName"
         const val COLUMN_MESSAGE = "msg"
         const val COLUMN_TIME = "time"
+        const val COLUMN_msgidUnq = "msgidUnq"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -25,7 +26,8 @@ class ChatDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
                 $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $COLUMN_DEVICE_NAME TEXT,
                 $COLUMN_MESSAGE TEXT,
-                $COLUMN_TIME INTEGER
+                $COLUMN_TIME INTEGER,
+               $COLUMN_msgidUnq TEXT NOT NULL UNIQUE
             )
         """
         db.execSQL(createTableQuery)
@@ -47,6 +49,8 @@ fun insertMessage(context: Context, deviceName: String, msg: String, time: Long)
         put(ChatDatabaseHelper.COLUMN_DEVICE_NAME, deviceName)
         put(ChatDatabaseHelper.COLUMN_MESSAGE, msg)
         put(ChatDatabaseHelper.COLUMN_TIME, time)
+        put(ChatDatabaseHelper.COLUMN_msgidUnq, encodeMd5(ChatDatabaseHelper.COLUMN_DEVICE_NAME+ChatDatabaseHelper.COLUMN_MESSAGE+ChatDatabaseHelper.COLUMN_TIME))
+
     }
 
     // 插入数据

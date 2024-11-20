@@ -33,6 +33,9 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         // 拼接标题和内容
         val message = "标题: $title, 内容: $text"
 
+        if(title=="没有标题" && text=="没有内容")
+            return
+
         // 使用 TTS 阅读通知内容
         speakOut(message)
     }
