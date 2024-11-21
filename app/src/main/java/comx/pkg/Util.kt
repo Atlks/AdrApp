@@ -13,9 +13,6 @@ import android.provider.Settings
 import android.os.Build
 import android.util.Log
 import com.google.gson.Gson
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
 
@@ -104,7 +101,7 @@ fun encodeMd5(s: String): String {
     // 将字节数组转换为十六进制字符串
     return hashBytes.joinToString("") { "%02x".format(it) }
 }
-fun getCurrentTimestampInSeconds(): Long {
+fun getTimestampInSecs(): Long {
     return System.currentTimeMillis() / 1000
 }
 fun showToast(context: Context, message: String, delaySec: Long) {

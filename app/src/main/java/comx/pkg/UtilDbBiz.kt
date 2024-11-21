@@ -3,14 +3,14 @@ package comx.pkg
 import android.content.Context
 import comx.pkg.MainActivity.Msg
 
-fun insertDB(context: Context, deviceName: String, msg: String) {
+fun insertDB(context: Context, msgid: String, v: String) {
   //  val deviceName = deviceName // 设备名称，可以通过 Settings.Secure 或 Build.MODEL 获取
     // val msg = msg// 消息内容
-    val time = getCurrentTimestampInSeconds() // 当前时间戳
-    var msgid= encodeMd5(deviceName+msg+time)
-     val sms = Msg(deviceName, msg, time, msgid)
-
-    var v= encodeJson(sms)
+//    val time = getTimestampInSecs() // 当前时间戳
+//    var msgid= encodeMd5(deviceName+msg+time)
+//     val sms = Msg(deviceName, msg, time, msgid)
+//
+//    var v= encodeJson(sms)
 
 
     val rowId = insertRow(context, msgid, v)

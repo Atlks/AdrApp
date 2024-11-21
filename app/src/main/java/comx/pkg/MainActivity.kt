@@ -266,29 +266,25 @@ class MainActivity : AppCompatActivity() {
         try {
             //----block send
             var msg = binding.txtbx1.text.toString()
-            val time = System.currentTimeMillis()
-            val msg1 = Msg(deviceName1, msg, time, time.toString())
-
-            val encodeJson = encodeJson(msg1)
-
-
-            sendMsg(encodeJson.toString())
+            val time =getTimestampInSecs()
+            var msgid= encodeMd5(deviceName1+msg+time)
+            val msg1 = Msg(deviceName1, msg, time, msgid)
+            val encodeJson_msg = encodeJson(msg1)
+            sendMsg(encodeJson_msg.toString())
 
 
             lifecycleScope.launch(Dispatchers.IO) {
 
 
                 //----------block insert
-                insertDB(this@MainActivity, deviceName1, msg.toString());
+                insertDB(this@MainActivity, msgid, encodeJson_msg);
 
 
                 //-----------block show list
                 var smsList = ListSms()
                 Log.d(tagLog, "smslist.size:" + smsList.size)
                 // binding.textView.text = "cnt:" + smsList.size
-
-
-                //goto main thrd updt ui
+               //goto main thrd updt ui
                 withContext(Dispatchers.Main) {
 
                     bindData2Table(smsList);
@@ -312,23 +308,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun RcvmsgHdlr(message: String) {
+    private fun RcvmsgHdlr(messageStr: String) {
         Log.d(tagLog, "fun msgrecv((")
-        Log.d(tagLog, "message=" + message);
+        Log.d(tagLog, "message=" + messageStr);
         Log.d(tagLog, ")))")
-        Log.d(tagLog, "Message received: $message")
+        Log.d(tagLog, "Message received: $messageStr")
         // 例如，更新 UI 或保存消息
-        var jsonObj = decodeJson(message)
+        var jsonObj = decodeJson(messageStr)
 
         // 检查 jsonObj 是否为 null，并确保 devicename 和 msg 键存在
         if (jsonObj != null) {
-            val deviceName = jsonObj.optString("dvcnm")  // 使用 optString 来安全获取值
+            val deviceName = jsonObj.optString("dvcnm")
+            val msgid = jsonObj.optString("id")// 使用 optString 来安全获取值
             if (deviceName.equals(getDeviceName(this)))
                 return
             val msg = jsonObj.optString("msg")
 
             if (deviceName.isNotEmpty() && msg.isNotEmpty()) {
-                insertDB(this, deviceName, msg)
+                insertDB(this, msgid, messageStr)
             } else {
                 Log.e("JsonParsing", "Missing device name or message in JSON.")
             }
