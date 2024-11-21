@@ -220,6 +220,8 @@ class MainActivity : AppCompatActivity() {
             var smsList = ListSms()
             Log.d(tagLog, "smslist.size:" + smsList.size)
             // binding.textView.text = "cnt:" + smsList.size
+            smsList= foreachx(smsList)
+
             bindData2Table(smsList);
             binding.txtbx1.setText("")
 
@@ -238,6 +240,23 @@ class MainActivity : AppCompatActivity() {
             Log.e(tagLog, "Caught exception", e)
         }
 
+    }
+
+    private fun foreachx(smsList: List<Msg>):List<Msg> {
+         val smsList2 = mutableListOf<Msg>()
+
+        smsList.forEachIndexed { index, msg ->
+            var msgNew=msg.copy()
+
+            if (msg.dvcnm == getDeviceName(this)) {
+                msgNew  = msg.copy(dvcnm = "✨✨(${msg.dvcnm})")
+               // smsList[index] = msg.copy(dvcnm = "✨✨(${msg.dvcnm})")
+              //  msgNew.dvcnm="✨✨(${msg.dvcnm})"
+            }
+            smsList2.add(msgNew)
+
+        }
+        return  smsList2
     }
 
     private fun sendAgainMsg(mainActivity: Context) {
@@ -301,6 +320,7 @@ class MainActivity : AppCompatActivity() {
 
                 //-----------block show list
                 var smsList = ListSms()
+                //order by sendtime
                 Log.d(tagLog, "smslist.size:" + smsList.size)
                 // binding.textView.text = "cnt:" + smsList.size
                 //goto main thrd updt ui
@@ -354,6 +374,7 @@ class MainActivity : AppCompatActivity() {
 
         //-------bing to list
         var smsList = ListSms()
+        smsList= foreachx(smsList)
         Log.d(tagLog, "smslist.size:" + smsList.size)
         // binding.textView.text = "cnt:" + smsList.size
         // 切换到主线程更新 UI
@@ -426,7 +447,7 @@ class MainActivity : AppCompatActivity() {
         Log.d(tagLog, ")))")
 
 
-        val smsList = mutableListOf<Msg>()
+        var smsList = mutableListOf<Msg>()
         val messages = getAllrows(this) // 传入 Context
         messages.forEach { message ->
             var v = message.v;
@@ -439,7 +460,7 @@ class MainActivity : AppCompatActivity() {
 
             // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
         }
-        orderMsgList(smsList)
+        smsList=  orderMsgList(smsList)
 
         return smsList
     }
