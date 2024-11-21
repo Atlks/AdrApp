@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-            binding.saveNoteBtn.setOnClickListener {
+            binding.resendAllMsg.setOnClickListener {
                 // 创建一个 Intent 对象，用于启动 SecondActivity
                 // exportSystemNotesToJson(this, "notebek.json")
                 sendAgainMsg(this)
