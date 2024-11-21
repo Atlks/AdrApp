@@ -21,7 +21,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.ui.AppBarConfiguration
 
-
 import comx.pkg.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         try {
             Log.d(tagLog, "funx onCrt()")
 
-            keeplive(this,MyNotificationListenerService::class.java)
+            keeplive(this, MyNotificationListenerService::class.java)
 
             // 设置全局异常捕获
 //            Thread.setDefaultUncaughtExceptionHandler { thread: Thread, throwable: Throwable? ->
@@ -87,9 +86,17 @@ class MainActivity : AppCompatActivity() {
 
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.POST_NOTIFICATIONS
+                    )
+                    != PackageManager.PERMISSION_GRANTED
+                ) {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                        1
+                    )
                 }
             }
             // 检查是否已获得写入外部存储权限
@@ -108,7 +115,6 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
-
             //-----------------btn click
             val deviceName1 = getDeviceName(this)
             binding.sendBtn.setOnClickListener {
@@ -119,14 +125,15 @@ class MainActivity : AppCompatActivity() {
 
             binding.saveNoteBtn.setOnClickListener {
                 // 创建一个 Intent 对象，用于启动 SecondActivity
-                exportSystemNotesToJson(this,"notebek.json")
+                exportSystemNotesToJson(this, "notebek.json")
             }
 
 
-            binding. getBdcst.setOnClickListener {
+            binding.getBdcst.setOnClickListener {
 
                 // 显示Toast
-                val toast = Toast.makeText(this, "bdcstIp="+ getDeviceBroadcastIP(), Toast.LENGTH_LONG)
+                val toast =
+                    Toast.makeText(this, "bdcstIp=" + getDeviceBroadcastIP(), Toast.LENGTH_LONG)
                 toast.show()
             }
 
@@ -160,7 +167,7 @@ class MainActivity : AppCompatActivity() {
                     // android.setting
                     val intent = Intent("android.settings.ACTION_APP_NOTIFICATION_SETTINGS")
                     //startActivity(intent)
-                    gotoNtfyUI(this,"comx.pkg")
+                    gotoNtfyUI(this, "comx.pkg")
                 } catch (e: Exception) {
                     Log.e(tagLog, "Erroreee", e)
                 }
@@ -216,7 +223,7 @@ class MainActivity : AppCompatActivity() {
                 scrollView.fullScroll(View.FOCUS_DOWN)
             }
 
-          //  keeplive(this)
+            //  keeplive(this)
 
             Log.d(tagLog, "endfun onCrt()")
 
@@ -260,7 +267,7 @@ class MainActivity : AppCompatActivity() {
             //----block send
             var msg = binding.txtbx1.text.toString()
             val time = System.currentTimeMillis()
-            val msg1 = Msg(deviceName1, msg, time, time)
+            val msg1 = Msg(deviceName1, msg, time, time.toString())
 
             val encodeJson = encodeJson(msg1)
 
@@ -271,10 +278,8 @@ class MainActivity : AppCompatActivity() {
             lifecycleScope.launch(Dispatchers.IO) {
 
 
-
                 //----------block insert
-                insertDB(this@MainActivity,deviceName1, msg.toString());
-
+                insertDB(this@MainActivity, deviceName1, msg.toString());
 
 
                 //-----------block show list
@@ -286,13 +291,13 @@ class MainActivity : AppCompatActivity() {
                 //goto main thrd updt ui
                 withContext(Dispatchers.Main) {
 
-                            bindData2Table(smsList);
-                            //滚动到底部
-                            var scrollView = binding.scrvw;
-                            scrollView.post {
-                                scrollView.fullScroll(View.FOCUS_DOWN)
+                    bindData2Table(smsList);
+                    //滚动到底部
+                    var scrollView = binding.scrvw;
+                    scrollView.post {
+                        scrollView.fullScroll(View.FOCUS_DOWN)
 
-                            }
+                    }
                 }
             }
 
@@ -300,8 +305,6 @@ class MainActivity : AppCompatActivity() {
 
 
             binding.txtbx1.setText("")
-
-
 
 
         } catch (e: Exception) {
@@ -325,7 +328,7 @@ class MainActivity : AppCompatActivity() {
             val msg = jsonObj.optString("msg")
 
             if (deviceName.isNotEmpty() && msg.isNotEmpty()) {
-                insertDB(this,deviceName, msg)
+                insertDB(this, deviceName, msg)
             } else {
                 Log.e("JsonParsing", "Missing device name or message in JSON.")
             }
@@ -366,10 +369,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
-
-
     // 显示删除确认对话框
     private fun showDeleteConfirmationDialog() {
         val dialog = AlertDialog.Builder(this)
@@ -401,7 +400,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Serializable
-    data class Msg(val dvcnm: String, val msg: String, val time: Long, val id: Long)
+    data class Msg(val dvcnm: String, val msg: String, val time: Long, val id: String)
 
     private fun ListSms(): List<Msg> {
         Log.d(tagLog, "fun ListSms((")
@@ -410,23 +409,30 @@ class MainActivity : AppCompatActivity() {
 
 
         val smsList = mutableListOf<Msg>()
-        val messages = getAllMessages(this) // 传入 Context
+        val messages = getAllrows(this) // 传入 Context
         messages.forEach { message ->
-            val sms = Msg(message.deviceName, message.msg, message.time, message.id)
+            var v=message.v;
+            var jsonobj= decodeJson(v)
+             var dvcnm=getFld(jsonobj,"dvcnm")
+            var msg=getFld(jsonobj,"msg")
+            var timestmp=getFldLong(jsonobj,"time",0)
+            val sms = Msg(dvcnm,  msg  ,timestmp,"")
             smsList.add(sms)
 
             // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
         }
-
+        orderMsgList(smsList)
 
         return smsList
     }
 
 
 
+    private fun orderMsgList(smsList: MutableList<MainActivity.Msg>): MutableList<Msg> {
+        return smsList.sortedBy { it.time }.toMutableList()
+    }
 
 
-    data class Sms(val address: String, val body: String, val date: Long, val id: Long)
 
     // 用于存储数据行的 CheckBox 引用
     var checkBoxList = mutableListOf<CheckBox>()

@@ -18,6 +18,41 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
+
+
+/**
+ *如果key不存在,返回def值
+ *
+ *
+ *
+ * 其他各种错误情况下，返回def值
+ */
+  fun getFldLong(jsonobj: JSONObject?, key: String,def:Long): Long {
+    return try {
+        if (jsonobj != null && jsonobj.has(key) && !jsonobj.isNull(key)) {
+            jsonobj.getLong(key)
+        } else {
+            def
+        }
+    } catch (e: Exception) {
+        def
+    }
+}
+/**
+ * 获取值，如果值为null，或没有此key，返回空字符串
+ */
+fun getFld(jsonobj: JSONObject?,key:String): String {
+    return try {
+        if (jsonobj != null && jsonobj.has(key) && !jsonobj.isNull(key)) {
+            jsonobj.getString(key)
+        } else {
+            ""
+        }
+    } catch (e: Exception) {
+        ""
+    }
+}
+
 fun formatTimestamp(timestamp: Long): String {
     try {
         val date = Date(timestamp) // 将时间戳转换为 Date 对象
@@ -69,7 +104,9 @@ fun encodeMd5(s: String): String {
     // 将字节数组转换为十六进制字符串
     return hashBytes.joinToString("") { "%02x".format(it) }
 }
-
+fun getCurrentTimestampInSeconds(): Long {
+    return System.currentTimeMillis() / 1000
+}
 fun showToast(context: Context, message: String, delaySec: Long) {
     // 显示Toast
     val toast = Toast.makeText(context, message, Toast.LENGTH_LONG)
