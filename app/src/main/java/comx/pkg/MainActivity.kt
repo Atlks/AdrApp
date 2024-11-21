@@ -334,38 +334,40 @@ class MainActivity : AppCompatActivity() {
         Log.d(tagLog, "Message received: $messageStr")
         // 例如，更新 UI 或保存消息
         var jsonObj = decodeJson(messageStr)
-
         // 检查 jsonObj 是否为 null，并确保 devicename 和 msg 键存在
-        if (jsonObj != null) {
-            val deviceName = jsonObj.optString("dvcnm")
-            val msgid = jsonObj.optString("id")// 使用 optString 来安全获取值
-            if (deviceName.equals(getDeviceName(this)))
-                return
-            val msg = jsonObj.optString("msg")
-
-            if (deviceName.isNotEmpty() && msg.isNotEmpty()) {
-                insertDB(this, msgid, messageStr)
-            } else {
-                Log.e("JsonParsing", "Missing device name or message in JSON.")
-            }
-            var smsList = ListSms()
-            Log.d(tagLog, "smslist.size:" + smsList.size)
-            // binding.textView.text = "cnt:" + smsList.size
-
-            // 切换到主线程更新 UI
-            runOnUiThread {
-                bindData2Table(smsList);
-                //滚动到底部
-                var scrollView = binding.scrvw;
-                scrollView.post {
-                    scrollView.fullScroll(View.FOCUS_DOWN)
-                }
-            }
-
-
-        } else {
-            Log.e("JsonParsing", "Failed to decode JSON message.")
+        if (jsonObj == null) {
+            Log.d(tagLog, "endfun msgrecv()#ret=")
+            return
         }
+
+
+        // if my msg  ret
+        val deviceName = jsonObj.optString("dvcnm")
+        if (deviceName.equals(getDeviceName(this)))
+            return
+
+
+        val msg = jsonObj.optString("msg")
+        val msgid = jsonObj.optString("id")// 使用 optString 来安全获取值
+        insertDB(this, msgid, messageStr)
+
+
+        //-------bing to list
+        var smsList = ListSms()
+        Log.d(tagLog, "smslist.size:" + smsList.size)
+        // binding.textView.text = "cnt:" + smsList.size
+        // 切换到主线程更新 UI
+        runOnUiThread {
+            bindData2Table(smsList);
+            //滚动到底部
+            var scrollView = binding.scrvw;
+            scrollView.post {
+                scrollView.fullScroll(View.FOCUS_DOWN)
+            }
+        }
+
+
+
         Log.d(tagLog, "endfun msgrecv()#ret=")
     }
 
