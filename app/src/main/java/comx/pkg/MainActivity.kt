@@ -4,6 +4,7 @@ package comx.pkg
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -75,8 +76,9 @@ class MainActivity : AppCompatActivity() {
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.READ_SMS,
-
-                    )
+                    android.Manifest.permission.ACCESS_NOTIFICATION_POLICY,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                )
                 ActivityCompat.requestPermissions(
                     this,
                     permissions,
@@ -94,7 +96,10 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     ActivityCompat.requestPermissions(
                         this,
-                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                        arrayOf(
+                            android.Manifest.permission.ACCESS_NOTIFICATION_POLICY,
+                            android.Manifest.permission.POST_NOTIFICATIONS
+                        ),
                         1
                     )
                 }
@@ -125,7 +130,8 @@ class MainActivity : AppCompatActivity() {
 
             binding.saveNoteBtn.setOnClickListener {
                 // 创建一个 Intent 对象，用于启动 SecondActivity
-                exportSystemNotesToJson(this, "notebek.json")
+                // exportSystemNotesToJson(this, "notebek.json")
+                sendAgainMsg(this)
             }
 
 
@@ -234,6 +240,19 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun sendAgainMsg(mainActivity: Context) {
+        // var smsList = ListSms()
+        val messages = getAllrows(this) // 传入 Context
+        messages.forEach { message ->
+            var v = message.v;
+            sendMsg(v)
+
+            // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
+        }
+
+
+    }
+
     private fun setRcvMsgLsnr() {
         val udpListener = UdpListener(18888)
         udpListener.startListening { message ->
@@ -266,8 +285,8 @@ class MainActivity : AppCompatActivity() {
         try {
             //----block send
             var msg = binding.txtbx1.text.toString()
-            val time =getTimestampInSecs()
-            var msgid= encodeMd5(deviceName1+msg+time)
+            val time = getTimestampInSecs()
+            var msgid = encodeMd5(deviceName1 + msg + time)
             val msg1 = Msg(deviceName1, msg, time, msgid)
             val encodeJson_msg = encodeJson(msg1)
             sendMsg(encodeJson_msg.toString())
@@ -284,7 +303,7 @@ class MainActivity : AppCompatActivity() {
                 var smsList = ListSms()
                 Log.d(tagLog, "smslist.size:" + smsList.size)
                 // binding.textView.text = "cnt:" + smsList.size
-               //goto main thrd updt ui
+                //goto main thrd updt ui
                 withContext(Dispatchers.Main) {
 
                     bindData2Table(smsList);
@@ -408,12 +427,12 @@ class MainActivity : AppCompatActivity() {
         val smsList = mutableListOf<Msg>()
         val messages = getAllrows(this) // 传入 Context
         messages.forEach { message ->
-            var v=message.v;
-            var jsonobj= decodeJson(v)
-             var dvcnm=getFld(jsonobj,"dvcnm")
-            var msg=getFld(jsonobj,"msg")
-            var timestmp=getFldLong(jsonobj,"time",0)
-            val sms = Msg(dvcnm,  msg  ,timestmp,"")
+            var v = message.v;
+            var jsonobj = decodeJson(v)
+            var dvcnm = getFld(jsonobj, "dvcnm")
+            var msg = getFld(jsonobj, "msg")
+            var timestmp = getFldLong(jsonobj, "time", 0)
+            val sms = Msg(dvcnm, msg, timestmp, "")
             smsList.add(sms)
 
             // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
@@ -424,11 +443,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     private fun orderMsgList(smsList: MutableList<MainActivity.Msg>): MutableList<Msg> {
         return smsList.sortedBy { it.time }.toMutableList()
     }
-
 
 
     // 用于存储数据行的 CheckBox 引用

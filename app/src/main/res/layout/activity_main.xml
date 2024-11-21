@@ -14,7 +14,12 @@
 
 
         >
-
+        <Button
+            android:id="@+id/xxsafda"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="v7"
+            android:layout_marginTop="3dp"/>
         <Button
             android:id="@+id/gotoFormButton"
             android:layout_width="wrap_content"
@@ -105,10 +110,10 @@
         android:text="获取广播地址"
         android:layout_marginTop="3dp"/>
     <Button
-        android:id="@+id/saveNoteBtn"
+        android:id="@+id/resendAllMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="saveNote"
+        android:text="resendAllMsg"
         android:layout_marginTop="3dp"/>
     </LinearLayout>
 
