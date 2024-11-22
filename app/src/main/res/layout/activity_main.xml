@@ -18,7 +18,7 @@
             android:id="@+id/xxsafda"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="v7"
+            android:text="v8"
             android:layout_marginTop="3dp"/>
         <Button
             android:id="@+id/gotoFormButton"

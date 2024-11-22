@@ -4,11 +4,12 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 
 class ChatDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        private const val DATABASE_NAME = "chat3.db"
+        private const val DATABASE_NAME = "chat5.db"
         private const val DATABASE_VERSION = 1
 
         // 表名和字段
@@ -39,7 +40,16 @@ class ChatDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
 
 
 }
-fun insertRow(context: Context, k: String, v: String ): Long {
+
+/**
+ * for mysql store engr api spec...read_row()
+ */
+fun write_row(context: Context, k: String, v: String ): Long {
+    Log.d(tagLog, "fun write_row((")
+    Log.d(tagLog, "k="+k)
+    Log.d(tagLog, "v="+v)
+    Log.d(tagLog, ")))")
+
     val dbHelper = ChatDatabaseHelper(context)
     val db = dbHelper.writableDatabase
 
@@ -53,6 +63,7 @@ fun insertRow(context: Context, k: String, v: String ): Long {
     // 插入数据
     val rowId = db.insert(ChatDatabaseHelper.TABLE_MESSAGES, null, values)
     db.close()
+    Log.d(tagLog, "endfun write_row()#ret rowId="+rowId)
     return rowId
 }
 

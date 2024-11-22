@@ -5,10 +5,12 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.speech.tts.TextToSpeech
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import org.bouncycastle.asn1.x500.style.RFC4519Style.description
 import java.util.Locale
@@ -23,6 +25,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
        // textToSpeech = TextToSpeech(this, this)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("ForegroundServiceType")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
@@ -30,8 +33,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         createNotificationChannel()
 
         // 显示前台通知
-        startForeground(1, buildNotification())
-
+      //  startForeground(1, buildNotification())
+        startForeground(1, buildNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
 
 
         // 初始化 TextToSpeech，避免影响前台通知的启动
@@ -54,7 +57,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         }
     }
 
-    private fun buildNotification(): Notification? {
+    private fun buildNotification(): Notification{
         return NotificationCompat.Builder(this, "your_channel_id")
             .setContentTitle("服务正在运行")
             .setContentText("这是前台服务")

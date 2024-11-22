@@ -85,7 +85,12 @@ class MainActivity : AppCompatActivity() {
                     REQUEST_SMS_PERMISSION
                 )
             }
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val permission = android.Manifest.permission.FOREGROUND_SERVICE_DATA_SYNC
+                if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(arrayOf(permission), 1)
+                }
+            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (ContextCompat.checkSelfPermission(
@@ -220,7 +225,7 @@ class MainActivity : AppCompatActivity() {
             var smsList = ListSms()
             Log.d(tagLog, "smslist.size:" + smsList.size)
             // binding.textView.text = "cnt:" + smsList.size
-            smsList= foreachx(smsList)
+            smsList = Fmtforeachx(smsList)
 
             bindData2Table(smsList);
             binding.txtbx1.setText("")
@@ -242,21 +247,21 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun foreachx(smsList: List<Msg>):List<Msg> {
-         val smsList2 = mutableListOf<Msg>()
+    private fun Fmtforeachx(smsList: List<Msg>): List<Msg> {
+        val smsList2 = mutableListOf<Msg>()
 
         smsList.forEachIndexed { index, msg ->
-            var msgNew=msg.copy()
+            var msgNew = msg.copy()
 
             if (msg.dvcnm == getDeviceName(this)) {
-                msgNew  = msg.copy(dvcnm = "✨✨(${msg.dvcnm})")
-               // smsList[index] = msg.copy(dvcnm = "✨✨(${msg.dvcnm})")
-              //  msgNew.dvcnm="✨✨(${msg.dvcnm})"
+                msgNew = msg.copy(dvcnm = "✨✨(${msg.dvcnm})")
+                // smsList[index] = msg.copy(dvcnm = "✨✨(${msg.dvcnm})")
+                //  msgNew.dvcnm="✨✨(${msg.dvcnm})"
             }
             smsList2.add(msgNew)
 
         }
-        return  smsList2
+        return smsList2
     }
 
     private fun sendAgainMsg(mainActivity: Context) {
@@ -315,11 +320,12 @@ class MainActivity : AppCompatActivity() {
 
 
                 //----------block insert
-                insertDB(this@MainActivity, msgid, encodeJson_msg);
+                write_row(this@MainActivity, msgid, encodeJson_msg);
 
 
                 //-----------block show list
                 var smsList = ListSms()
+                smsList=Fmtforeachx(smsList)
                 //order by sendtime
                 Log.d(tagLog, "smslist.size:" + smsList.size)
                 // binding.textView.text = "cnt:" + smsList.size
@@ -352,6 +358,14 @@ class MainActivity : AppCompatActivity() {
         Log.d(tagLog, "message=" + messageStr);
         Log.d(tagLog, ")))")
         Log.d(tagLog, "Message received: $messageStr")
+
+
+        //---idx
+        // if my msg  ret
+//insertDB
+        //qry n bing to list
+
+
         // 例如，更新 UI 或保存消息
         var jsonObj = decodeJson(messageStr)
         // 检查 jsonObj 是否为 null，并确保 devicename 和 msg 键存在
@@ -369,12 +383,12 @@ class MainActivity : AppCompatActivity() {
 
         val msg = jsonObj.optString("msg")
         val msgid = jsonObj.optString("id")// 使用 optString 来安全获取值
-        insertDB(this, msgid, messageStr)
+        write_row(this, msgid, messageStr)
 
 
         //-------bing to list
         var smsList = ListSms()
-        smsList= foreachx(smsList)
+        smsList = Fmtforeachx(smsList)
         Log.d(tagLog, "smslist.size:" + smsList.size)
         // binding.textView.text = "cnt:" + smsList.size
         // 切换到主线程更新 UI
@@ -460,7 +474,7 @@ class MainActivity : AppCompatActivity() {
 
             // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
         }
-        smsList=  orderMsgList(smsList)
+        smsList = orderMsgList(smsList)
 
         return smsList
     }
