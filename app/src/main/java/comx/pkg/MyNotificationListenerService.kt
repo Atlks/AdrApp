@@ -86,6 +86,9 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         if(title=="没有标题" && text=="没有内容")
             return
 
+        if(title=="" && text=="")
+            return
+
         if(title.toLowerCase()=="timer")
             return
 
