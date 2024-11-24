@@ -12,7 +12,6 @@ import android.service.notification.StatusBarNotification
 import android.speech.tts.TextToSpeech
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import org.bouncycastle.asn1.x500.style.RFC4519Style.description
 import java.util.Locale
 
 class MyNotificationListenerService : NotificationListenerService(), TextToSpeech.OnInitListener {
@@ -30,11 +29,11 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         // 创建通知渠道 (仅适用于 Android 8.0 及以上版本)
-        createNotificationChannel()
+        newNotificationChannel()
 
         // 显示前台通知
       //  startForeground(1, buildNotification())
-        startForeground(1, buildNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+        startForeground(1, newNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
 
 
         // 初始化 TextToSpeech，避免影响前台通知的启动
@@ -43,7 +42,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         return START_STICKY
     }
 
-    private fun createNotificationChannel() {
+    private fun newNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelId = "your_channel_id"
             val channelName = "My Foreground Service"
@@ -57,10 +56,10 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         }
     }
 
-    private fun buildNotification(): Notification{
+    private fun newNotification(): Notification{
         return NotificationCompat.Builder(this, "your_channel_id")
             .setContentTitle("服务正在运行")
-            .setContentText("这是前台服务")
+            .setContentText("这是服务runing....")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .build()
     }
