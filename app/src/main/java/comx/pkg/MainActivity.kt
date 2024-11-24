@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
             keeplive4FrgrdSvrs(this, MyNotificationListenerService::class.java)
 
             keeplive2alarmManager(this, MyNotificationListenerService::class.java)
-            keeplive3JobScheduler(this, MyNotificationListenerService::class.java)
+       //     keeplive3JobScheduler(this, MyNotificationListenerService::class.java)
 
             // 设置全局异常捕获
 //            Thread.setDefaultUncaughtExceptionHandler { thread: Thread, throwable: Throwable? ->
