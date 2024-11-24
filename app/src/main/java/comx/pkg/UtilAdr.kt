@@ -7,33 +7,35 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
 import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.Context
-import android.os.Build
-import android.util.Log
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 
 
 /**
  * context, YourService::class.java
  */
-fun keeplive(context: Context, serviceClass: Class<*>) {
+fun keeplive4FrgrdSvrs(context: Context, serviceClass: Class<*>) {
     val serviceIntent = Intent(context, serviceClass)
     ContextCompat.startForegroundService(context, serviceIntent)
 }
 
-fun keeplive2(context: Context){
+fun keeplive2alarmManager(context: Context, serviceClass: Class<*>){
     val alarmManager =context. getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    val intent = Intent(context, YourService::class.java)
+    val intent = Intent(context, serviceClass)
     val pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
     alarmManager.setRepeating(
@@ -42,6 +44,17 @@ fun keeplive2(context: Context){
         AlarmManager.INTERVAL_HOUR,
         pendingIntent
     )
+}
+
+fun keeplive3JobScheduler(context: Context, serviceClass: Class<*>){
+    val jobId=9898989
+    val jobInfo = JobInfo.Builder(jobId, ComponentName(context, serviceClass))
+        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+        .setPersisted(true) // 保持持久化
+        .build()
+
+    val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+    jobScheduler.schedule(jobInfo)
 }
 
 

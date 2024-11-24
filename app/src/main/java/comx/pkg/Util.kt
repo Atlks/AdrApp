@@ -12,9 +12,10 @@ import java.security.MessageDigest
 import android.provider.Settings
 import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import org.json.JSONObject
-
+import java.time.LocalTime
 
 
 /**
@@ -48,6 +49,21 @@ fun getFld(jsonobj: JSONObject?,key:String): String {
     } catch (e: Exception) {
         ""
     }
+}
+
+
+fun getNow(): String {
+    try {
+        val date = Date() // 将时间戳转换为 Date 对象
+        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()) // 定义格式
+        return format.format(date) // 格式化日期
+    } catch (e: Exception) {
+        // 处理异常
+        Log.e(tagLog, "Caught exception", e)
+        return  "1970-01-01 00:00:00"
+    }
+
+
 }
 
 fun formatTimestamp(timestamp: Long): String {
@@ -90,6 +106,44 @@ fun getDeviceInfo(): String {
         用户 (User): ${Build.USER}
     """.trimIndent()
 }
+
+//8--23
+@RequiresApi(Build.VERSION_CODES.O)
+fun isTimeInDaytim(): Boolean {
+    // 获取当前时间
+    val now = LocalTime.now()
+
+    // 定义时间范围
+    val startTime = LocalTime.of(10, 0) // 早上10点
+    val endTime = LocalTime.of(23, 0)  // 下午7点
+
+    // 判断当前时间是否在范围内
+    if (now.isAfter(startTime) && now.isBefore(endTime)) {
+        // println("888")
+        return true
+    }
+    return false
+}
+/**
+ * 10---21
+ */
+@RequiresApi(Build.VERSION_CODES.O)
+fun isTimeInWktim(): Boolean {
+    // 获取当前时间
+    val now = LocalTime.now()
+
+    // 定义时间范围
+    val startTime = LocalTime.of(10, 0) // 早上10点
+    val endTime = LocalTime.of(19, 0)  // 下午7点
+
+    // 判断当前时间是否在范围内
+    if (now.isAfter(startTime) && now.isBefore(endTime)) {
+       // println("888")
+        return true
+    }
+    return false
+}
+
 
 fun encodeMd5(s: String): String {
 // 获取 MD5 MessageDigest 实例

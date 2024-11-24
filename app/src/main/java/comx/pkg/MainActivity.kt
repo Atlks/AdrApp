@@ -43,7 +43,10 @@ class MainActivity : AppCompatActivity() {
         try {
             Log.d(tagLog, "funx onCrt()")
 
-            keeplive(this, MyNotificationListenerService::class.java)
+            keeplive4FrgrdSvrs(this, MyNotificationListenerService::class.java)
+
+            keeplive2alarmManager(this, MyNotificationListenerService::class.java)
+            keeplive3JobScheduler(this, MyNotificationListenerService::class.java)
 
             // 设置全局异常捕获
 //            Thread.setDefaultUncaughtExceptionHandler { thread: Thread, throwable: Throwable? ->
@@ -139,6 +142,11 @@ class MainActivity : AppCompatActivity() {
                 sendAgainMsg(this)
             }
 
+            //
+            binding.noBtrOptmzBtn.setOnClickListener {
+                val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                startActivity(intent)
+            }
 
             binding.getBdcst.setOnClickListener {
 

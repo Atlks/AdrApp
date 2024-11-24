@@ -59,7 +59,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     private fun newNotification(): Notification{
         return NotificationCompat.Builder(this, "your_channel_id")
             .setContentTitle("服务正在运行")
-            .setContentText("这是服务runing....")
+            .setContentText("服务runing...."+getNow())
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .build()
     }
@@ -72,6 +72,10 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
     @SuppressLint("NewApi")
     override fun onNotificationPosted(sbn: StatusBarNotification) {
+
+//       if(!isTimeInDaytim())
+//           return
+
         val notification = sbn.notification
         val extras = notification.extras
 
