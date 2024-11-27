@@ -112,6 +112,7 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
             }
+            checkPermissions4READ_PHONE_STATE()
             // 检查是否已获得写入外部存储权限
             //requestCode 是自定义的整数，用于在权限回调中识别请求。
 //        var requestCode4wrt = 111
@@ -146,6 +147,10 @@ class MainActivity : AppCompatActivity() {
             binding.noBtrOptmzBtn.setOnClickListener {
                 val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
                 startActivity(intent)
+            }
+
+            binding.reqSycMsg.setOnClickListener {
+                reqSycMsgClk(deviceName1)
             }
 
             binding.getBdcst.setOnClickListener {
@@ -253,6 +258,31 @@ class MainActivity : AppCompatActivity() {
             Log.e(tagLog, "Caught exception", e)
         }
 
+    }
+
+    private fun reqSycMsgClk(deviceName1: String) {
+        val deviceName2 = getDeviceName(this)
+
+            //----block send
+            var msg = "/reqSyn"
+            val time = getTimestampInSecs()
+            var msgid = encodeMd5(deviceName1 + msg + time)
+            val msg1 = Msg(deviceName1, msg, time, msgid)
+            val encodeJson_msg = encodeJson(msg1)
+            sendMsg(encodeJson_msg.toString())
+
+    }
+
+
+    private fun checkPermissions4READ_PHONE_STATE() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CONTACTS),
+                100
+            )
+        }
     }
 
     private fun Fmtforeachx(smsList: List<Msg>): List<Msg> {
@@ -389,7 +419,17 @@ class MainActivity : AppCompatActivity() {
             return
 
 
+
+        //--------reqSyn
         val msg = jsonObj.optString("msg")
+
+        if(msg=="/reqSyn")
+        {
+            sendAgainMsg(this)
+            return
+        }
+
+        //--------
         val msgid = jsonObj.optString("id")// 使用 optString 来安全获取值
         write_row(this, msgid, messageStr)
 
