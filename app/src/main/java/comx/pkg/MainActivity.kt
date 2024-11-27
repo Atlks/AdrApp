@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
             binding.resendAllMsg.setOnClickListener {
                 // 创建一个 Intent 对象，用于启动 SecondActivity
                 // exportSystemNotesToJson(this, "notebek.json")
-                sendAgainMsg(this)
+                sendMsgAllAgainForeach(this)
             }
 
             //
@@ -302,7 +302,22 @@ class MainActivity : AppCompatActivity() {
         return smsList2
     }
 
-    private fun sendAgainMsg(mainActivity: Context) {
+
+    private fun sendMsg(msg: String) {
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val message = msg.toString()
+            val address = "255.255.255.255" // 或广播地址 "255.255.255.255"
+            val port = 18888
+
+            send(message, address, port)
+            send(message, getDeviceBroadcastIP(), port)
+
+        }
+
+    }
+
+    private fun sendMsgAllAgainForeach(mainActivity: Context) {
         // var smsList = ListSms()
         val messages = getAllrows(this) // 传入 Context
         messages.forEach { message ->
@@ -415,8 +430,8 @@ class MainActivity : AppCompatActivity() {
 
         // if my msg  ret
         val deviceName = jsonObj.optString("dvcnm")
-        if (deviceName.equals(getDeviceName(this)))
-            return
+//        if (deviceName.equals(getDeviceName(this)))
+//            return
 
 
 
@@ -425,7 +440,7 @@ class MainActivity : AppCompatActivity() {
 
         if(msg=="/reqSyn")
         {
-            sendAgainMsg(this)
+            sendMsgAllAgainForeach(this)
             return
         }
 
@@ -455,19 +470,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun sendMsg(msg: String) {
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val message = msg.toString()
-            val address = "255.255.255.255" // 或广播地址 "255.255.255.255"
-            val port = 18888
-
-            send(message, address, port)
-            send(message, getDeviceBroadcastIP(), port)
-
-        }
-
-    }
 
 
     // 显示删除确认对话框

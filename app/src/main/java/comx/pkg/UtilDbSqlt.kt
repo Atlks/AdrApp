@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 
-class ChatDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class UtilDbSqlt(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
         private const val DATABASE_NAME = "chat5.db"
@@ -50,18 +50,18 @@ fun write_row(context: Context, k: String, v: String ): Long {
     Log.d(tagLog, "v="+v)
     Log.d(tagLog, ")))")
 
-    val dbHelper = ChatDatabaseHelper(context)
+    val dbHelper = UtilDbSqlt(context)
     val db = dbHelper.writableDatabase
 
     val values = ContentValues().apply {
-        put(ChatDatabaseHelper.COLUMN_K, k)
-        put(ChatDatabaseHelper.COLUMN_V, v)
+        put(UtilDbSqlt.COLUMN_K, k)
+        put(UtilDbSqlt.COLUMN_V, v)
 
 
     }
 
     // 插入数据
-    val rowId = db.insert(ChatDatabaseHelper.TABLE_MESSAGES, null, values)
+    val rowId = db.insert(UtilDbSqlt.TABLE_MESSAGES, null, values)
     db.close()
     Log.d(tagLog, "endfun write_row()#ret rowId="+rowId)
     return rowId
@@ -75,15 +75,15 @@ data class KVrow(
 
 
 fun getAllrows(context: Context): List<KVrow> {
-    val dbHelper = ChatDatabaseHelper(context)
+    val dbHelper = UtilDbSqlt(context)
     val db = dbHelper.readableDatabase
     val messageList = mutableListOf<KVrow>()
 
     val cursor = db.query(
-        ChatDatabaseHelper.TABLE_MESSAGES, // 表名
+        UtilDbSqlt.TABLE_MESSAGES, // 表名
         arrayOf( // 要查询的列
-            ChatDatabaseHelper.COLUMN_K,
-            ChatDatabaseHelper.COLUMN_V
+            UtilDbSqlt.COLUMN_K,
+            UtilDbSqlt.COLUMN_V
 
         ),
         null, // where 子句
@@ -95,8 +95,8 @@ fun getAllrows(context: Context): List<KVrow> {
 
     with(cursor) {
         while (moveToNext()) {
-            val k = getString(getColumnIndexOrThrow(ChatDatabaseHelper.COLUMN_K))
-            val v = getString(getColumnIndexOrThrow(ChatDatabaseHelper.COLUMN_V))
+            val k = getString(getColumnIndexOrThrow(UtilDbSqlt.COLUMN_K))
+            val v = getString(getColumnIndexOrThrow(UtilDbSqlt.COLUMN_V))
 
             // 将结果添加到列表中
             messageList.add(KVrow(k, v ))
