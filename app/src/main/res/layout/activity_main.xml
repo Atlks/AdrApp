@@ -15,7 +15,7 @@
 
         >
         <Button
-            android:id="@+id/xxsafda"
+            android:id="@+id/menux"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="v11"
@@ -36,6 +36,79 @@
             android:layout_marginTop="3dp"/>
     </LinearLayout>
 
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="3dp"
+
+        android:id="@+id/menudiv"
+
+        >
+
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="3dp"
+
+
+
+            >
+
+            <Button
+                android:id="@+id/setNtfyAuth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="通知权限"
+                android:layout_gravity="start"
+                android:layout_weight="1"
+                android:layout_marginTop="3dp"/>
+            <Button
+                android:id="@+id/setNtfyLsnAuth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="监听通知权限"
+                android:layout_gravity="start"
+                android:layout_weight="1"
+                android:layout_marginTop="3dp"/>
+
+            <Button
+                android:id="@+id/noBtrOptmzBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="noBtrOptmz"
+                android:layout_gravity="start"
+                android:layout_weight="1"
+                android:layout_marginTop="3dp"/>
+        </LinearLayout>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="3dp"
+
+
+
+            >
+
+            <Button
+                android:id="@+id/getBdcst"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="获取广播地址"
+                android:layout_gravity="start"
+                android:layout_weight="1"
+                android:layout_marginTop="3dp"/>
+        </LinearLayout>
+
+
+
+
+
+
+    </LinearLayout>
 
     <ScrollView
         android:id="@+id/scrvw"
@@ -61,6 +134,7 @@
         android:id="@+id/txtbx1"
         android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="请输入文字" android:inputType="text" />
 
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -70,67 +144,33 @@
 
 
         >
-    <Button
-        android:id="@+id/sendBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="send..."
-        android:layout_marginTop="3dp"/>
 
         <Button
-            android:id="@+id/setNtfyAuth"
+            android:id="@+id/sendBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="通知权限"
+            android:text="send..."
             android:layout_marginTop="3dp"/>
-    <Button
-        android:id="@+id/setNtfyLsnAuth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="监听通知权限"
-        android:layout_marginTop="3dp"/>
 
+        <Button
+            android:id="@+id/reqSycMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="reqSycMsg"
+            android:layout_marginTop="3dp"/>
 
-
-    </LinearLayout>
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="3dp"
-
-
-
-        >
-    <Button
-        android:id="@+id/getBdcst"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="获取广播地址"
-        android:layout_marginTop="3dp"/>
     <Button
         android:id="@+id/resendAllMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="resendAllMsg"
         android:layout_marginTop="3dp"/>
-        <Button
-            android:id="@+id/noBtrOptmzBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="noBtrOptmz"
-            android:layout_marginTop="3dp"/>
+
 
 
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/reqSycMsg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="reqSycMsg"
-        android:layout_marginTop="3dp"/>
+
 
 </LinearLayout>

@@ -137,6 +137,16 @@ class MainActivity : AppCompatActivity() {
             }
 
 
+            var menudiv=binding.menudiv
+            binding.menux.setOnClickListener(View.OnClickListener { // 当按钮被点击时，切换LinearLayout的可见性
+                if (menudiv.getVisibility() === View.GONE) {
+                    menudiv.setVisibility(View.VISIBLE)
+                } else {
+                    menudiv.setVisibility(View.GONE)
+                }
+            })
+            menudiv.setVisibility(View.GONE)
+
             binding.resendAllMsg.setOnClickListener {
                 // 创建一个 Intent 对象，用于启动 SecondActivity
                 // exportSystemNotesToJson(this, "notebek.json")

@@ -40,6 +40,8 @@ android {
 
 //build.gradle.kts
 dependencies {
+
+
     implementation ("com.google.code.gson:gson:2.8.8")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
     implementation("org.bitcoinj:bitcoinj-core:0.15.10")
