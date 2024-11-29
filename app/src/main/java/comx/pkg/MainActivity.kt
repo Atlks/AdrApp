@@ -1,6 +1,7 @@
 package comx.pkg
 //import comx.databinding.ActivityMainBinding
 //import comx.pkg.databinding.ActivityMainBinding
+
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -16,7 +17,6 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.View
 import android.widget.CheckBox
-import android.widget.ScrollView
 import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
@@ -25,13 +25,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.ui.AppBarConfiguration
-
 import comx.pkg.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import java.lang.Thread.sleep
+
 
 // val tagLog = "MainActivity1114"
 
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     val READ_PHONE_STATE_pmscode = 888
     val rmsFOREGROUND_SERVICE_DATA_SYNC = 890
     var pmsPOST_NOTIFICATIONS = 891
-
+    val pmscode_READ_CONTACTS = 892
 
     override fun onCreate(savedInstanceState: Bundle?) {
         appContext = applicationContext
@@ -180,6 +180,11 @@ class MainActivity : AppCompatActivity() {
 
             }
 
+
+            /**
+             * TextToSpeech API（更常用的做法）
+             * 大多数应用程序不会直接使用 Intent.ACTION_TTS_SERVICE 来启动 TTS 服务，而是通过 TextToSpeech API 来初始化 TTS 服务并进行文本到语音的合成。
+             */
             binding.setTTSBtn.setOnClickListener {
 
                 try {
@@ -194,6 +199,28 @@ class MainActivity : AppCompatActivity() {
                     // 处理异常
                     Log.e(tagLog, "setTTSBtn Caught exception", e)
                 }
+//                try {
+//
+//                    val intent = Intent()
+//                    intent.setAction(TextToSpeech.ACTION_TTS_SERVICE)
+//                    val packageManager = packageManager
+//
+//
+//// 查找所有可以处理该 Intent 的应用
+//                    val services = packageManager.queryIntentServices(intent, 0)
+//                    if (services != null && !services.isEmpty()) {
+//                        // 有可用的 TTS 服务
+//                        Log.d("TTS", "TTS service found")
+//                    } else {
+//                        // 没有可用的 TTS 服务
+//                        Log.d("TTS", "No TTS service available")
+//                    }
+//
+//
+//                } catch (e: Exception) {
+//                    // 处理异常
+//                    Log.e(tagLog, "setTTSBtn Caught exception", e)
+//                }
 
             }
 
@@ -326,7 +353,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     private fun reqSycMsgClk(deviceName1: String) {
         val deviceName2 = getDeviceName(this)
 
@@ -354,9 +380,18 @@ class MainActivity : AppCompatActivity() {
 
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CONTACTS),
+                arrayOf(Manifest.permission.READ_PHONE_STATE),
                 READ_PHONE_STATE_pmscode
             )
+            sleep(1000)
+
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_CONTACTS),
+                pmscode_READ_CONTACTS
+            )
+
+
         }
     }
 
@@ -660,8 +695,8 @@ class MainActivity : AppCompatActivity() {
         )
         Log.d(tagLog, "fun onRequestPermissionsResult(")
         Log.d(tagLog, "requestCode:" + requestCode.toString())
-        Log.d(tagLog, "permissions:" + permissions.toString())
-        Log.d(tagLog, "grantResults:" + grantResults.toString())
+        Log.d(tagLog, "permissions:" + encodeJson(permissions).toString())
+        Log.d(tagLog, "grantResults:" + encodeJson(permissions).toString())
         Log.d(tagLog, " )))")
 
 

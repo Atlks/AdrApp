@@ -147,8 +147,16 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
             if (title.contains("360手机卫士"))
                 return
+            if (title.contains("短信") && title.contains("正在运行"))
+                return
+            if (title.startsWith("正在下载"))
+                return
 
+            if (title.startsWith("正在通过USB充电"))
+                return
 
+            if (title.startsWith("已连接到USB调试"))
+                return
             if (title == "Choose input method")
                 return
 
@@ -196,7 +204,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         Log.d(tagLog, "fun speakOut()")
         try {
             // 动态设置语言
-            val language =  Locale.CHINESE ;//detectLanguage(message)
+            val language = Locale.CHINESE;//detectLanguage(message)
             // textToSpeech?.language = language
             // 这里可以设置语言、语速等
             val languageResult = textToSpeech?.setLanguage(language)
