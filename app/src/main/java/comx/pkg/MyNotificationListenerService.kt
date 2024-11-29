@@ -50,23 +50,29 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
 
         // 初始化 TextToSpeech，避免影响前台通知的启动
-
-        textToSpeech = TextToSpeech(this, object : TextToSpeech.OnInitListener {
-            override fun onInit(status: Int) {
-                if (status == TextToSpeech.SUCCESS) {
-                    // 进行 TextToSpeech 的配置和调用
-                    Log.d(tagLog, "TextToSpeech initialization success..")
-                } else {
-                    Log.d(tagLog, "TextToSpeech initialization failed")
-                }
-            }
-        })// 执行你的业务逻辑
+        initializeTextToSpeech()// 执行你的业务逻辑
 
         Log.d(tagLog, "endfun onStartCommand()")
 
         //START_STICKY：服务被终止时，系统会尝试重新启动它，并传递 null 的 Intent。
         //START_REDELIVER_INTENT：服务被终止时，系统会重新启动它，并且会再次传递之前的 Intent。
         return START_REDELIVER_INTENT
+    }
+
+    private fun initializeTextToSpeech() {
+        textToSpeech = TextToSpeech(this, object : TextToSpeech.OnInitListener {
+            override fun onInit(status: Int) {
+                if (status == TextToSpeech.SUCCESS) {
+                    // 进行 TextToSpeech 的配置和调用
+                    //success in xm135g..but fail in xm12
+                    Log.d(tagLog, "TextToSpeech initialization success..")
+                } else {
+                    Log.d(tagLog, "TextToSpeech initialization failed with status code: $status")
+
+                    //  Log.d(tagLog, "TextToSpeech initialization failed")
+                }
+            }
+        })
     }
 
     private fun newNotificationChannel() {
@@ -136,6 +142,16 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             if (title.toLowerCase() == "timer")
                 return
 
+            if (title.toLowerCase() == "im2025")
+                return
+
+            if (title.contains("360手机卫士"))
+                return
+
+
+            if (title == "Choose input method")
+                return
+
 
             // 使用 TTS 阅读通知内容
             speakOut(message)
@@ -180,11 +196,22 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         Log.d(tagLog, "fun speakOut()")
         try {
             // 动态设置语言
-            val language = detectLanguage(message)
-            textToSpeech?.language = language
+            val language =  Locale.CHINESE ;//detectLanguage(message)
+            // textToSpeech?.language = language
+            // 这里可以设置语言、语速等
+            val languageResult = textToSpeech?.setLanguage(language)
 
+
+            // 检查语言是否支持
+            if (languageResult == TextToSpeech.LANG_MISSING_DATA || languageResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.d(tagLog, "Language is missing or not supported, attempting to handle this.")
+                // 你可以提示用户安装语言包，或者选择其他可用语言
+            } else {
+                Log.d(tagLog, "Language supported.")
+            }
             // 使用 TTS 阅读
             textToSpeech?.speak(message, TextToSpeech.QUEUE_FLUSH, null, null)
+
 
             //  textToSpeech?.speak(message, TextToSpeech.QUEUE_FLUSH, null, null)
 

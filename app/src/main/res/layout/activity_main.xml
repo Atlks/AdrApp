@@ -8,41 +8,43 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#00ff00"
         android:orientation="horizontal"
         android:padding="3dp"
-        android:background="#00ff00"
 
 
         >
+
         <Button
             android:id="@+id/menux"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="v11"
-            android:layout_marginTop="3dp"/>
+            android:layout_marginTop="3dp"
+            android:text="v11" />
+
         <Button
             android:id="@+id/gotoFormButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Go to MMNC"
-            android:layout_marginTop="3dp"/>
+            android:layout_marginTop="3dp"
+            android:text="Go to MMNC" />
 
 
         <Button
             android:id="@+id/gotoSmsBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Go to Sms"
-            android:layout_marginTop="3dp"/>
+            android:layout_marginTop="3dp"
+            android:text="Go to Sms" />
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/menudiv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="3dp"
 
-        android:id="@+id/menudiv"
+        android:padding="3dp"
 
         >
 
@@ -52,7 +54,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="3dp"
-
 
 
             >
@@ -61,34 +62,35 @@
                 android:id="@+id/setNtfyAuth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="通知权限"
                 android:layout_gravity="start"
+                android:layout_marginTop="3dp"
                 android:layout_weight="1"
-                android:layout_marginTop="3dp"/>
+                android:text="通知权限" />
+
             <Button
                 android:id="@+id/setNtfyLsnAuth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="监听通知权限"
                 android:layout_gravity="start"
+                android:layout_marginTop="3dp"
                 android:layout_weight="1"
-                android:layout_marginTop="3dp"/>
+                android:text="监听通知权限" />
 
             <Button
                 android:id="@+id/noBtrOptmzBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="noBtrOptmz"
                 android:layout_gravity="start"
+                android:layout_marginTop="3dp"
                 android:layout_weight="1"
-                android:layout_marginTop="3dp"/>
+                android:text="noBtrOptmz" />
         </LinearLayout>
+
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="3dp"
-
 
 
             >
@@ -97,31 +99,50 @@
                 android:id="@+id/getBdcst"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="获取广播地址"
                 android:layout_gravity="start"
+                android:layout_marginTop="3dp"
                 android:layout_weight="1"
-                android:layout_marginTop="3dp"/>
+                android:text="获取广播地址" />
+
             <Button
                 android:id="@+id/setautoStartBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="autoStart"
                 android:layout_gravity="start"
+                android:layout_marginTop="3dp"
                 android:layout_weight="1"
-                android:layout_marginTop="3dp"/>
+                android:text="autoStart" />
+
             <Button
                 android:id="@+id/setBtrOptmzBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="btr optmz"
                 android:layout_gravity="start"
+                android:layout_marginTop="3dp"
                 android:layout_weight="1"
-                android:layout_marginTop="3dp"/>
+                android:text="btr optmz" />
         </LinearLayout>
 
 
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="3dp"
 
 
+            >
+
+            <Button
+                android:id="@+id/setTTSBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="3dp"
+                android:layout_weight="1"
+                android:text="settts" />
+
+        </LinearLayout>
 
 
     </LinearLayout>
@@ -140,15 +161,17 @@
             android:layout_width="match_parent"
 
             android:layout_height="wrap_content"
-            android:stretchColumns="1"
-            android:paddingTop="8dp"/>
+            android:paddingTop="8dp"
+            android:stretchColumns="1" />
     </ScrollView>
-
 
 
     <EditText
         android:id="@+id/txtbx1"
-        android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="请输入文字" android:inputType="text" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="请输入文字"
+        android:inputType="text" />
 
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -158,35 +181,31 @@
         android:padding="3dp"
 
 
-
         >
 
         <Button
             android:id="@+id/sendBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="send..."
-            android:layout_marginTop="3dp"/>
+            android:layout_marginTop="3dp"
+            android:text="send..." />
 
         <Button
             android:id="@+id/reqSycMsg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="reqSycMsg"
-            android:layout_marginTop="3dp"/>
+            android:layout_marginTop="3dp"
+            android:text="reqSycMsg" />
 
-    <Button
-        android:id="@+id/resendAllMsg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="resendAllMsg"
-        android:layout_marginTop="3dp"/>
-
-
+        <Button
+            android:id="@+id/resendAllMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="resendAllMsg" />
 
 
     </LinearLayout>
-
 
 
 </LinearLayout>

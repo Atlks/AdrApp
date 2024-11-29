@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.View
 import android.widget.CheckBox
@@ -31,21 +32,22 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import java.lang.Thread.sleep
- // val tagLog = "MainActivity1114"
+
+// val tagLog = "MainActivity1114"
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var binding: ActivityMainBinding
     private val REQUEST_SMS_PERMISSION = 889
-    val READ_PHONE_STATE_pmscode=888
-    val rmsFOREGROUND_SERVICE_DATA_SYNC=890
-    var  pmsPOST_NOTIFICATIONS=891
+    val READ_PHONE_STATE_pmscode = 888
+    val rmsFOREGROUND_SERVICE_DATA_SYNC = 890
+    var pmsPOST_NOTIFICATIONS = 891
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         appContext = applicationContext
-        AppCompatActivity1main=this
+        AppCompatActivity1main = this
         try {
             Log.d(tagLog, "funx onCrt()")
 
@@ -177,6 +179,26 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
 
             }
+
+            binding.setTTSBtn.setOnClickListener {
+
+                try {
+
+
+                    // Prompt the user to install language data
+                    val intent = Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)
+                    startActivity(intent)
+
+
+                } catch (e: Exception) {
+                    // 处理异常
+                    Log.e(tagLog, "setTTSBtn Caught exception", e)
+                }
+
+            }
+
+
+
             menudiv.setVisibility(View.GONE)
 
             binding.resendAllMsg.setOnClickListener {
@@ -303,6 +325,8 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+
     private fun reqSycMsgClk(deviceName1: String) {
         val deviceName2 = getDeviceName(this)
 
@@ -335,8 +359,6 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
-
-
 
 
     private fun sendMsgAllAgainForeach(mainActivity: Context) {
@@ -487,8 +509,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
     // 显示删除确认对话框
     private fun showDeleteConfirmationDialog() {
         val dialog = AlertDialog.Builder(this)
@@ -521,11 +541,6 @@ class MainActivity : AppCompatActivity() {
 
     @Serializable
     data class Msg(val dvcnm: String, val msg: String, val time: Long, val id: String)
-
-
-
-
-
 
 
     // 用于存储数据行的 CheckBox 引用

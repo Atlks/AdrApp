@@ -19,11 +19,17 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            //unresloved reference : debuggable
+           // debuggable   false  // 确保 release 构建没有开启调试
+             isMinifyEnabled  = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+
+        debug {
+           // debuggable true  // debug 版本应该是可以调试的
         }
     }
     compileOptions {

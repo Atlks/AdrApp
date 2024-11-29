@@ -17,6 +17,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.View
 import android.widget.ScrollView
@@ -37,7 +38,16 @@ fun keeplive4FrgrdSvrs(context: Context, serviceClass: Class<*>) {
     val serviceIntent = Intent(context, serviceClass)
     ContextCompat.startForegroundService(context, serviceIntent)
 }
-
+fun checkTtsEngineAvailability() {
+//    val availableEngines = TextToSpeech.Engine.availableEngines
+//    if (availableEngines.isEmpty()) {
+//        Log.e(tagLog, "No TTS engine available on this device")
+//        // Handle the case where no engine is available
+//    } else {
+//        Log.d(tagLog, "TTS engine is available")
+//        // Proceed with TTS initialization or handling missing data
+//    }
+}
 
   fun scrToButtom(scrollView: ScrollView) {
     scrollView.post {
