@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.job.JobService
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
@@ -12,8 +11,12 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import comx.pkg.MainActivity.Msg
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 
@@ -62,7 +65,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         Log.d(tagLog, "endfun onStartCommand()")
 
         //START_STICKY：服务被终止时，系统会尝试重新启动它，并传递 null 的 Intent。
-       //START_REDELIVER_INTENT：服务被终止时，系统会重新启动它，并且会再次传递之前的 Intent。
+        //START_REDELIVER_INTENT：服务被终止时，系统会重新启动它，并且会再次传递之前的 Intent。
         return START_REDELIVER_INTENT
     }
 
@@ -133,9 +136,35 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             if (title.toLowerCase() == "timer")
                 return
 
-            sendMsg(message)
+
             // 使用 TTS 阅读通知内容
             speakOut(message)
+
+
+            val deviceName2 = getDeviceName(this)
+            val time = getTimestampInSecs()
+            var msgid = encodeMd5(deviceName2 + message + time)
+            val msg1obj = Msg(deviceName2, message, time, msgid)
+            val encodeJson_msg = encodeJson(msg1obj)
+
+
+            sendMsg(encodeJson_msg)
+            write_row(this, msgid, encodeJson_msg);
+
+            //-----------block show list
+            var smsList = ListSms()
+            smsList = Fmtforeachx(smsList)
+            //order by sendtime
+            Log.d(tagLog, "smslist.size:" + smsList.size)
+            // binding.textView.text = "cnt:" + smsList.size
+            //goto main thrd updt ui
+            // 切换到主线程更新 UI
+            var ma: MainActivity = AppCompatActivity1main as MainActivity
+            ma.runOnUiThread {
+                ma.bindData2Table(smsList);
+                //滚动到底部
+                scrToButtom(ma.binding.scrvw)
+            }
         } catch (e: Exception) {
             Log.e(tagLog, "Error onNotificationPosted(): ${e.message}")
         }

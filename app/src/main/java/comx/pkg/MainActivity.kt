@@ -15,6 +15,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.CheckBox
+import android.widget.ScrollView
 import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
@@ -30,20 +31,21 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import java.lang.Thread.sleep
-
+ // val tagLog = "MainActivity1114"
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     private val REQUEST_SMS_PERMISSION = 889
     val READ_PHONE_STATE_pmscode=888
     val rmsFOREGROUND_SERVICE_DATA_SYNC=890
     var  pmsPOST_NOTIFICATIONS=891
-    private val tagLog = "MainActivity1114"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
+        appContext = applicationContext
+        AppCompatActivity1main=this
         try {
             Log.d(tagLog, "funx onCrt()")
 
@@ -288,9 +290,7 @@ class MainActivity : AppCompatActivity() {
 
             //滚动到底部
             var scrollView = binding.scrvw;
-            scrollView.post {
-                scrollView.fullScroll(View.FOCUS_DOWN)
-            }
+            scrToButtom(scrollView)
 
             //  keeplive(this)
 
@@ -336,22 +336,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun Fmtforeachx(smsList: List<Msg>): List<Msg> {
-        val smsList2 = mutableListOf<Msg>()
 
-        smsList.forEachIndexed { index, msg ->
-            var msgNew = msg.copy()
-
-            if (msg.dvcnm == getDeviceName(this)) {
-                msgNew = msg.copy(dvcnm = "✨✨(${msg.dvcnm})")
-                // smsList[index] = msg.copy(dvcnm = "✨✨(${msg.dvcnm})")
-                //  msgNew.dvcnm="✨✨(${msg.dvcnm})"
-            }
-            smsList2.add(msgNew)
-
-        }
-        return smsList2
-    }
 
 
     private fun sendMsgAllAgainForeach(mainActivity: Context) {
@@ -426,10 +411,7 @@ class MainActivity : AppCompatActivity() {
                     bindData2Table(smsList);
                     //滚动到底部
                     var scrollView = binding.scrvw;
-                    scrollView.post {
-                        scrollView.fullScroll(View.FOCUS_DOWN)
-
-                    }
+                    scrToButtom(scrollView)
                 }
             }
 
@@ -496,15 +478,15 @@ class MainActivity : AppCompatActivity() {
             bindData2Table(smsList);
             //滚动到底部
             var scrollView = binding.scrvw;
-            scrollView.post {
-                scrollView.fullScroll(View.FOCUS_DOWN)
-            }
+            scrToButtom(scrollView)
         }
 
 
 
         Log.d(tagLog, "endfun msgrecv()#ret=")
     }
+
+
 
 
     // 显示删除确认对话框
@@ -540,43 +522,17 @@ class MainActivity : AppCompatActivity() {
     @Serializable
     data class Msg(val dvcnm: String, val msg: String, val time: Long, val id: String)
 
-    private fun ListSms(): List<Msg> {
-        Log.d(tagLog, "fun ListSms((")
-
-        Log.d(tagLog, ")))")
 
 
-        var smsList = mutableListOf<Msg>()
-        val messages = getAllrows(this) // 传入 Context
-        messages.forEach { message ->
-            var v = message.v;
-            var jsonobj = decodeJson(v)
-            var dvcnm = getFld(jsonobj, "dvcnm")
-            var msg = getFld(jsonobj, "msg")
-            var timestmp = getFldLong(jsonobj, "time", 0)
-            val sms = Msg(dvcnm, msg, timestmp, "")
-            //ingr /cmd msg
-            if (!msg.startsWith("/"))
-                smsList.add(sms)
-
-            // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
-        }
-        smsList = orderMsgList(smsList)
-
-        return smsList
-    }
 
 
-    private fun orderMsgList(smsList: MutableList<MainActivity.Msg>): MutableList<Msg> {
-        return smsList.sortedBy { it.time }.toMutableList()
-    }
 
 
     // 用于存储数据行的 CheckBox 引用
     var checkBoxList = mutableListOf<CheckBox>()
 
     @SuppressLint("SetTextI18n")
-    private fun bindData2Table(dataList: List<Msg>) {
+    public fun bindData2Table(dataList: List<Msg>) {
         // 获取 TableLayout 组件
         val table1 = binding.tableLayout;
 // 清空现有的表格内容

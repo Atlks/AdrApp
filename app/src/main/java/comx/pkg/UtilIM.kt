@@ -17,10 +17,10 @@ fun sendMsg(msg: String) {
     try {
         CoroutineScope(Dispatchers.IO).launch {
             val message = msg.toString()
-            val address = "255.255.255.255" // 或广播地址 "255.255.255.255"
+            val addressBrdcst = "255.255.255.255" // 或广播地址 "255.255.255.255"
             val port = 18888
 
-            send(message, address, port)
+            send(message, addressBrdcst, port)
             send(message, getDeviceBroadcastIP(), port)
 
         }
@@ -31,10 +31,10 @@ fun sendMsg(msg: String) {
 
 }
 
-suspend fun send(message: String, address: String, port: Int) {
+suspend fun send(message: String, addressBrdcst: String, port: Int) {
 
     withContext(Dispatchers.IO) {
-        val debugInfo = listOf(broadcastAddress.hostAddress, port, message)
+        val debugInfo = listOf(message,addressBrdcst, port)
         Log.d(tagLog, "fun  send(( ${debugInfo.joinToString()} )))")
 
 
@@ -43,7 +43,7 @@ suspend fun send(message: String, address: String, port: Int) {
 
         try {
             // 设置广播地址和端口
-            val broadcastAddress = InetAddress.getByName(address)
+            val broadcastAddress = InetAddress.getByName(addressBrdcst)
 
 
             // 打印调试信息

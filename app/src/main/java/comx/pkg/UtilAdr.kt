@@ -18,12 +18,17 @@ import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
+import android.view.View
+import android.widget.ScrollView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 
+lateinit var appContext: Context
+lateinit var  AppCompatActivity1main: AppCompatActivity
 
 /**
  * context, YourService::class.java
@@ -33,6 +38,12 @@ fun keeplive4FrgrdSvrs(context: Context, serviceClass: Class<*>) {
     ContextCompat.startForegroundService(context, serviceIntent)
 }
 
+
+  fun scrToButtom(scrollView: ScrollView) {
+    scrollView.post {
+        scrollView.fullScroll(View.FOCUS_DOWN)
+    }
+}
 fun keeplive2alarmManager(context: Context, serviceClass: Class<*>){
     val alarmManager =context. getSystemService(Context.ALARM_SERVICE) as AlarmManager
     val intent = Intent(context, serviceClass)
