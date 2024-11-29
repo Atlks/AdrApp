@@ -9,7 +9,28 @@ import java.nio.charset.StandardCharsets
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
 var tagLog2 = "MainActivity1114"
+
+
+fun sendMsg(msg: String) {
+    try {
+        CoroutineScope(Dispatchers.IO).launch {
+            val message = msg.toString()
+            val address = "255.255.255.255" // 或广播地址 "255.255.255.255"
+            val port = 18888
+
+            send(message, address, port)
+            send(message, getDeviceBroadcastIP(), port)
+
+        }
+    } catch (e: Exception) {
+        Log.e(tagLog, "Error sendMsg(): ${e.message}")
+    }
+
+
+}
+
 suspend fun send(message: String, address: String, port: Int) {
     withContext(Dispatchers.IO) {
         // 创建一个 DatagramSocket
@@ -33,6 +54,9 @@ suspend fun send(message: String, address: String, port: Int) {
             // 发送数据包
             socket.send(packet)
             println("Broadcast message sent: $message")
+
+        } catch (e: Exception) {
+            Log.e(tagLog, "Error send(): ${e.message}")
         } finally {
             // 关闭 socket
             socket.close()
@@ -49,7 +73,7 @@ class UdpListener(private val port: Int) {
 
     private var socket: DatagramSocket? = null
 
-    fun startListening(addMessageFun: (String) -> Unit ) {
+    fun startListening(addMessageFun: (String) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val logtag = tagLog
             try {

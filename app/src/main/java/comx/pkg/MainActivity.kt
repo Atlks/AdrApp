@@ -25,7 +25,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.ui.AppBarConfiguration
 
 import comx.pkg.databinding.ActivityMainBinding
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,7 +36,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    private val REQUEST_SMS_PERMISSION = 7
+    private val REQUEST_SMS_PERMISSION = 889
+    val READ_PHONE_STATE_pmscode=888
+    val rmsFOREGROUND_SERVICE_DATA_SYNC=890
+    var  pmsPOST_NOTIFICATIONS=891
     private val tagLog = "MainActivity1114"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +50,7 @@ class MainActivity : AppCompatActivity() {
             keeplive4FrgrdSvrs(this, MyNotificationListenerService::class.java)
 
             keeplive2alarmManager(this, MyNotificationListenerService::class.java)
-       //     keeplive3JobScheduler(this, MyNotificationListenerService::class.java)
+            //     keeplive3JobScheduler(this, MyNotificationListenerService::class.java)
 
             // 设置全局异常捕获
 //            Thread.setDefaultUncaughtExceptionHandler { thread: Thread, throwable: Throwable? ->
@@ -93,7 +95,7 @@ class MainActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val permission = android.Manifest.permission.FOREGROUND_SERVICE_DATA_SYNC
                 if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(arrayOf(permission), 1)
+                    requestPermissions(arrayOf(permission), rmsFOREGROUND_SERVICE_DATA_SYNC)
                 }
             }
 
@@ -110,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                             android.Manifest.permission.ACCESS_NOTIFICATION_POLICY,
                             android.Manifest.permission.POST_NOTIFICATIONS
                         ),
-                        1
+                        pmsPOST_NOTIFICATIONS
                     )
                 }
             }
@@ -139,7 +141,7 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-            var menudiv=binding.menudiv
+            var menudiv = binding.menudiv
             binding.menux.setOnClickListener(View.OnClickListener { // 当按钮被点击时，切换LinearLayout的可见性
                 if (menudiv.getVisibility() === View.GONE) {
                     menudiv.setVisibility(View.VISIBLE)
@@ -150,14 +152,14 @@ class MainActivity : AppCompatActivity() {
 
 
             //打开设置自启动权限ui
-            binding.setautoStartBtn.setOnClickListener{
+            binding.setautoStartBtn.setOnClickListener {
 
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 intent.data = Uri.parse("package:${packageName}")
                 startActivity(intent)
 
                 //val intent = Intent(Settings.autoStart)
-               // startActivity(intent)
+                // startActivity(intent)
                 if (Build.MANUFACTURER.equals("Xiaomi", ignoreCase = true)) {
                     // Open Xiaomi's Auto Start settings
                     val intent = Intent()
@@ -165,10 +167,10 @@ class MainActivity : AppCompatActivity() {
                         "com.miui.securitycenter",
                         "com.miui.securitycenter.activity.autostart.AutoStartActivity"
                     )
-                  //  startActivity(intent)
+                    //  startActivity(intent)
                 }
             }
-            binding.setBtrOptmzBtn.setOnClickListener{
+            binding.setBtrOptmzBtn.setOnClickListener {
                 val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
                 startActivity(intent)
 
@@ -221,10 +223,13 @@ class MainActivity : AppCompatActivity() {
 
             }
 
+            //val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+            //startActivity(intent)
+
             //打开通知设置界面
             binding.setNtfyAuth.setOnClickListener {
                 try {
-                    sendNotification(this, "通知标题", "这是通知内容")
+                    sendNotification2024(this, "通知标题", "这是通知内容")
                     // 创建一个 Intent 对象，用于启动 SecondActivity
                     // android.setting
                     val intent = Intent("android.settings.ACTION_APP_NOTIFICATION_SETTINGS")
@@ -301,24 +306,32 @@ class MainActivity : AppCompatActivity() {
     private fun reqSycMsgClk(deviceName1: String) {
         val deviceName2 = getDeviceName(this)
 
-            //----block send
-            var msg = "/reqSyn"
-            val time = getTimestampInSecs()
-            var msgid = encodeMd5(deviceName1 + msg + time)
-            val msg1 = Msg(deviceName1, msg, time, msgid)
-            val encodeJson_msg = encodeJson(msg1)
-            sendMsg(encodeJson_msg.toString())
+        //----block send
+        var msg = "/reqSyn"
+        val time = getTimestampInSecs()
+        var msgid = encodeMd5(deviceName1 + msg + time)
+        val msg1 = Msg(deviceName1, msg, time, msgid)
+        val encodeJson_msg = encodeJson(msg1)
+        sendMsg(encodeJson_msg.toString())
 
     }
 
 
     private fun checkPermissions4READ_PHONE_STATE() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_PHONE_STATE
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_CONTACTS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CONTACTS),
-                100
+                READ_PHONE_STATE_pmscode
             )
         }
     }
@@ -341,27 +354,13 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun sendMsg(msg: String) {
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val message = msg.toString()
-            val address = "255.255.255.255" // 或广播地址 "255.255.255.255"
-            val port = 18888
-
-            send(message, address, port)
-            send(message, getDeviceBroadcastIP(), port)
-
-        }
-
-    }
-
     private fun sendMsgAllAgainForeach(mainActivity: Context) {
         // var smsList = ListSms()
         val messages = getAllrows(this) // 传入 Context
         messages.forEach { message ->
             var v = message.v;
-            if(!v.startsWith("/"))
-            sendMsg(v)
+            if (!v.startsWith("/"))
+                sendMsg(v)
 
             // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
         }
@@ -417,7 +416,7 @@ class MainActivity : AppCompatActivity() {
 
                 //-----------block show list
                 var smsList = ListSms()
-                smsList=Fmtforeachx(smsList)
+                smsList = Fmtforeachx(smsList)
                 //order by sendtime
                 Log.d(tagLog, "smslist.size:" + smsList.size)
                 // binding.textView.text = "cnt:" + smsList.size
@@ -473,12 +472,10 @@ class MainActivity : AppCompatActivity() {
 //            return
 
 
-
         //--------reqSyn
         val msg = jsonObj.optString("msg")
 
-        if(msg=="/reqSyn")
-        {
+        if (msg == "/reqSyn") {
             sendMsgAllAgainForeach(this)
             return
         }
@@ -507,8 +504,6 @@ class MainActivity : AppCompatActivity() {
 
         Log.d(tagLog, "endfun msgrecv()#ret=")
     }
-
-
 
 
     // 显示删除确认对话框
@@ -559,9 +554,9 @@ class MainActivity : AppCompatActivity() {
             var msg = getFld(jsonobj, "msg")
             var timestmp = getFldLong(jsonobj, "time", 0)
             val sms = Msg(dvcnm, msg, timestmp, "")
-         //ingr /cmd msg
-           if(!msg.startsWith("/"))
-            smsList.add(sms)
+            //ingr /cmd msg
+            if (!msg.startsWith("/"))
+                smsList.add(sms)
 
             // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
         }
@@ -699,13 +694,16 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        if (requestCode == REQUEST_SMS_PERMISSION && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // 权限已授予
-            Log.d(tagLog, "权限已授予REQUEST_SMS_PERMISSION")
+        if (requestCode == REQUEST_SMS_PERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 权限已授予
+                Log.d(tagLog, "权限已授予REQUEST_SMS_PERMISSION")
 
-        } else {
-            Log.e(tagLog, "Permission denied to read SMS")
+            } else {
+                Log.e(tagLog, "Permission denied to read SMS")
+            }
         }
+
         var requestCode4wrt = 111
         if (requestCode == requestCode4wrt) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
@@ -719,6 +717,8 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
+
+        Log.d(tagLog, "endfun onRequestPermissionsResult()")
     }
 
 

@@ -123,7 +123,7 @@ fun gotoNtfyUI(context: Context, packageName: String){
     }
 }
 
-fun sendNotification(context: Context, title: String, message: String) {
+fun sendNotification2024(context: Context, title: String, message: String) {
     Log.d(tagLog, "fun sendNotification(")
     Log.d(tagLog, "tit="+title)
     Log.d(tagLog, "))")
