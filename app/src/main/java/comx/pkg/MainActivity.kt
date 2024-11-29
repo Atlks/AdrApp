@@ -4,9 +4,11 @@ package comx.pkg
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -145,6 +147,32 @@ class MainActivity : AppCompatActivity() {
                     menudiv.setVisibility(View.GONE)
                 }
             })
+
+
+            //打开设置自启动权限ui
+            binding.setautoStartBtn.setOnClickListener{
+
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.data = Uri.parse("package:${packageName}")
+                startActivity(intent)
+
+                //val intent = Intent(Settings.autoStart)
+               // startActivity(intent)
+                if (Build.MANUFACTURER.equals("Xiaomi", ignoreCase = true)) {
+                    // Open Xiaomi's Auto Start settings
+                    val intent = Intent()
+                    intent.component = ComponentName(
+                        "com.miui.securitycenter",
+                        "com.miui.securitycenter.activity.autostart.AutoStartActivity"
+                    )
+                  //  startActivity(intent)
+                }
+            }
+            binding.setBtrOptmzBtn.setOnClickListener{
+                val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                startActivity(intent)
+
+            }
             menudiv.setVisibility(View.GONE)
 
             binding.resendAllMsg.setOnClickListener {
@@ -332,6 +360,7 @@ class MainActivity : AppCompatActivity() {
         val messages = getAllrows(this) // 传入 Context
         messages.forEach { message ->
             var v = message.v;
+            if(!v.startsWith("/"))
             sendMsg(v)
 
             // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
@@ -530,6 +559,8 @@ class MainActivity : AppCompatActivity() {
             var msg = getFld(jsonobj, "msg")
             var timestmp = getFldLong(jsonobj, "time", 0)
             val sms = Msg(dvcnm, msg, timestmp, "")
+         //ingr /cmd msg
+           if(!msg.startsWith("/"))
             smsList.add(sms)
 
             // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
