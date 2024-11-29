@@ -445,6 +445,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun RcvmsgHdlr(messageStr: String) {
+        sleep(500)
         Log.d(tagLog, "fun msgrecv((")
         Log.d(tagLog, "message=" + messageStr);
         Log.d(tagLog, ")))")

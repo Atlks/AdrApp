@@ -32,7 +32,12 @@ fun sendMsg(msg: String) {
 }
 
 suspend fun send(message: String, address: String, port: Int) {
+
     withContext(Dispatchers.IO) {
+        val debugInfo = listOf(broadcastAddress.hostAddress, port, message)
+        Log.d(tagLog, "fun  send(( ${debugInfo.joinToString()} )))")
+
+
         // 创建一个 DatagramSocket
         val socket = DatagramSocket()
 
@@ -40,13 +45,16 @@ suspend fun send(message: String, address: String, port: Int) {
             // 设置广播地址和端口
             val broadcastAddress = InetAddress.getByName(address)
 
-            // 将消息编码为字节数组
-            val data = message.toByteArray(StandardCharsets.UTF_8)
 
             // 打印调试信息
             val debugInfo = listOf(broadcastAddress.hostAddress, port, message)
-            println("fun send(( ${debugInfo.joinToString()} ))")
-            Log.d(tagLog, "fun send(( ${debugInfo.joinToString()} )))")
+           // println("fun send(( ${debugInfo.joinToString()} ))")
+            Log.d(tagLog, "  send(( ${debugInfo.joinToString()} )))")
+
+
+            // 将消息编码为字节数组
+            val data = message.toByteArray(StandardCharsets.UTF_8)
+
 
             // 创建数据包
             val packet = DatagramPacket(data, data.size, broadcastAddress, port)
@@ -61,6 +69,8 @@ suspend fun send(message: String, address: String, port: Int) {
             // 关闭 socket
             socket.close()
         }
+        Log.d(tagLog, "endfun send( )")
+
     }
 }
 
