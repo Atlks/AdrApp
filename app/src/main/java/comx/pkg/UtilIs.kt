@@ -13,6 +13,18 @@ import java.util.Locale
     }
 }
 
+/**
+ * 判断全是数字
+ */
+  fun isAllNumber(title: String): Boolean {
+    return title.all { it.isDigit() }
+}
+
+
+fun isContainCjkChar(text: String): Boolean {
+    return text.any { it.isCJKCharacter()}
+}
+
 // 扩展函数：检测是否为 CJK（中日韩）字符
   fun Char.isCJKCharacter(): Boolean {
     return this.code in 0x4E00..0x9FFF ||  // 常用汉字
