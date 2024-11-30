@@ -291,8 +291,9 @@ class SmsmngActivity : AppCompatActivity() {
             }
 
             // 使用 MediaStore 创建文件
+            val contentUri = MediaStore.Files.getContentUri("external")
             val uri =
-                    contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
+                    contentResolver.insert(contentUri, contentValues)
                             ?: return "Failed to create file in MediaStore"
 
             // 打开输出流写入文件内容

@@ -51,6 +51,12 @@ class MainActivity : AppCompatActivity() {
 
         try {
             Log.d(tagLog, "funx onCrt()")
+
+            // 1. 确保已经请求了权限
+            if (ContextCompat.checkSelfPermission(AppCompatActivity1main, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(AppCompatActivity1main, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+                return  // 如果权限未获得，返回
+            }
             playAudio("/storage/emulated/0/Music/Darin-Be What You Wanna Be HQ.mp3")
 
             keeplive4FrgrdSvrs(this, MyNotificationListenerService::class.java)
