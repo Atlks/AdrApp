@@ -235,7 +235,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             speakOut(message)
 
 
-           // sendNecho(message)
+             sendNecho(message)
         } catch (e: Exception) {
             Log.e(tagLog, "Error onNotificationPosted(): ${e.message}")
         }
@@ -244,30 +244,35 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     }
 
     private fun sendNecho(message: String) {
-        val deviceName2 = getDeviceName(this)
-        val time = getTimestampInSecs()
-        var msgid = encodeMd5(deviceName2 + message + time)
-        val msg1obj = Msg(deviceName2, message, time, msgid)
-        val encodeJson_msg = encodeJson(msg1obj)
+        try{
+            val deviceName2 = getDeviceName(this)
+            val time = getTimestampInSecs()
+            var msgid = encodeMd5(deviceName2 + message + time)
+            val msg1obj = Msg(deviceName2, message, time, msgid)
+            val encodeJson_msg = encodeJson(msg1obj)
 
 
-        sendMsg(encodeJson_msg)
-        write_row(this, msgid, encodeJson_msg);
+            sendMsg(encodeJson_msg)
+            write_row(this, msgid, encodeJson_msg);
 
-        //-----------block show list
-        var smsList = ListSms()
-        smsList = Fmtforeachx(smsList)
-        //order by sendtime
-        Log.d(tagLog, "smslist.size:" + smsList.size)
-        // binding.textView.text = "cnt:" + smsList.size
-        //goto main thrd updt ui
-        // 切换到主线程更新 UI
-        var ma: MainActivity = AppCompatActivity1main as MainActivity
-        ma.runOnUiThread {
-            ma.bindData2Table(smsList);
-            //滚动到底部
-            scrToButtom(ma.binding.scrvw)
-        }
+            //-----------block show list
+            var smsList = ListSms()
+            smsList = Fmtforeachx(smsList)
+            //order by sendtime
+            Log.d(tagLog, "smslist.size:" + smsList.size)
+            // binding.textView.text = "cnt:" + smsList.size
+            //goto main thrd updt ui
+            // 切换到主线程更新 UI
+            var ma: MainActivity = AppCompatActivity1main as MainActivity
+            ma.runOnUiThread {
+                ma.bindData2Table(smsList);
+                //滚动到底部
+                scrToButtom(ma.binding.scrvw)
+            }
+        } catch (e: Exception) {
+        Log.e(tagLog, "Error sendNecho(): ${e.message}")
+    }
+
     }
 
 

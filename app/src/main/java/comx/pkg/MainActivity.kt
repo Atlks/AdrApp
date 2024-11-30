@@ -325,7 +325,7 @@ class MainActivity : AppCompatActivity() {
 
 
             //-----------------otehr
-         //   setRcvMsgLsnr()
+           setRcvMsgLsnr()
 
 
             //block show list
