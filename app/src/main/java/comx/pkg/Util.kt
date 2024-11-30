@@ -88,6 +88,22 @@ fun getDvcIdFlFrg(): String {
 fun getDvcId(): String {
     return "${Build.BRAND}_${Build.MODEL}".trimIndent()
 }
+fun formatPhoneNumberForTTS(phoneNumber: String): String {
+    val numberMapping = mapOf(
+        '0' to "零", '1' to "一", '2' to "二", '3' to "三", '4' to "四",
+        '5' to "五", '6' to "六", '7' to "七", '8' to "八", '9' to "九"
+    )
+
+    val formatted = StringBuilder()
+    for (ch in phoneNumber) {
+        if (ch.isDigit()) {
+            formatted.append(numberMapping[ch] ?: ch)
+        } else {
+            formatted.append(ch)
+        }
+    }
+    return formatted.toString()
+}
 
 fun getDeviceName(context: Context): String {
     return Settings.Secure.getString(context.contentResolver, "bluetooth_name")

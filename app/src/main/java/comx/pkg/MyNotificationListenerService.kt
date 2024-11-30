@@ -190,7 +190,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             val text = extras.getString("android.text") ?: "没有内容"
 
             // 拼接标题和内容
-            val message = "标题: $title, 内容: $text"
+            var message = "标题: $title, 内容: $text"
 
             if (title == "没有标题" && text == "没有内容")
                 return
@@ -203,7 +203,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
             if (title.toLowerCase() == "im2025")
                 return
-
+            if (title.contains("下午闹钟"))
+                return
             if (title.contains("360手机卫士"))
                 return
             if (title.contains("短信") && title.contains("正在运行"))
@@ -217,8 +218,11 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             if (title.startsWith("已连接到USB调试"))
                 return
 
-            if (isAllNumber(title) && text.isEmpty()) {
+            if (isAllNumber(title)&& title.length>7 && text.isEmpty()) {
                 //tel call
+
+                val nmb22=formatPhoneNumberForTTS(title)
+                message = "标题: 电话$nmb22, 内容: $text"
 
             } else {
                 //all english
@@ -234,8 +238,9 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             // 使用 TTS 阅读通知内容
             speakOut(message)
 
-
-             sendNecho(message)
+            Thread(Runnable {
+                sendNecho(message)
+            }).start()
         } catch (e: Exception) {
             Log.e(tagLog, "Error onNotificationPosted(): ${e.message}")
         }

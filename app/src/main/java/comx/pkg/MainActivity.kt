@@ -418,7 +418,7 @@ class MainActivity : AppCompatActivity() {
             sleep(200);
             Log.d(tagLog, "startListening msg rcv after 3sec")
 
-            RcvmsgHdlr(message)
+            RcvmsgHdlrAsync(message)
             Log.d(tagLog, "end startListening ..")
             //  insertDB(jsonObj["devicename"], jsonObj["msg"]);
 
@@ -430,7 +430,7 @@ class MainActivity : AppCompatActivity() {
             sleep(400);
             Log.d(tagLog, "startListening msg rcv after 3sec")
 
-            RcvmsgHdlr(message)
+            RcvmsgHdlrAsync(message)
             Log.d(tagLog, "end startListening ..")
             //  insertDB(jsonObj["devicename"], jsonObj["msg"]);
 
@@ -483,8 +483,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun RcvmsgHdlr(messageStr: String) {
+    private fun RcvmsgHdlrAsync(messageStr: String) {
+
+        Thread(Runnable {
+            //  sendNecho(message)
+
         sleep(500)
+              (rcvMsgHdlrCore(messageStr))
+
+        }).start()
+    }
+
+    private fun rcvMsgHdlrCore(messageStr: String): Boolean {
         Log.d(tagLog, "fun msgrecv((")
         Log.d(tagLog, "message=" + messageStr);
         Log.d(tagLog, ")))")
@@ -493,7 +503,7 @@ class MainActivity : AppCompatActivity() {
 
         //---idx
         // if my msg  ret
-//insertDB
+        //insertDB
         //qry n bing to list
 
 
@@ -502,14 +512,14 @@ class MainActivity : AppCompatActivity() {
         // 检查 jsonObj 是否为 null，并确保 devicename 和 msg 键存在
         if (jsonObj == null) {
             Log.d(tagLog, "endfun msgrecv()#ret=")
-            return
+            return true
         }
 
 
         // if my msg  ret
         val deviceName = jsonObj.optString("dvcnm")
-//        if (deviceName.equals(getDeviceName(this)))
-//            return
+        //        if (deviceName.equals(getDeviceName(this)))
+        //            return
 
 
         //--------reqSyn
@@ -517,7 +527,7 @@ class MainActivity : AppCompatActivity() {
 
         if (msg == "/reqSyn") {
             sendMsgAllAgainForeach(this)
-            return
+            return true
         }
 
         //--------
@@ -541,6 +551,7 @@ class MainActivity : AppCompatActivity() {
 
 
         Log.d(tagLog, "endfun msgrecv()#ret=")
+        return false
     }
 
 
