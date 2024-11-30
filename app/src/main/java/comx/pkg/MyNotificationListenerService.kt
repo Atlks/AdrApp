@@ -6,6 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.media.MediaPlayer
 import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
@@ -17,6 +18,7 @@ import androidx.core.app.NotificationCompat
 import comx.pkg.MainActivity.Msg
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.util.Locale
 import java.util.UUID
 
@@ -205,6 +207,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             if (title.contains("下午闹钟"))
                 return
+            if (title.contains("闹钟"))
+                return
             if (title.contains("360手机卫士"))
                 return
             if (title.contains("短信") && title.contains("正在运行"))
@@ -235,6 +239,11 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
 
 
+            //for xm12
+            if(message.contains("所有人")|| message.contains("抽查")|| message.contains("meet")|| message.contains("google"))
+            playAudio("/storage/emulated/0/Documents/Darin-Be What You Wanna Be HQ.mp3")
+
+
             // 使用 TTS 阅读通知内容
             speakOut(message)
 
@@ -247,6 +256,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         Log.d(tagLog, "endfun onNotificationPosted()")
 
     }
+
+
 
     private fun sendNecho(message: String) {
         try{

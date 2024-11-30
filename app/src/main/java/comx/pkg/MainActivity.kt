@@ -44,12 +44,14 @@ class MainActivity : AppCompatActivity() {
     val rmsFOREGROUND_SERVICE_DATA_SYNC = 890
     var pmsPOST_NOTIFICATIONS = 891
     val pmscode_READ_CONTACTS = 892
-
+    val pmscode_READ_EXTERNAL_STORAGE=893
     override fun onCreate(savedInstanceState: Bundle?) {
         appContext = applicationContext
         AppCompatActivity1main = this
+
         try {
             Log.d(tagLog, "funx onCrt()")
+            playAudio("/storage/emulated/0/Music/Darin-Be What You Wanna Be HQ.mp3")
 
             keeplive4FrgrdSvrs(this, MyNotificationListenerService::class.java)
 
@@ -121,6 +123,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             checkPermissions4READ_PHONE_STATE()
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), pmscode_READ_EXTERNAL_STORAGE)
+            }
             // 检查是否已获得写入外部存储权限
             //requestCode 是自定义的整数，用于在权限回调中识别请求。
 //        var requestCode4wrt = 111

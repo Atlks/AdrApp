@@ -1,6 +1,13 @@
 package comx.pkg
 
+import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Context
+import android.content.pm.PackageManager
+import android.media.AudioManager
+import android.media.MediaPlayer
+import android.media.MediaScannerConnection
+import android.net.Uri
 import android.widget.Toast
 import java.io.File
 import java.text.SimpleDateFormat
@@ -11,10 +18,14 @@ import java.security.MessageDigest
 
 import android.provider.Settings
 import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import org.json.JSONObject
+import java.io.IOException
 import java.time.LocalTime
 
 
@@ -25,7 +36,7 @@ import java.time.LocalTime
  *
  * 其他各种错误情况下，返回def值
  */
-  fun getFldLong(jsonobj: JSONObject?, key: String,def:Long): Long {
+fun getFldLong(jsonobj: JSONObject?, key: String, def: Long): Long {
     return try {
         if (jsonobj != null && jsonobj.has(key) && !jsonobj.isNull(key)) {
             jsonobj.getLong(key)
@@ -36,10 +47,11 @@ import java.time.LocalTime
         def
     }
 }
+
 /**
  * 获取值，如果值为null，或没有此key，返回空字符串
  */
-fun getFld(jsonobj: JSONObject?,key:String): String {
+fun getFld(jsonobj: JSONObject?, key: String): String {
     return try {
         if (jsonobj != null && jsonobj.has(key) && !jsonobj.isNull(key)) {
             jsonobj.getString(key)
@@ -60,7 +72,7 @@ fun getNow(): String {
     } catch (e: Exception) {
         // 处理异常
         Log.e(tagLog, "Caught exception", e)
-        return  "1970-01-01 00:00:00"
+        return "1970-01-01 00:00:00"
     }
 
 
@@ -74,7 +86,7 @@ fun formatTimestamp(timestamp: Long): String {
     } catch (e: Exception) {
         // 处理异常
         Log.e(tagLog, "Caught exception", e)
-        return  "1970-01-01 00:00:00"
+        return "1970-01-01 00:00:00"
     }
 
 
@@ -88,6 +100,142 @@ fun getDvcIdFlFrg(): String {
 fun getDvcId(): String {
     return "${Build.BRAND}_${Build.MODEL}".trimIndent()
 }
+
+/**
+ * kotlin 实现播放
+ *   playAudio("Documents/Darin-Be What You Wanna Be HQ.mp3")
+ *
+ */
+@SuppressLint("Range")
+fun playAudio(mp3: String) {
+    Thread(Runnable {
+
+        Log.d(tagLog, "\n\n\n")
+        Log.d(tagLog, "fun playAudio($mp3)")
+
+        val existx = isExistFile(mp3)
+        Log.d(tagLog, "isExistFile=" + existx)
+
+
+
+//add mp3
+        val contentResolver = AppCompatActivity1main.contentResolver // 或者直接使用 'contentResolver'
+
+        val values = ContentValues().apply {
+            put(MediaStore.Audio.Media.TITLE, "Your MP3 Title")
+            put(MediaStore.Audio.Media.DATA, "/storage/emulated/0/Music/Darin-Be What You Wanna Be HQ.mp3") // 文件的绝对路径
+            put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg")
+            put(MediaStore.Audio.Media.SIZE, getFileLen(mp3))
+            put(MediaStore.Audio.Media.DATE_ADDED, System.currentTimeMillis() / 1000)
+        }
+
+        val contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        val uriMp3 = contentResolver.insert(contentUri, values)
+      //  content://media/external/audio/media/1000029723
+
+// 插入后可以获得 URI，可以在这里进行处理或返回成功提示
+        if (uriMp3 != null) {
+            Log.d(tagLog, "File added: $uriMp3")
+        }
+
+
+
+        //---------add mp3 to  contentResolver
+        val filePath = "/storage/emulated/0/Music/Darin-Be What You Wanna Be HQ.mp3"
+        MediaScannerConnection.scanFile(AppCompatActivity1main, arrayOf(filePath), null) { path, uri ->
+            Log.d("MediaScanner", "Scanned file: $path, Uri: $uri")
+            println(11)
+        }
+        Thread.sleep(500)  // 等待2秒，确保扫描完成
+
+        //add
+
+
+      //  val contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+     //   MediaStore.Audio.Media.
+       // val contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        val cursor = contentResolver.query(contentUri, null, null, null, null)
+        cursor?.let {
+            while (it.moveToNext()) {
+                val filePath = it.getString(it.getColumnIndex(MediaStore.Audio.Media.DATA))
+                // 对文件路径进行处理
+              Log.d(tagLog, filePath)
+                Log.d(tagLog, "\n...\n")
+            }
+        }
+        cursor?.close()
+
+        // 创建 MediaPlayer 实例
+
+        // 确保已经请求了权限
+       // android.Manifest.permission.READ_EXTERNAL_STORAGE
+        if (ContextCompat.checkSelfPermission(AppCompatActivity1main,android. Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(AppCompatActivity1main, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+           // return
+        }
+
+        try {
+            val mediaPlayer = MediaPlayer()
+            if (mediaPlayer == null) {
+                Log.d(tagLog, "Failed to initialize MediaPlayer")
+
+            }
+            val contentUri = Uri.parse(uriMp3.toString()) // 获取的 content URI
+
+           // mediaPlayer.reset()  // 重置播放器
+            // 设置音频资源的路径，假设你传入的是文件路径
+            if (uriMp3 != null) {
+                Log.d(tagLog, "setDataSource uriMp3="+uriMp3)
+
+                mediaPlayer.setDataSource(  "/storage/emulated/0/Music/1732962347874.mp3")
+
+
+              //  mediaPlayer.setDataSource(AppCompatActivity1main, uriMp3)
+            }
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+            mediaPlayer.setOnErrorListener { mp, what, extra ->
+                Log.e(tagLog, "MediaPlayer error occurred. What: $what, Extra: $extra")
+                true // Returning true to indicate the error was handled
+            }
+            mediaPlayer.isLooping = true
+
+
+            // 准备音频文件
+            Log.d(tagLog, "Preparing media player with source: $mp3")
+            mediaPlayer.prepare()
+            Log.d(tagLog, "Media player prepared, starting playback.")
+            mediaPlayer.start()
+
+
+            // 监听播放完成事件
+            mediaPlayer.setOnCompletionListener {
+                // 播放完成后可以释放资源
+                mediaPlayer.release()
+            }
+        } catch (e: IOException) {
+            Log.e(tagLog, "playAudio() Caught exception", e)
+
+            e.printStackTrace() // 打印异常日志
+        }
+
+        Log.d(tagLog, "endfun playAudio()")
+
+    }).start()
+}
+
+fun getFileLen(mp3: String): Long {
+    val file = File(mp3)
+    return  file.length()
+}
+
+fun isExistFile(mp3: String): Any {
+    // 假设 mp3 是文件的相对路径，文件存储在设备的内存中
+    val file = File(mp3)
+
+    // 检查文件是否存在
+    return file.exists()
+}
+
 fun formatPhoneNumberForTTS(phoneNumber: String): String {
     val numberMapping = mapOf(
         '0' to "零", '1' to "一", '2' to "二", '3' to "三", '4' to "四",
@@ -108,6 +256,7 @@ fun formatPhoneNumberForTTS(phoneNumber: String): String {
 fun getDeviceName(context: Context): String {
     return Settings.Secure.getString(context.contentResolver, "bluetooth_name")
 }
+
 fun getDeviceInfo(): String {
     return """
         品牌 (Brand): ${Build.BRAND}
@@ -140,6 +289,7 @@ fun isTimeInDaytim(): Boolean {
     }
     return false
 }
+
 /**
  * 10---21
  */
@@ -154,7 +304,7 @@ fun isTimeInWktim(): Boolean {
 
     // 判断当前时间是否在范围内
     if (now.isAfter(startTime) && now.isBefore(endTime)) {
-       // println("888")
+        // println("888")
         return true
     }
     return false
@@ -171,9 +321,11 @@ fun encodeMd5(s: String): String {
     // 将字节数组转换为十六进制字符串
     return hashBytes.joinToString("") { "%02x".format(it) }
 }
+
 fun getTimestampInSecs(): Long {
     return System.currentTimeMillis() / 1000
 }
+
 fun showToast(context: Context, message: String, delaySec: Long) {
     // 显示Toast
     val toast = Toast.makeText(context, message, Toast.LENGTH_LONG)
@@ -185,12 +337,13 @@ fun showToast(context: Context, message: String, delaySec: Long) {
         toast.cancel()  // 取消Toast
     }, delaySec * 1000)  // 延迟7秒
 }
-  fun toLongx(numStr: String?): Long {
+
+fun toLongx(numStr: String?): Long {
     // 如果 numStr 为空或者无法转换为 Long，则返回 0 或其他默认值
     return numStr?.toLongOrNull() ?: 0L
 }
 
-  fun joinToStr(toTypedArray: Array<String>, separator: String): String {
+fun joinToStr(toTypedArray: Array<String>, separator: String): String {
     // 使用 joinToString 方法将数组元素连接为一个字符串，并用指定的分隔符分隔
     return toTypedArray.joinToString(separator)
 }
@@ -199,7 +352,7 @@ fun showToast(context: Context, message: String, delaySec: Long) {
  * txt: aaa bbb
  * 希望可以返回  arrayOf("%aaa%", "%bbb%")
  */
-  fun to_arrayOf(txt: String): Array<String>? {
+fun to_arrayOf(txt: String): Array<String>? {
     if (txt.isBlank()) return emptyArray() // 如果输入为空或全是空格，返回空数组 // 如果输入为空，返回 null
     return txt.split(" ") // 按空格分割字符串
         .filter { it.isNotBlank() } // 过滤掉空白项
@@ -259,11 +412,10 @@ fun getFileNameWithCurrentTime(): String {
 }
 
 fun getFileNameWzTime4FlNmFrg(): String {
-    val dateFormat =getFileNameWithCurrentTime()
-    val currentTime = dateFormat.replace("_","T")
+    val dateFormat = getFileNameWithCurrentTime()
+    val currentTime = dateFormat.replace("_", "T")
     return currentTime
 }
-
 
 
 /**
