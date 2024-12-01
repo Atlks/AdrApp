@@ -14,6 +14,7 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
 import android.speech.tts.TextToSpeech
@@ -68,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 )
                 return  // 如果权限未获得，返回
             }
-            playAudio2024FrmDcmt(this, "/Darin-Be What You Wanna Be HQ.mp3")
+            scanFrmDcmt(this )
 
             keeplive4FrgrdSvrs(this, MyNotificationListenerService::class.java)
 
@@ -356,7 +357,7 @@ class MainActivity : AppCompatActivity() {
 
 
             //-----------------otehr
-            setRcvMsgLsnr()
+         //   setRcvMsgLsnr()
 
 
             //block show list
@@ -383,6 +384,76 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+    /**
+     * 这里要扫描 documents文件夹下所有文件
+     */
+    private fun scanFrmDcmt(context: Context ) {
+        Log.d(tagLog, "\n\n\n")
+        Log.d(tagLog, "fun scanFrmDcmt(")
+
+
+        Log.d(tagLog, "))")
+
+
+        //externalStorageState =mounted
+        val externalStorageState = Environment.getExternalStorageState()
+        val b = Environment.MEDIA_MOUNTED != externalStorageState
+        val bb2= Environment.MEDIA_MOUNTED_READ_ONLY != externalStorageState
+        if (b &&bb2) {
+            // Storage is not available
+            Log.d(tagLog, "Storage is not available")
+        }
+        val contentResolver = context.contentResolver
+        // val mimeType = "audio/mpeg"
+        val relativePath = "Documents/aasms/" // 确保 fldr 变量已经被定义且正确
+
+        // 创建查询条件
+        var selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND " +
+                "${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
+        // _display_name = ? AND relative_path = ?
+        selection="relative_path = ?"
+        val selectionArgs = arrayOf("$relativePath")
+
+
+        /**
+         * 使用 MediaStore.Files.getContentUri("external") 会获取外部存储（通常是设备的 SD 卡，如果没有 SD 卡，则是设备的内置存储）上所有文件的 URI。这意味着，通过这个 URI 进行的查询会检索到外部存储上的所有文件，而不仅仅是特定类型的文件或特定目录下的文件。
+         */
+        // 使用 MediaStore 查询文件
+  //MediaStore.Files.EXTERNAL_CONTENT_URI,
+      //  MediaStore.VOLUME_EXTERNAL
+        val contentUri = MediaStore.Files.getContentUri("external")
+        Log.d(tagLog, "contentUri=" + contentUri)
+        //contentUri==  content://media/external/file
+        val cursor = contentResolver.query(
+            contentUri,
+            null,
+            null,
+            null,
+            null
+        )
+
+        cursor?.use {
+           // var rztbool=it.moveToNext()
+            while (it.moveToNext()) {
+                val uri = ContentUris.withAppendedId(
+                    contentUri,
+                    it.getLong(it.getColumnIndexOrThrow(MediaStore.MediaColumns._ID))
+                )
+                Log.d(tagLog, "datasrc uri=" + uri)
+
+
+                Thread(Runnable {
+                  //  playMp3(context, uri)
+                }).start()
+
+            }
+        }
+
+        Log.d(tagLog, "endfun scanFrmDcmt()")
+
+    }
+
     private fun playAudio2024FrmDcmt(context: Context, fileName: String) {
         Log.d(tagLog, "\n\n\n")
         Log.d(tagLog, "fun playAudio2024FrmDcmt(")
@@ -390,18 +461,20 @@ class MainActivity : AppCompatActivity() {
         Log.d(tagLog, "fileName=" + fileName)
         Log.d(tagLog, "))")
         val contentResolver = context.contentResolver
-        val mimeType = "audio/mpeg"
+       // val mimeType = "audio/mpeg"
         val relativePath = "Documents/" // 确保 fldr 变量已经被定义且正确
 
         // 创建查询条件
-        val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND " +
+        var selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND " +
                 "${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
-        val selectionArgs = arrayOf(fileName, relativePath)
+       // _display_name = ? AND relative_path = ?
+        selection="_display_name = ?"
+        val selectionArgs = arrayOf(fileName)
 
         // 使用 MediaStore 查询文件
         val contentUri = MediaStore.Files.getContentUri("external")
         Log.d(tagLog, "contentUri=" + contentUri)
-
+      //contentUri==  content://media/external/file
         val cursor = contentResolver.query(
             contentUri,
             null,
@@ -800,6 +873,7 @@ class MainActivity : AppCompatActivity() {
             permissions,
             grantResults
         )
+        Log.d(tagLog, "\n\n\n")
         Log.d(tagLog, "fun onRequestPermissionsResult(")
         Log.d(tagLog, "requestCode:" + requestCode.toString())
         Log.d(tagLog, "permissions:" + encodeJson(permissions).toString())
