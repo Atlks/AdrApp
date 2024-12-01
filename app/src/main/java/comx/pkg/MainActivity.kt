@@ -67,9 +67,9 @@ class MainActivity : AppCompatActivity() {
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                     1
                 )
-                return  // 如果权限未获得，返回
+               // return  // 如果权限未获得，返回
             }
-            scanFrmDcmt(this )
+           // scanFrmDcmt(this )
 
             keeplive4FrgrdSvrs(this, MyNotificationListenerService::class.java)
 
@@ -89,6 +89,10 @@ class MainActivity : AppCompatActivity() {
 
             super.onCreate(savedInstanceState)
 
+
+            //-----------set auth
+
+            Log.d(tagLog, "set auth...")
             // 初始化 ViewBinding
             binding = ActivityMainBinding.inflate(layoutInflater)
             setContentView(binding.root)
@@ -169,7 +173,10 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
+
+
             //-----------------btn click
+            Log.d(tagLog, "set btn clk evt...")
             val deviceName1 = getDeviceName(this)
             binding.sendBtn.setOnClickListener {
                 // 创建一个 Intent 对象，用于启动 SecondActivity
@@ -357,10 +364,11 @@ class MainActivity : AppCompatActivity() {
 
 
             //-----------------otehr
-         //   setRcvMsgLsnr()
+             setRcvMsgLsnr()
 
 
             //block show list
+            Log.d(tagLog, " block show list ")
             var smsList = ListSms()
             Log.d(tagLog, "smslist.size:" + smsList.size)
             // binding.textView.text = "cnt:" + smsList.size
