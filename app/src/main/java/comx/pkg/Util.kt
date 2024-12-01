@@ -114,74 +114,92 @@ fun playAudio(mp3: String) {
 
     // 确保已经请求了权限
     // android.Manifest.permission.READ_EXTERNAL_STORAGE
-    if (ContextCompat.checkSelfPermission(AppCompatActivity1main,android. Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-        ActivityCompat.requestPermissions(AppCompatActivity1main, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+    if (ContextCompat.checkSelfPermission(
+            AppCompatActivity1main,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        ActivityCompat.requestPermissions(
+            AppCompatActivity1main,
+            arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+            1
+        )
         // return
     }
 
     Thread(Runnable {
+        try {
+            Log.d(tagLog, "\n\n\n")
+            Log.d(tagLog, "fun playAudio($mp3)")
 
-        Log.d(tagLog, "\n\n\n")
-        Log.d(tagLog, "fun playAudio($mp3)")
-
-        val existx = isExistFile(mp3)
-        Log.d(tagLog, "isExistFile=" + existx)
+            val existx = isExistFile(mp3)
+            Log.d(tagLog, "isExistFile=" + existx)
 
 
 //add mp3
-        val contentResolver = AppCompatActivity1main.contentResolver // 或者直接使用 'contentResolver'
+            val contentResolver = AppCompatActivity1main.contentResolver // 或者直接使用 'contentResolver'
 
-        val values = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, "Be What You.mp3") // 文件名
-            put(MediaStore.Audio.Media.TITLE, "Be What You")
-            put(MediaStore.Audio.Media.DATA, "/storage/emulated/0/Music/Darin-Be What You Wanna Be HQ.mp3") // 文件的绝对路径
-            put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg")
-            put(MediaStore.Audio.Media.SIZE, getFileLen(mp3))
-            put(MediaStore.Audio.Media.DATE_ADDED, System.currentTimeMillis() / 1000)
-        }
+            val values = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, "Be What You.mp3") // 文件名
+                put(MediaStore.Audio.Media.TITLE, "Be What You")
+                put(
+                    MediaStore.Audio.Media.DATA,
+                    "/storage/emulated/0/Music/Darin-Be What You Wanna Be HQ.mp3"
+                ) // 文件的绝对路径
+                put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg")
+                put(MediaStore.Audio.Media.SIZE, getFileLen(mp3))
+                put(MediaStore.Audio.Media.DATE_ADDED, System.currentTimeMillis() / 1000)
+            }
 
-        val contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-        val uriMp3 = contentResolver.insert(contentUri, values)
-      //  content://media/external/audio/media/1000029723
+            val contentUri = MediaStore.Files.getContentUri("external")
+            // val contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+            val uriMp3 = contentResolver.insert(contentUri, values)
+            //  content://media/external/audio/media/1000029723
 
 // 插入后可以获得 URI，可以在这里进行处理或返回成功提示
-        if (uriMp3 != null) {
-            Log.d(tagLog, "File added: $uriMp3")
-        }
+            if (uriMp3 != null) {
+                Log.d(tagLog, "File added: $uriMp3")
+            }
 
 
+            // 插入文件和扫描：在 MediaStore 中插入文件后，使用 MediaScannerConnection.scanFile 扫描文件，这样文件就会被系统识别。
+            // 4. 使用 MediaScanner 扫描文件并等待其准备完毕
+            val filePath = "/storage/emulated/0/Music/Darin-Be What You Wanna Be HQ.mp3"
+            MediaScannerConnection.scanFile(
+                AppCompatActivity1main,
+                arrayOf(filePath),
+                null
+            ) { path, uri ->
+                Log.d("MediaScanner", "Scanned file: $path, Uri: $uri")
+            }
+            Thread.sleep(2000)
 
-       // 插入文件和扫描：在 MediaStore 中插入文件后，使用 MediaScannerConnection.scanFile 扫描文件，这样文件就会被系统识别。
-        // 4. 使用 MediaScanner 扫描文件并等待其准备完毕
-        val filePath = "/storage/emulated/0/Music/Darin-Be What You Wanna Be HQ.mp3"
-        MediaScannerConnection.scanFile(AppCompatActivity1main, arrayOf(filePath), null) { path, uri ->
-            Log.d("MediaScanner", "Scanned file: $path, Uri: $uri")
-        }
-        Thread.sleep(2000)
 
-        try {
             val mediaPlayer = MediaPlayer()
             if (mediaPlayer == null) {
                 Log.d(tagLog, "Failed to initialize MediaPlayer")
 
             }
 
-           // mediaPlayer.reset()  // 重置播放器
+            // mediaPlayer.reset()  // 重置播放器
             // 设置音频资源的路径，假设你传入的是文件路径
             //hrer urimp3==contentUri
-            Log.d(tagLog, "setDataSource uriMp3="+uriMp3)
+            Log.d(tagLog, "setDataSource uriMp3=" + uriMp3)
 
 
-               // mediaPlayer.setDataSource(  "/storage/emulated/0/Music/1732962347874.mp3")
+            // mediaPlayer.setDataSource(  "/storage/emulated/0/Music/1732962347874.mp3")
 
 
             if (uriMp3 != null) {
                 val contentUri = Uri.parse(uriMp3.toString()) // 获取的 content URI
                 //contentUri==content://media/external/audio/media/<audio_id>
-                mediaPlayer.setDataSource(AppCompatActivity1main, contentUri) // 使用 content URI 设置数据源
-            // var fpath="file:///storage/emulated/0/Music/Darin-Be What You Wanna Be HQ.mp3"
-            //    mediaPlayer.setDataSource(AppCompatActivity1main,Uri.parse(fpath))
-              //  mediaPlayer.setDataSource(AppCompatActivity1main, uriMp3)
+                mediaPlayer.setDataSource(
+                    AppCompatActivity1main,
+                    contentUri
+                ) // 使用 content URI 设置数据源
+                // var fpath="file:///storage/emulated/0/Music/Darin-Be What You Wanna Be HQ.mp3"
+                //    mediaPlayer.setDataSource(AppCompatActivity1main,Uri.parse(fpath))
+                //  mediaPlayer.setDataSource(AppCompatActivity1main, uriMp3)
             }
 
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
@@ -211,6 +229,10 @@ fun playAudio(mp3: String) {
         }
 
         Log.d(tagLog, "endfun playAudio()")
+
+    }).start()
+
+    Thread(Runnable {
 
     }).start()
 }
@@ -245,7 +267,7 @@ fun playAudio(mp3: String) {
 
 fun getFileLen(mp3: String): Long {
     val file = File(mp3)
-    return  file.length()
+    return file.length()
 }
 
 fun isExistFile(mp3: String): Any {

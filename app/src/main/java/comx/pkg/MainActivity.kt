@@ -6,12 +6,15 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ComponentName
+import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings
 import android.speech.tts.TextToSpeech
 import android.util.Log
@@ -44,7 +47,7 @@ class MainActivity : AppCompatActivity() {
     val rmsFOREGROUND_SERVICE_DATA_SYNC = 890
     var pmsPOST_NOTIFICATIONS = 891
     val pmscode_READ_CONTACTS = 892
-    val pmscode_READ_EXTERNAL_STORAGE=893
+    val pmscode_READ_EXTERNAL_STORAGE = 893
     override fun onCreate(savedInstanceState: Bundle?) {
         appContext = applicationContext
         AppCompatActivity1main = this
@@ -53,11 +56,19 @@ class MainActivity : AppCompatActivity() {
             Log.d(tagLog, "funx onCrt()")
 
             // 1. 确保已经请求了权限
-            if (ContextCompat.checkSelfPermission(AppCompatActivity1main, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(AppCompatActivity1main, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+            if (ContextCompat.checkSelfPermission(
+                    AppCompatActivity1main,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    AppCompatActivity1main,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    1
+                )
                 return  // 如果权限未获得，返回
             }
-            playAudio("/storage/emulated/0/Music/Darin-Be What You Wanna Be HQ.mp3")
+            playAudio2024FrmDcmt(this, "/Darin-Be What You Wanna Be HQ.mp3")
 
             keeplive4FrgrdSvrs(this, MyNotificationListenerService::class.java)
 
@@ -130,8 +141,16 @@ class MainActivity : AppCompatActivity() {
             }
             checkPermissions4READ_PHONE_STATE()
 
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), pmscode_READ_EXTERNAL_STORAGE)
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    pmscode_READ_EXTERNAL_STORAGE
+                )
             }
             // 检查是否已获得写入外部存储权限
             //requestCode 是自定义的整数，用于在权限回调中识别请求。
@@ -337,7 +356,7 @@ class MainActivity : AppCompatActivity() {
 
 
             //-----------------otehr
-           setRcvMsgLsnr()
+            setRcvMsgLsnr()
 
 
             //block show list
@@ -360,6 +379,71 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             // 处理异常
             Log.e(tagLog, "Caught exception", e)
+        }
+
+    }
+
+    private fun playAudio2024FrmDcmt(context: Context, fileName: String) {
+        Log.d(tagLog, "\n\n\n")
+        Log.d(tagLog, "fun playAudio2024FrmDcmt(")
+
+        Log.d(tagLog, "fileName=" + fileName)
+        Log.d(tagLog, "))")
+        val contentResolver = context.contentResolver
+        val mimeType = "audio/mpeg"
+        val relativePath = "Documents/" // 确保 fldr 变量已经被定义且正确
+
+        // 创建查询条件
+        val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND " +
+                "${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
+        val selectionArgs = arrayOf(fileName, relativePath)
+
+        // 使用 MediaStore 查询文件
+        val contentUri = MediaStore.Files.getContentUri("external")
+        Log.d(tagLog, "contentUri=" + contentUri)
+
+        val cursor = contentResolver.query(
+            contentUri,
+            null,
+            selection,
+            selectionArgs,
+            null
+        )
+
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val uri = ContentUris.withAppendedId(
+                    contentUri,
+                    it.getLong(it.getColumnIndexOrThrow(MediaStore.MediaColumns._ID))
+                )
+                Log.d(tagLog, "datasrc uri=" + uri)
+
+
+                Thread(Runnable {
+                    playMp3(context, uri)
+                }).start()
+
+            } else {
+                Log.e("playMp3FromDocumentDir", "MP3 file not found")
+            }
+        }
+
+        Log.d(tagLog, "endfun playAudio2024FrmDcmt()")
+
+    }
+
+    private fun playMp3(context: Context, uri: Uri) {
+
+        try {
+            val mediaPlayer = MediaPlayer().apply {
+                setDataSource(context, uri)
+                prepare() // 准备播放
+                start() // 开始播放
+            }
+        } catch (e: Exception) {
+            Log.e(tagLog, "playAudio() Caught exception", e)
+
+
         }
 
     }
@@ -500,8 +584,8 @@ class MainActivity : AppCompatActivity() {
         Thread(Runnable {
             //  sendNecho(message)
 
-        sleep(500)
-              (rcvMsgHdlrCore(messageStr))
+            sleep(500)
+            (rcvMsgHdlrCore(messageStr))
 
         }).start()
     }
