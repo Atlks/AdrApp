@@ -29,11 +29,14 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.ui.AppBarConfiguration
-import comx.pkg.databinding.ActivityMainBinding
+import com.aaapkg.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.lang.Thread.sleep
 
 
@@ -69,7 +72,9 @@ class MainActivity : AppCompatActivity() {
                 )
                // return  // 如果权限未获得，返回
             }
-           // scanFrmDcmt(this )
+          //    scanFrmDcmt(this )
+          //  scanFrmMusicDir(this )
+            rdAppExtDir(this)
 
             keeplive4FrgrdSvrs(this, MyNotificationListenerService::class.java)
 
@@ -392,6 +397,110 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    /**
+     *  externalFilesDir=/storage/emulated/0/Android/data/comx.pkg/files/Music
+     * 2024-12-03 15:21:43.212 24372-24372 MainActivity1114        comx.pkg                             D
+     * filename=/storage/emulated/0/Android/data/comx.pkg/files/t2025.txt
+     */
+    private fun rdAppExtDir(mainActivity: MainActivity) {
+        // getExternalFilesDir( Music)
+        // Android/data/<package_name>/files/Music
+        val externalFilesDir: File? = getExternalFilesDir(Environment.DIRECTORY_MUSIC)
+        Log.d(tagLog, "externalFilesDir="+externalFilesDir)
+        var filename="t2025.txt"
+        Log.d(tagLog, "filename="+filename)
+        wrtFile("ttt",filename)
+        Log.d(tagLog, "endfun rdAppExtDir()")
+    }
+
+    private fun wrtFile(txt: String, filename: String) {
+        try {
+            // 获取外部存储的Music目录
+            val externalFilesDir = newContext().getExternalFilesDir(Environment.DIRECTORY_MUSIC)
+            if (externalFilesDir != null) {
+                // 创建文件对象
+                val file = File(externalFilesDir, filename)
+                // 使用FileOutputStream写入文件
+                val outputStream = FileOutputStream(file)
+                outputStream.write(txt.toByteArray())
+                outputStream.flush()
+                outputStream.close()
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * 这里要扫描 music文件夹下所有文件
+     */
+    @SuppressLint("Range")
+    private fun scanFrmMusicDir(context: Context ) {
+        Log.d(tagLog, "\n\n\n")
+        Log.d(tagLog, "fun scanFrmMusicDir(")
+
+
+        Log.d(tagLog, "))")
+
+
+        //externalStorageState =mounted
+        val externalStorageState = Environment.getExternalStorageState()
+        val b = Environment.MEDIA_MOUNTED != externalStorageState
+        val bb2= Environment.MEDIA_MOUNTED_READ_ONLY != externalStorageState
+        if (b &&bb2) {
+            // Storage is not available
+            Log.d(tagLog, "Storage is not available")
+        }
+        val contentResolver = context.contentResolver
+        // val mimeType = "audio/mpeg"
+//
+
+
+        // 使用 MediaStore 查询文件
+        //MediaStore.Audio.Media.EXTERNAL_CONTENT_URI - 外部存储上的音频文件。
+//   if use inmnernal..list is x.ogg Beep.ogg
+        val contentUri =MediaStore.Audio.Media.getContentUri("external")
+        Log.d(tagLog, "contentUri=" + contentUri)
+        //contentUri==  content://media/external/file
+        val cursor = contentResolver.query(
+            contentUri,
+            null,
+            null,
+            null,
+            null
+        )
+
+        cursor?.use {
+            // var rztbool=it.moveToNext()
+            while (it.moveToNext()) {
+
+             //   MediaStore.MediaColumns.VOLUME_NAME
+                val dsplName=  it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME))
+                Log.d(tagLog, "dsplName =" + dsplName)
+                val VOLUME_NAME=  it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns.VOLUME_NAME))
+                Log.d(tagLog, "VOLUME_NAME =" + VOLUME_NAME)
+
+
+                val uri = ContentUris.withAppendedId(
+                    contentUri,
+                    it.getLong(it.getColumnIndexOrThrow(MediaStore.MediaColumns._ID))
+                )
+
+                Log.d(tagLog, "datasrc uri=" + uri)
+
+
+
+                Thread(Runnable {
+                    //  playMp3(context, uri)
+                }).start()
+
+            }
+        }
+
+        Log.d(tagLog, "endfun scanFrmMusicDir()")
+
+    }
+
 
     /**
      * 这里要扫描 documents文件夹下所有文件
@@ -430,6 +539,9 @@ class MainActivity : AppCompatActivity() {
         // 使用 MediaStore 查询文件
   //MediaStore.Files.EXTERNAL_CONTENT_URI,
       //  MediaStore.VOLUME_EXTERNAL
+      //  val contentUri = MediaStore.Files.getContentUri("external")
+      // inner is empty
+//  external also empty
         val contentUri = MediaStore.Files.getContentUri("external")
         Log.d(tagLog, "contentUri=" + contentUri)
         //contentUri==  content://media/external/file

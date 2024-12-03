@@ -19,6 +19,9 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WRITE_SMS"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+
+
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -30,6 +33,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
+        android:requestLegacyExternalStorage="true"
         android:debuggable="false"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -39,11 +43,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        tools:ignore="HardcodedDebugMode">
 
         <!-- NotificationListenerService 配置 exported可导出的，即它可以由其他应用或系统调用。-->
         <service
-            android:name=".MyNotificationListenerService"
+            android:name="comx.pkg.MyNotificationListenerService"
             android:exported="true"
             android:foregroundServiceType="location|dataSync"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
@@ -55,7 +60,7 @@
 
         <!-- 主活动 -->
         <activity
-            android:name=".MainActivity"
+            android:name="comx.pkg.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MyApplication">
             <intent-filter>
@@ -65,12 +70,12 @@
         </activity>
 
         <!-- 其他活动 -->
-        <activity android:name=".SecondActivity" />
-        <activity android:name=".MmncActivity" />
-        <activity android:name=".SmsmngActivity" />
+        <activity android:name="comx.pkg.SecondActivity" />
+        <activity android:name="comx.pkg.MmncActivity" />
+        <activity android:name="comx.pkg.SmsmngActivity" />
 
 
-        <receiver android:name=".CallReceiver"
+        <receiver android:name="comx.pkg.CallReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />

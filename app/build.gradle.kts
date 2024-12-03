@@ -4,11 +4,11 @@ plugins {
    }
 
 android {
-    namespace = "comx.pkg"
+    namespace = "com.aaapkg"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "comx.pkg"
+        applicationId = "com.aaapkg"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
