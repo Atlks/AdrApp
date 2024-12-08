@@ -480,19 +480,21 @@ class MainActivity : AppCompatActivity() {
         Log.d(tagLog,"fun setAuthExtStr()")
         Log.d(tagLog, "VERSION.SDK_INT="+ Build.VERSION.SDK_INT)
      //   VERSION.SDK_INT=33
+        if (Build.VERSION.SDK_INT <= 29) {  // Android 11 (API 30) 或更高版本
 
-        if (ContextCompat.checkSelfPermission(
-                AppCompatActivity1main,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            Log.d(tagLog, "Permission not granted READ_EXTERNAL_STORAGE, requesting...")
-            ActivityCompat.requestPermissions(
-                AppCompatActivity1main,
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                pmscode_READ_EXTERNAL_STORAGE
-            )
-            // return  // 如果权限未获得，返回
+            if (ContextCompat.checkSelfPermission(
+                    AppCompatActivity1main,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.d(tagLog, "Permission not granted READ_EXTERNAL_STORAGE, requesting...")
+                ActivityCompat.requestPermissions(
+                    AppCompatActivity1main,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    pmscode_READ_EXTERNAL_STORAGE
+                )
+                // return  // 如果权限未获得，返回
+            }
         }
         Log.d(tagLog,"endfun setAuthExtStr()")
     }
