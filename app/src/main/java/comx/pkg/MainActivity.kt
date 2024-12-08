@@ -5,6 +5,7 @@ package comx.pkg
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.ContentUris
 import android.content.Context
@@ -24,6 +25,7 @@ import android.widget.CheckBox
 import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -52,6 +54,7 @@ class MainActivity : AppCompatActivity() {
     var pmsPOST_NOTIFICATIONS = 891
     val pmscode_READ_CONTACTS = 892
     val pmscode_READ_EXTERNAL_STORAGE = 893
+    val  pmscode_MANAGE_EXTERNAL_STORAGE=894
     override fun onCreate(savedInstanceState: Bundle?) {
         appContext = applicationContext
         AppCompatActivity1main = this
@@ -59,19 +62,10 @@ class MainActivity : AppCompatActivity() {
         try {
             Log.d(tagLog, "funx onCrt()")
 
+
+            setAuthMngExtStr()
             // 1. 确保已经请求了权限
-            if (ContextCompat.checkSelfPermission(
-                    AppCompatActivity1main,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    AppCompatActivity1main,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                    1
-                )
-               // return  // 如果权限未获得，返回
-            }
+            setAuthExtStr()
           //    scanFrmDcmt(this )
           //  scanFrmMusicDir(this )
             rdAppExtDir(this)
@@ -188,13 +182,28 @@ class MainActivity : AppCompatActivity() {
                 sendBtnClik(deviceName1)
             }
 
+            binding.setAuthRdExtStrBtn.setOnClickListener{
+                setAuthExtStr()
+            }
+
+            binding.setAuthMngExtStrBtn.setOnClickListener            {
+                setAuthMngExtStr()
+            }
+
 
             var menudiv = binding.menudiv
+            menudiv.setVisibility(View.GONE)
+            binding.menudiv1.setVisibility(View.GONE)
+            binding.menudiv2.setVisibility(View.GONE)
             binding.menux.setOnClickListener(View.OnClickListener { // 当按钮被点击时，切换LinearLayout的可见性
                 if (menudiv.getVisibility() === View.GONE) {
                     menudiv.setVisibility(View.VISIBLE)
+                    binding.menudiv1.setVisibility(View.VISIBLE)
+                    binding.menudiv2.setVisibility(View.VISIBLE)
                 } else {
                     menudiv.setVisibility(View.GONE)
+                    binding.menudiv1.setVisibility(View.GONE)
+                    binding.menudiv2.setVisibility(View.GONE)
                 }
             })
 
@@ -395,6 +404,97 @@ class MainActivity : AppCompatActivity() {
             Log.e(tagLog, "Caught exception", e)
         }
 
+    }
+
+
+    /**
+     * 应用不能通过常规权限请求流程获得该权限，必须引导用户进入设置界面
+     */
+    private fun setAuthMngExtStr() {
+        Log.d(tagLog,"fun setAuthMngExtStr()")
+        Log.d(tagLog, "VERSION.SDK_INT="+ Build.VERSION.SDK_INT)
+        //   VERSION.SDK_INT=33
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {  // Android 11 (API 30) 或更高版本
+            if (Environment.isExternalStorageManager()) {
+                // 已经授予权限，可以访问所有外部存储
+                Log.d(tagLog,"已经you权限，可以访问所有外部存储")
+            } else {
+
+                try{
+                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                startActivityForResult(intent, pmscode_MANAGE_EXTERNAL_STORAGE)
+
+            } catch (e: ActivityNotFoundException) {
+                // 捕获异常并做相应处理
+                Toast.makeText(this, "无法打开权限设置ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION，请检查设备或系统版本", Toast.LENGTH_SHORT).show()
+//如果特定的 Intent 仍然无法工作，你可以尝试直接打开应用的设置页面，让用户手动授权访问所有文件的权限：
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    val uri = Uri.fromParts("package", packageName, null)
+                    intent.data = uri
+                    startActivity(intent)
+
+            }
+
+            }
+        }
+
+
+        //Build.VERSION.SDK_INT <=30
+//        if (ContextCompat.checkSelfPermission(
+//                AppCompatActivity1main,
+//                Manifest.permission.MANAGE_EXTERNAL_STORAGE
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            Log.d(tagLog, "Permission not granted MANAGE_EXTERNAL_STORAGE, requesting...")
+//            ActivityCompat.requestPermissions(
+//                AppCompatActivity1main,
+//                arrayOf(Manifest.permission.MANAGE_EXTERNAL_STORAGE),
+//                pmscode_MANAGE_EXTERNAL_STORAGE
+//            )
+//
+//        }
+        Log.d(tagLog,"endfun setAuthMngExtStr()")
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == pmscode_MANAGE_EXTERNAL_STORAGE) {
+            if (Environment.isExternalStorageManager()) {
+                // 用户已授予权限，可以执行文件管理操作
+                Log.d(tagLog, "用户已授予权限，可以执行文件管理操作")
+            } else {
+                // 用户未授予权限
+                Toast.makeText(this, "权限被拒绝，无法访问存储", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    /**
+     * MANAGE_EXTERNAL_STORAGE
+     * Android 10 (API 29) 及更高版本：不再使用 READ_EXTERNAL_STORAGE
+     */
+    private fun setAuthExtStr() {
+        Log.d(tagLog,"fun setAuthExtStr()")
+        Log.d(tagLog, "VERSION.SDK_INT="+ Build.VERSION.SDK_INT)
+     //   VERSION.SDK_INT=33
+
+        if (ContextCompat.checkSelfPermission(
+                AppCompatActivity1main,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.d(tagLog, "Permission not granted READ_EXTERNAL_STORAGE, requesting...")
+            ActivityCompat.requestPermissions(
+                AppCompatActivity1main,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                pmscode_READ_EXTERNAL_STORAGE
+            )
+            // return  // 如果权限未获得，返回
+        }
+        Log.d(tagLog,"endfun setAuthExtStr()")
     }
 
     /**
@@ -1000,6 +1100,32 @@ class MainActivity : AppCompatActivity() {
         Log.d(tagLog, "grantResults:" + encodeJson(permissions).toString())
         Log.d(tagLog, " )))")
 
+
+
+
+        if (requestCode ==pmscode_MANAGE_EXTERNAL_STORAGE  ) {
+            //PERMISSION_GRANTED = 0
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 权限已授予
+                Log.d(tagLog, "权限已授予pmscode_MANAGE_EXTERNAL_STORAGE")
+
+            } else {
+                Log.e(tagLog, "Permission denied  mscode_mng_EXTERNAL_STORAGE")
+            }
+        }
+
+
+
+        if (requestCode ==pmscode_READ_EXTERNAL_STORAGE  ) {
+            //PERMISSION_GRANTED = 0
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 权限已授予
+                Log.d(tagLog, "权限已授予pmscode_READ_EXTERNAL_STORAGE")
+
+            } else {
+                Log.e(tagLog, "Permission denied  mscode_READ_EXTERNAL_STORAGE")
+            }
+        }
 
 
         if (requestCode == REQUEST_SMS_PERMISSION) {

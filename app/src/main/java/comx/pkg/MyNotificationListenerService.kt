@@ -6,20 +6,15 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.media.MediaPlayer
 import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.speech.tts.TextToSpeech
 import android.util.Log
-import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.aaapkg.R
 import comx.pkg.MainActivity.Msg
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.io.IOException
 import java.util.Locale
 import java.util.UUID
 
@@ -210,6 +205,12 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             if (title.contains("闹钟"))
                 return
+            if (containsAny2025("迪拜 反水 返水 盈利 佣金",message))
+                return
+            if (title.contains("输入法"))
+                return
+            if (containsAny2025("迪拜 反水 返水 盈利 佣金",message))
+                return
             if (title.contains("360手机卫士"))
                 return
             if (title.contains("短信") && title.contains("正在运行"))
@@ -258,6 +259,29 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
     }
 
+    /**
+     * 功能 检测字符串str是否包含任何所列出的单词
+     * containWords 空格分割的字符串，要检测包含的单词表
+     * str 字符串
+     */
+    private fun containsAny2025(containWords: String, str: String): Boolean {
+
+        // 将 containWords 按空格分割成单词列表
+        val words = containWords.split(" ")
+            .filter { it.isNotBlank() }  // 过滤掉空字符串
+
+        // 遍历每个单词，检查 str 是否包含该单词
+        for (word in words) {
+            if(word.trim().equals(""))
+                continue
+            if (str.contains(word, ignoreCase = true)) {
+                return true  // 如果 str 包含任意一个单词，返回 true
+            }
+        }
+
+        // 如果 str 不包含任何一个单词，返回 false
+        return false
+    }
 
 
     private fun sendNecho(message: String) {

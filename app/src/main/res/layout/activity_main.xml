@@ -38,100 +38,94 @@
             android:text="Go to Sms" />
     </LinearLayout>
 
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="3dp"
+        android:id="@+id/menudiv1"
+
+        >
+
+        <Button
+            android:id="@+id/setNtfyAuth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="3dp"
+            android:layout_weight="1"
+            android:text="通知权限" />
+
+        <Button
+            android:id="@+id/setNtfyLsnAuth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="3dp"
+            android:layout_weight="1"
+            android:text="监听通知权限" />
+
+        <Button
+            android:id="@+id/noBtrOptmzBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="3dp"
+            android:layout_weight="1"
+            android:text="noBtrOptmz" />
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="3dp"
+
+        android:id="@+id/menudiv2"
+        >
+
+        <Button
+            android:id="@+id/getBdcst"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="3dp"
+            android:layout_weight="1"
+            android:text="获取广播地址" />
+
+        <Button
+            android:id="@+id/setautoStartBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="3dp"
+            android:layout_weight="1"
+            android:text="autoStart" />
+
+        <Button
+            android:id="@+id/setBtrOptmzBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="3dp"
+            android:layout_weight="1"
+            android:text="btr optmz" />
+    </LinearLayout>
+
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/menudiv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
 
         android:padding="3dp"
 
         >
 
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="3dp"
 
-
-            >
-
-            <Button
-                android:id="@+id/setNtfyAuth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginTop="3dp"
-                android:layout_weight="1"
-                android:text="通知权限" />
-
-            <Button
-                android:id="@+id/setNtfyLsnAuth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginTop="3dp"
-                android:layout_weight="1"
-                android:text="监听通知权限" />
-
-            <Button
-                android:id="@+id/noBtrOptmzBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginTop="3dp"
-                android:layout_weight="1"
-                android:text="noBtrOptmz" />
-        </LinearLayout>
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="3dp"
-
-
-            >
-
-            <Button
-                android:id="@+id/getBdcst"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginTop="3dp"
-                android:layout_weight="1"
-                android:text="获取广播地址" />
-
-            <Button
-                android:id="@+id/setautoStartBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginTop="3dp"
-                android:layout_weight="1"
-                android:text="autoStart" />
-
-            <Button
-                android:id="@+id/setBtrOptmzBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginTop="3dp"
-                android:layout_weight="1"
-                android:text="btr optmz" />
-        </LinearLayout>
-
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="3dp"
-
-
-            >
 
             <Button
                 android:id="@+id/setTTSBtn"
@@ -142,7 +136,25 @@
                 android:layout_weight="1"
                 android:text="settts" />
 
-        </LinearLayout>
+
+        <Button
+            android:id="@+id/set_auth_rd_ext_str_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="3dp"
+            android:layout_weight="1"
+            android:text="setAuthRdExtStr" />
+
+
+        <Button
+            android:id="@+id/setAuthMngExtStrBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="3dp"
+            android:layout_weight="1"
+            android:text="setAuthMngExtStr" />
 
 
     </LinearLayout>
