@@ -16,6 +16,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.Settings
 import android.speech.tts.TextToSpeech
@@ -54,7 +55,9 @@ class MainActivity : AppCompatActivity() {
     var pmsPOST_NOTIFICATIONS = 891
     val pmscode_READ_CONTACTS = 892
     val pmscode_READ_EXTERNAL_STORAGE = 893
-    val  pmscode_MANAGE_EXTERNAL_STORAGE=894
+    val pmscode_MANAGE_EXTERNAL_STORAGE = 894
+    val REQUEST_CODE_SELECT_DIRECTORY = 895
+    val REQUEST_CODE_SELECT_Fil = 896
     override fun onCreate(savedInstanceState: Bundle?) {
         appContext = applicationContext
         AppCompatActivity1main = this
@@ -63,11 +66,11 @@ class MainActivity : AppCompatActivity() {
             Log.d(tagLog, "funx onCrt()")
 
 
-            setAuthMngExtStr()
+            // setAuthMngExtStr()
             // 1. 确保已经请求了权限
-            setAuthExtStr()
-          //    scanFrmDcmt(this )
-          //  scanFrmMusicDir(this )
+            //   setAuthExtStr()
+            //    scanFrmDcmt(this )
+            //  scanFrmMusicDir(this )
             rdAppExtDir(this)
 
             keeplive4FrgrdSvrs(this, MyNotificationListenerService::class.java)
@@ -172,8 +175,6 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
-
-
             //-----------------btn click
             Log.d(tagLog, "set btn clk evt...")
             val deviceName1 = getDeviceName(this)
@@ -182,13 +183,27 @@ class MainActivity : AppCompatActivity() {
                 sendBtnClik(deviceName1)
             }
 
-            binding.setAuthRdExtStrBtn.setOnClickListener{
+            binding.setAuthRdExtStrBtn.setOnClickListener {
                 setAuthExtStr()
             }
 
-            binding.setAuthMngExtStrBtn.setOnClickListener            {
+            binding.setAuthMngExtStrBtn.setOnClickListener {
                 setAuthMngExtStr()
             }
+
+            binding.setAuthDirBtn.setOnClickListener {
+                setAuthOpenDir()
+            }
+
+            binding.rdflsBtn.setOnClickListener {
+                rdflsInSaf()
+            }
+
+            binding.playMp3Btn.setOnClickListener {
+                playMp3BtnEvt()
+            }
+
+          //  playMp3Btn
 
 
             var menudiv = binding.menudiv
@@ -297,6 +312,12 @@ class MainActivity : AppCompatActivity() {
                 reqSycMsgClk(deviceName1)
             }
 
+            binding.setNtfyMp3btn.setOnClickListener {
+                setNtfyMp3()
+            }
+
+
+
             binding.getBdcst.setOnClickListener {
 
                 // 显示Toast
@@ -378,7 +399,7 @@ class MainActivity : AppCompatActivity() {
 
 
             //-----------------otehr
-             setRcvMsgLsnr()
+            setRcvMsgLsnr()
 
 
             //block show list
@@ -406,35 +427,111 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun playMp3BtnEvt() {
+        playNtfyMp3()
+    }
+
+    private fun setNtfyMp3() {
+        Log.d(tagLog, "fun setNtfyMp3()")
+        try{
+
+         //   val intent = Intent(Intent.ACTION_GET_CONTENT)
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+          //   intent.addCategory(Intent.CATEGORY_OPENABLE)
+            //  Intent.CATEGORY_OPENABLE 确保用户选择的文件是能够通过应用程序打开的文件，避免选择那些不能操作的文件（例如一些系统文件或无关的文件）。
+            intent.type = "*/*"
+          //  intent.type = "audio/mp3"  // 只允许选择 MP3 文件
+            //  val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+            startActivityForResult(intent, REQUEST_CODE_SELECT_Fil)
+
+
+        } catch (e: Exception) {
+            // 处理异常
+            Log.e(tagLog, "setNtfyMp3 () ,Caught exception", e)
+        }
+        Log.d(tagLog, "endfun setNtfyMp3()")
+
+
+    }
+
+
+
+
+    @SuppressLint("Range")
+    private fun rdflsInSaf() {
+        Log.d(tagLog, "fun rdflsInSaf()")
+        try {
+            val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            val uriString = sharedPreferences.getString("selected_directory_uri", null)
+
+            uriString?.let {
+                val uri = Uri.parse(it)
+                val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(
+                    uri,
+                    DocumentsContract.getTreeDocumentId(uri)
+                )
+
+                val cursor = contentResolver.query(childrenUri, null, null, null, null)
+                cursor?.use {
+                    while (it.moveToNext()) {
+                        val displayName =
+                            it.getString(it.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME))
+                        val documentId =
+                            it.getString(it.getColumnIndex(DocumentsContract.Document.COLUMN_DOCUMENT_ID))
+                        Log.d(tagLog, "文件名: $displayName, 文档ID: $documentId")
+                        // 可以根据需要读取文件
+                        if (displayName == "Darin-Be What You Wanna Be HQ.mp3") {
+                            val fileUri =
+                                DocumentsContract.buildDocumentUriUsingTree(uri, documentId)
+                            Log.d(tagLog, "fileUri:" + fileUri.toString())
+//fileUri:content://com.android.externalstorage.documents/tree/primary%3ADocuments/document/primary%3ADocuments%2FDarin-Be%20What%20You%20Wanna%20Be%20HQ.mp3
+                            playMp3(this, fileUri)
+                        }
+                    }
+                }
+            }
+
+        } catch (e: Exception) {
+            // 处理异常
+            Log.e(tagLog, "rdflsInSaf() Caught exception", e)
+        }
+        Log.d(tagLog, "endfun rdflsInSaf()")
+
+    }
+
 
     /**
      * 应用不能通过常规权限请求流程获得该权限，必须引导用户进入设置界面
      */
     private fun setAuthMngExtStr() {
-        Log.d(tagLog,"fun setAuthMngExtStr()")
-        Log.d(tagLog, "VERSION.SDK_INT="+ Build.VERSION.SDK_INT)
+        Log.d(tagLog, "fun setAuthMngExtStr()")
+        Log.d(tagLog, "VERSION.SDK_INT=" + Build.VERSION.SDK_INT)
         //   VERSION.SDK_INT=33
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {  // Android 11 (API 30) 或更高版本
             if (Environment.isExternalStorageManager()) {
                 // 已经授予权限，可以访问所有外部存储
-                Log.d(tagLog,"已经you权限，可以访问所有外部存储")
+                Log.d(tagLog, "已经you权限，可以访问所有外部存储")
             } else {
 
-                try{
-                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                startActivityForResult(intent, pmscode_MANAGE_EXTERNAL_STORAGE)
+                try {
+                    val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                    startActivityForResult(intent, pmscode_MANAGE_EXTERNAL_STORAGE)
 
-            } catch (e: ActivityNotFoundException) {
-                // 捕获异常并做相应处理
-                Toast.makeText(this, "无法打开权限设置ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION，请检查设备或系统版本", Toast.LENGTH_SHORT).show()
+                } catch (e: ActivityNotFoundException) {
+                    // 捕获异常并做相应处理
+                    Toast.makeText(
+                        this,
+                        "无法打开权限设置ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION，请检查设备或系统版本",
+                        Toast.LENGTH_SHORT
+                    ).show()
 //如果特定的 Intent 仍然无法工作，你可以尝试直接打开应用的设置页面，让用户手动授权访问所有文件的权限：
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                     val uri = Uri.fromParts("package", packageName, null)
                     intent.data = uri
                     startActivity(intent)
 
-            }
+                }
 
             }
         }
@@ -454,7 +551,7 @@ class MainActivity : AppCompatActivity() {
 //            )
 //
 //        }
-        Log.d(tagLog,"endfun setAuthMngExtStr()")
+        Log.d(tagLog, "endfun setAuthMngExtStr()")
     }
 
 
@@ -470,6 +567,48 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "权限被拒绝，无法访问存储", Toast.LENGTH_SHORT).show()
             }
         }
+
+        if (requestCode == REQUEST_CODE_SELECT_DIRECTORY) {
+
+            if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_SELECT_DIRECTORY) {
+                val uri = data?.data
+                Log.d(tagLog, "dir url=" + uri)
+
+                uri?.let {
+                    // 将 URI 保存到 SharedPreferences
+                    val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("selected_directory_uri", it.toString())
+                    editor.apply()
+                }
+            }
+        }
+
+        if (requestCode == REQUEST_CODE_SELECT_Fil) {
+
+            if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_SELECT_Fil) {
+                val uri = data?.data
+                Log.d(tagLog, "file url=" + uri)
+
+                uri?.let {
+                    // 将 URI 保存到 SharedPreferences
+                    val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("selected_file_uri", it.toString())
+                    editor.apply()
+                }
+            }else
+
+            {
+                Log.d(tagLog, "resultCode not = RESULT_OK " )
+            }
+        }
+    }
+
+    private fun setAuthOpenDir() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        startActivityForResult(intent, REQUEST_CODE_SELECT_DIRECTORY)
+
     }
 
     /**
@@ -477,9 +616,9 @@ class MainActivity : AppCompatActivity() {
      * Android 10 (API 29) 及更高版本：不再使用 READ_EXTERNAL_STORAGE
      */
     private fun setAuthExtStr() {
-        Log.d(tagLog,"fun setAuthExtStr()")
-        Log.d(tagLog, "VERSION.SDK_INT="+ Build.VERSION.SDK_INT)
-     //   VERSION.SDK_INT=33
+        Log.d(tagLog, "fun setAuthExtStr()")
+        Log.d(tagLog, "VERSION.SDK_INT=" + Build.VERSION.SDK_INT)
+        //   VERSION.SDK_INT=33
         if (Build.VERSION.SDK_INT <= 29) {  // Android 11 (API 30) 或更高版本
 
             if (ContextCompat.checkSelfPermission(
@@ -496,7 +635,7 @@ class MainActivity : AppCompatActivity() {
                 // return  // 如果权限未获得，返回
             }
         }
-        Log.d(tagLog,"endfun setAuthExtStr()")
+        Log.d(tagLog, "endfun setAuthExtStr()")
     }
 
     /**
@@ -508,10 +647,10 @@ class MainActivity : AppCompatActivity() {
         // getExternalFilesDir( Music)
         // Android/data/<package_name>/files/Music
         val externalFilesDir: File? = getExternalFilesDir(Environment.DIRECTORY_MUSIC)
-        Log.d(tagLog, "externalFilesDir="+externalFilesDir)
-        var filename="t2025.txt"
-        Log.d(tagLog, "filename="+filename)
-        wrtFile("ttt",filename)
+        Log.d(tagLog, "externalFilesDir=" + externalFilesDir)
+        var filename = "t2025.txt"
+        Log.d(tagLog, "filename=" + filename)
+        wrtFile("ttt", filename)
         Log.d(tagLog, "endfun rdAppExtDir()")
     }
 
@@ -537,7 +676,7 @@ class MainActivity : AppCompatActivity() {
      * 这里要扫描 music文件夹下所有文件
      */
     @SuppressLint("Range")
-    private fun scanFrmMusicDir(context: Context ) {
+    private fun scanFrmMusicDir(context: Context) {
         Log.d(tagLog, "\n\n\n")
         Log.d(tagLog, "fun scanFrmMusicDir(")
 
@@ -548,8 +687,8 @@ class MainActivity : AppCompatActivity() {
         //externalStorageState =mounted
         val externalStorageState = Environment.getExternalStorageState()
         val b = Environment.MEDIA_MOUNTED != externalStorageState
-        val bb2= Environment.MEDIA_MOUNTED_READ_ONLY != externalStorageState
-        if (b &&bb2) {
+        val bb2 = Environment.MEDIA_MOUNTED_READ_ONLY != externalStorageState
+        if (b && bb2) {
             // Storage is not available
             Log.d(tagLog, "Storage is not available")
         }
@@ -561,7 +700,7 @@ class MainActivity : AppCompatActivity() {
         // 使用 MediaStore 查询文件
         //MediaStore.Audio.Media.EXTERNAL_CONTENT_URI - 外部存储上的音频文件。
 //   if use inmnernal..list is x.ogg Beep.ogg
-        val contentUri =MediaStore.Audio.Media.getContentUri("external")
+        val contentUri = MediaStore.Audio.Media.getContentUri("external")
         Log.d(tagLog, "contentUri=" + contentUri)
         //contentUri==  content://media/external/file
         val cursor = contentResolver.query(
@@ -576,10 +715,12 @@ class MainActivity : AppCompatActivity() {
             // var rztbool=it.moveToNext()
             while (it.moveToNext()) {
 
-             //   MediaStore.MediaColumns.VOLUME_NAME
-                val dsplName=  it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME))
+                //   MediaStore.MediaColumns.VOLUME_NAME
+                val dsplName =
+                    it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME))
                 Log.d(tagLog, "dsplName =" + dsplName)
-                val VOLUME_NAME=  it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns.VOLUME_NAME))
+                val VOLUME_NAME =
+                    it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns.VOLUME_NAME))
                 Log.d(tagLog, "VOLUME_NAME =" + VOLUME_NAME)
 
 
@@ -607,7 +748,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * 这里要扫描 documents文件夹下所有文件
      */
-    private fun scanFrmDcmt(context: Context ) {
+    private fun scanFrmDcmt(context: Context) {
         Log.d(tagLog, "\n\n\n")
         Log.d(tagLog, "fun scanFrmDcmt(")
 
@@ -618,8 +759,8 @@ class MainActivity : AppCompatActivity() {
         //externalStorageState =mounted
         val externalStorageState = Environment.getExternalStorageState()
         val b = Environment.MEDIA_MOUNTED != externalStorageState
-        val bb2= Environment.MEDIA_MOUNTED_READ_ONLY != externalStorageState
-        if (b &&bb2) {
+        val bb2 = Environment.MEDIA_MOUNTED_READ_ONLY != externalStorageState
+        if (b && bb2) {
             // Storage is not available
             Log.d(tagLog, "Storage is not available")
         }
@@ -631,7 +772,7 @@ class MainActivity : AppCompatActivity() {
         var selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND " +
                 "${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
         // _display_name = ? AND relative_path = ?
-        selection="relative_path = ?"
+        selection = "relative_path = ?"
         val selectionArgs = arrayOf("$relativePath")
 
 
@@ -639,10 +780,10 @@ class MainActivity : AppCompatActivity() {
          * 使用 MediaStore.Files.getContentUri("external") 会获取外部存储（通常是设备的 SD 卡，如果没有 SD 卡，则是设备的内置存储）上所有文件的 URI。这意味着，通过这个 URI 进行的查询会检索到外部存储上的所有文件，而不仅仅是特定类型的文件或特定目录下的文件。
          */
         // 使用 MediaStore 查询文件
-  //MediaStore.Files.EXTERNAL_CONTENT_URI,
-      //  MediaStore.VOLUME_EXTERNAL
-      //  val contentUri = MediaStore.Files.getContentUri("external")
-      // inner is empty
+        //MediaStore.Files.EXTERNAL_CONTENT_URI,
+        //  MediaStore.VOLUME_EXTERNAL
+        //  val contentUri = MediaStore.Files.getContentUri("external")
+        // inner is empty
 //  external also empty
         val contentUri = MediaStore.Files.getContentUri("external")
         Log.d(tagLog, "contentUri=" + contentUri)
@@ -656,7 +797,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         cursor?.use {
-           // var rztbool=it.moveToNext()
+            // var rztbool=it.moveToNext()
             while (it.moveToNext()) {
                 val uri = ContentUris.withAppendedId(
                     contentUri,
@@ -666,7 +807,7 @@ class MainActivity : AppCompatActivity() {
 
 
                 Thread(Runnable {
-                  //  playMp3(context, uri)
+                    //  playMp3(context, uri)
                 }).start()
 
             }
@@ -683,20 +824,20 @@ class MainActivity : AppCompatActivity() {
         Log.d(tagLog, "fileName=" + fileName)
         Log.d(tagLog, "))")
         val contentResolver = context.contentResolver
-       // val mimeType = "audio/mpeg"
+        // val mimeType = "audio/mpeg"
         val relativePath = "Documents/" // 确保 fldr 变量已经被定义且正确
 
         // 创建查询条件
         var selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND " +
                 "${MediaStore.MediaColumns.RELATIVE_PATH} = ?"
-       // _display_name = ? AND relative_path = ?
-        selection="_display_name = ?"
+        // _display_name = ? AND relative_path = ?
+        selection = "_display_name = ?"
         val selectionArgs = arrayOf(fileName)
 
         // 使用 MediaStore 查询文件
         val contentUri = MediaStore.Files.getContentUri("external")
         Log.d(tagLog, "contentUri=" + contentUri)
-      //contentUri==  content://media/external/file
+        //contentUri==  content://media/external/file
         val cursor = contentResolver.query(
             contentUri,
             null,
@@ -727,21 +868,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun playMp3(context: Context, uri: Uri) {
 
-        try {
-            val mediaPlayer = MediaPlayer().apply {
-                setDataSource(context, uri)
-                prepare() // 准备播放
-                start() // 开始播放
-            }
-        } catch (e: Exception) {
-            Log.e(tagLog, "playAudio() Caught exception", e)
-
-
-        }
-
-    }
 
 
     private fun reqSycMsgClk(deviceName1: String) {
@@ -1105,7 +1232,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        if (requestCode ==pmscode_MANAGE_EXTERNAL_STORAGE  ) {
+        if (requestCode == pmscode_MANAGE_EXTERNAL_STORAGE) {
             //PERMISSION_GRANTED = 0
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // 权限已授予
@@ -1118,7 +1245,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        if (requestCode ==pmscode_READ_EXTERNAL_STORAGE  ) {
+        if (requestCode == pmscode_READ_EXTERNAL_STORAGE) {
             //PERMISSION_GRANTED = 0
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // 权限已授予

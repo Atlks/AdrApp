@@ -118,13 +118,21 @@
         android:id="@+id/menudiv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
 
         android:padding="3dp"
 
         >
 
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+
+            android:padding="3dp"
+
+            >
 
 
             <Button
@@ -155,7 +163,57 @@
             android:layout_marginTop="3dp"
             android:layout_weight="1"
             android:text="setAuthMngExtStr" />
+        </LinearLayout>
+      <!-- btn cmd2 -->
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+
+            android:padding="3dp"
+
+            >
+
+
+            <Button
+                android:id="@+id/setAuthDirBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="3dp"
+                android:layout_weight="1"
+                android:text="setAuthDir" />
+
+
+            <Button
+                android:id="@+id/rdflsBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="3dp"
+                android:layout_weight="1"
+                android:text="rdfls" />
+
+
+            <Button
+                android:id="@+id/setNtfyMp3btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="3dp"
+                android:layout_weight="1"
+                android:text="setNtfyMp3" />
+
+            <Button
+                android:id="@+id/playMp3Btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="3dp"
+                android:layout_weight="1"
+                android:text="playM" />
+        </LinearLayout>
 
     </LinearLayout>
 

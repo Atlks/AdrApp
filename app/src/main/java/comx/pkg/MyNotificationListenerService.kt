@@ -243,7 +243,10 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
             //for xm12
             if(message.contains("所有人")|| message.contains("抽查")|| message.contains("meet")|| message.contains("google"))
-            playAudio("/storage/emulated/0/Documents/Darin-Be What You Wanna Be HQ.mp3")
+            {
+                playNtfyMp3()
+            //playAudio("/storage/emulated/0/Documents/Darin-Be What You Wanna Be HQ.mp3")
+            }
 
 
             // 使用 TTS 阅读通知内容
