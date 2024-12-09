@@ -242,7 +242,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
 
             //for xm12
-            if(message.contains("所有人")|| message.contains("抽查")|| message.contains("meet")|| message.contains("google"))
+            if(containsAny2025(message,"所有人 抽查  打卡 meet google"))
             {
                 playNtfyMp3()
             //playAudio("/storage/emulated/0/Documents/Darin-Be What You Wanna Be HQ.mp3")
