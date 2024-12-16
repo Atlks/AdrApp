@@ -203,6 +203,20 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             if (title.contains("下午闹钟"))
                 return
+            if (title.contains("多个应用进行了敏感操作"))
+                return
+            if (title.contains("省电模式"))
+                return
+            if (title.contains("网络共享或热点"))
+                return
+            if (title.contains("正在通过USB充电"))
+                return
+            if (title.contains("正在连接到USB"))
+                return
+            if (title.contains("已连接到USB"))
+                return
+            if (title.contains("正在获取服务信息"))
+                return
             if (title.contains("闹钟"))
                 return
             if (containsAny2025("迪拜 反水 返水 盈利 佣金",message))
