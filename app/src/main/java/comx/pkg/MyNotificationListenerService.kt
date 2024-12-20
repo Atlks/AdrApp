@@ -217,7 +217,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             if (title.contains("正在获取服务信息"))
                 return
-            if (title.contains("闹钟"))
+            if (containsAny2025(title,"闹钟 闹铃") )
                 return
             if (containsAny2025("迪拜 反水 返水 盈利 佣金",message))
                 return
