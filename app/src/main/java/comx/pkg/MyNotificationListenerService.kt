@@ -179,13 +179,20 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 //           return
 
         try {
-            Log.d(tagLog, "fun onNotificationPosted()")
+            Log.d(tagLog, "fun onNotificationPosted(")
+            Log.d(tagLog, "StatusBarNotification:" + encodeJson(sbn));
+            Log.d(tagLog, "))"  );
+
             val notification = sbn.notification
+            Log.d(tagLog, "notification:" + encodeJson(notification));
+
             val extras = notification.extras
 
             // 获取通知标题和内容
             val title = extras.getString("android.title") ?: "没有标题"
-            val text = extras.getString("android.text") ?: "没有内容"
+            var text = extras.getString("android.text") ?: "没有内容"
+            text=text.replace("Starred Contacts","");
+            text=text.replace("星标联系人","");
 
             // 拼接标题和内容
             var message = "标题: $title, 内容: $text"
