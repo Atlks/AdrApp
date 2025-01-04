@@ -230,7 +230,9 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             if (title.contains("输入法"))
                 return
-            if (containsAny2025("迪拜 反水 返水 盈利 佣金",message))
+            if (containsAny2025("奸淫 父女 出轨 大片 人妻 乱伦",message))
+                return
+            if (containsAny2025("产研 产研中心 救火",message))
                 return
             if (title.contains("360手机卫士"))
                 return
