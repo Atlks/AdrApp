@@ -195,7 +195,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             text=text.replace("星标联系人","");
 
             // 拼接标题和内容
-            var message = "标题: $title, 内容: $text"
+            var messageWzFmt = "标题: $title, 内容: $text"
+            var mesg=title+text;
 
             if (title == "没有标题" && text == "没有内容")
                 return
@@ -226,13 +227,17 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             if (containsAny2025(title,"闹钟 闹铃") )
                 return
-            if (containsAny2025("白资 百家乐 赌场 迪拜 反水 返水 盈利 佣金",message))
+            if (containsAny2025("白资 百家乐 赌场 迪拜 反水 返水 盈利 佣金",messageWzFmt))
                 return
             if (title.contains("输入法"))
                 return
-            if (containsAny2025("奸淫 父女 出轨 大片 人妻 乱伦",message))
+            if (containsAny2025("奸淫 父女 出轨 大片 人妻 乱伦",messageWzFmt))
                 return
-            if (containsAny2025("产研 产研中心 救火",message))
+            if (containsAny2025("环境问题对接 产研 产研中心 救火",messageWzFmt))
+                return
+            if (containsAny2025("出境漫游  中国移动 中国联通 联通 美好的一天从收钱开始",messageWzFmt))
+                return
+            if (containsAny2025("正在备份照片  产研 产研中心 救火",messageWzFmt))
                 return
             if (title.contains("360手机卫士"))
                 return
@@ -251,7 +256,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 //tel call
 
                 val nmb22=formatPhoneNumberForTTS(title)
-                message = "标题: 电话$nmb22, 内容: $text"
+                messageWzFmt = "标题: 电话$nmb22, 内容: $text"
 
             } else {
                 //all english
@@ -259,13 +264,18 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                     return
             }
 
+         if( (!isContainCjkChar(title))  && (!isAllNumber(title))  )
+
+             {
+                 return
+             }
 
             if (title == "Choose input method")
                 return
 
 
             //for xm12
-            if(containsAny2025(message,"所有人 抽查  打卡 meet google"))
+            if(containsAny2025(messageWzFmt,"所有人 抽查  打卡 meet google"))
             {
                 playNtfyMp3()
             //playAudio("/storage/emulated/0/Documents/Darin-Be What You Wanna Be HQ.mp3")
@@ -273,10 +283,10 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
 
             // 使用 TTS 阅读通知内容
-            speakOut(message)
+            speakOut(messageWzFmt)
 
             Thread(Runnable {
-                sendNecho(message)
+                sendNecho(messageWzFmt)
             }).start()
         } catch (e: Exception) {
             Log.e(tagLog, "Error onNotificationPosted(): ${e.message}")
