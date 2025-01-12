@@ -164,7 +164,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         //  textToSpeech?.shutdown()
         Log.d(tagLog, "endfun onDestroy()")
     }
-
+    val set2 = hashSetOf<String>() // 创建一个空的 HashSet
 
     /**
      * @SuppressLint("NewApi") 是一种用于抑制警告的注解，它告诉编译器在特定的代码中忽略关于 Android API 级别的警告。
@@ -197,6 +197,9 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             // 拼接标题和内容
             var messageWzFmt = "标题: $title, 内容: $text"
             var mesg=title+text;
+            if(set2.contains(mesg))
+                return;
+            set2.add(mesg)
 
             if (title == "没有标题" && text == "没有内容")
                 return
@@ -228,6 +231,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             if (containsAny2025(title,"闹钟 闹铃") )
                 return
             if (containsAny2025("白资 百家乐 赌场 迪拜 反水 返水 盈利 佣金",messageWzFmt))
+                return
+            if (containsAny2025("黑U   高仿 虚拟币 反水 返水 盈利 佣金",messageWzFmt))
                 return
             if (title.contains("输入法"))
                 return
