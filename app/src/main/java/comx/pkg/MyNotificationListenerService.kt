@@ -194,7 +194,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             text=text.replace("Starred Contacts","");
             text=text.replace("星标联系人","");
 
-            // 拼接标题和内容
+            // 拼接标题和.内容
             var messageWzFmt = "标题: $title, 内容: $text"
             var mesg=title+text;
             if(set2.contains(mesg))
