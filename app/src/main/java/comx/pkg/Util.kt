@@ -27,6 +27,7 @@ import com.google.gson.Gson
 import org.json.JSONObject
 import java.io.IOException
 import java.time.LocalTime
+val set4delp = hashSetOf<String>() // 创建一个空的 HashSet
 
 
 /**
