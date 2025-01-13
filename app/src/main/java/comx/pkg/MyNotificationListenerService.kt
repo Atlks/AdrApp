@@ -250,6 +250,17 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             if (title.startsWith("正在下载"))
                 return
+            if (containsAny2025("闹钟 响铃",messageWzFmt))
+                return
+            if (containsAny2025("降息 备用金 收钱提醒助手",messageWzFmt))
+                return
+            if (containsAny2025("特惠航线 特惠专场 旅行团 抢票 火车票 心动之旅",messageWzFmt))
+                return
+            if (containsAny2025("登录过期 备用金 ",messageWzFmt))
+                return
+
+            if (containsAny2025("热点 USB充电 USB调试 自动任务",messageWzFmt))
+                return
 
             if (title.startsWith("正在通过USB充电"))
                 return
