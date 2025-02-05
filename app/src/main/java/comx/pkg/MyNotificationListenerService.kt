@@ -10,14 +10,24 @@ import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.speech.tts.TextToSpeech
-import android.util.Log
+
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.aaapkg.R
 import comx.pkg.MainActivity.Msg
+import lib.containsAny2025
+
+
 import java.util.Locale
 import java.util.UUID
+import android.util.Log
+import lib.getUuid
 
+import org.json.JSONObject
+import java.io.IOException
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
+import java.net.URL
 
 /**
  * ord
@@ -47,7 +57,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         startForeground(1, newNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
 
 
-        iniTTS ()
+        iniTTS()
 
         Log.d(tagLog, "endfun onStartCommand()")
 
@@ -71,7 +81,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                     // 进行 TextToSpeech 的配置和调用
                     //success in xm135g..but fail in xm12
                     Log.d(tagLog, "TextToSpeech initialization success..")
-                  //  textToSpeech?.let { funx(it) }
+                    //  textToSpeech?.let { funx(it) }
                 } else {
                     Log.d(tagLog, "TextToSpeech initialization failed with status code: $status")
 
@@ -85,7 +95,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
 
                 textToSpeech?.stop()
-                  textToSpeech?.shutdown()
+                textToSpeech?.shutdown()
                 Log.d(tagLog, "endfun onDestroy2()")
             }
 
@@ -95,8 +105,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     }
 
 
-
-    private fun iniTTS()   {
+    private fun iniTTS() {
 
         Log.d(tagLog, "\n\n\n")
         Log.d(tagLog, "fun iniTTS()")
@@ -164,7 +173,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         //  textToSpeech?.shutdown()
         Log.d(tagLog, "endfun onDestroy()")
     }
-     val set2 = hashSetOf<String>() // 创建一个空的 HashSet
+
+    val set2 = hashSetOf<String>() // 创建一个空的 HashSet
 
     /**
      * @SuppressLint("NewApi") 是一种用于抑制警告的注解，它告诉编译器在特定的代码中忽略关于 Android API 级别的警告。
@@ -181,7 +191,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         try {
             Log.d(tagLog, "fun onNotificationPosted(")
             Log.d(tagLog, "StatusBarNotification:" + encodeJson(sbn));
-            Log.d(tagLog, "))"  );
+            Log.d(tagLog, "))");
 
             val notification = sbn.notification
             Log.d(tagLog, "notification:" + encodeJson(notification));
@@ -191,13 +201,13 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             // 获取通知标题和内容
             val title = extras.getString("android.title") ?: "没有标题"
             var text = extras.getString("android.text") ?: "没有内容"
-            text=text.replace("Starred Contacts","");
-            text=text.replace("星标联系人","");
+            text = text.replace("Starred Contacts", "");
+            text = text.replace("星标联系人", "");
 
             // 拼接标题和.内容
             var messageWzFmt = "标题: $title, 内容: $text"
-            var mesg=title+text;
-            if(set4delp.contains(mesg))
+            var mesg = title + text;
+            if (set4delp.contains(mesg))
                 return;
             set4delp.add(mesg)
 
@@ -228,21 +238,25 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             if (title.contains("正在获取服务信息"))
                 return
-            if (containsAny2025(title,"闹钟 闹铃") )
+            if (containsAny2025(title, "闹钟 闹铃"))
                 return
-            if (containsAny2025("白资 百家乐 赌场 迪拜 反水 返水 盈利 佣金",messageWzFmt))
+            if (containsAny2025("白资 百家乐 盈利 赌场 迪拜 反水 返水 盈利 佣金", messageWzFmt))
                 return
-            if (containsAny2025("黑U   高仿 虚拟币 反水 返水 盈利 佣金",messageWzFmt))
+            if (containsAny2025("黑U usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金", messageWzFmt))
                 return
             if (title.contains("输入法"))
                 return
-            if (containsAny2025("奸淫 父女 出轨 大片 人妻 乱伦",messageWzFmt))
+            if (containsAny2025("奸淫 父女 出轨 大片 人妻 乱伦", messageWzFmt))
                 return
-            if (containsAny2025("环境问题对接 产研 产研中心 救火",messageWzFmt))
+            if (containsAny2025("环境问题对接 产研 产研中心 救火", messageWzFmt))
                 return
-            if (containsAny2025("出境漫游  中国移动 中国联通 联通 美好的一天从收钱开始",messageWzFmt))
+            if (containsAny2025(
+                    "出境漫游  中国移动 中国联通 联通 美好的一天从收钱开始",
+                    messageWzFmt
+                )
+            )
                 return
-            if (containsAny2025("正在备份照片  产研 产研中心 救火",messageWzFmt))
+            if (containsAny2025("正在备份照片  产研 产研中心 救火", messageWzFmt))
                 return
             if (title.contains("360手机卫士"))
                 return
@@ -250,16 +264,18 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             if (title.startsWith("正在下载"))
                 return
-            if (containsAny2025("闹钟 响铃",messageWzFmt))
+            if (containsAny2025("闹钟 响铃", messageWzFmt))
                 return
-            if (containsAny2025("降息 备用金 收钱提醒助手",messageWzFmt))
+            if (containsAny2025("降息 备用金 收钱提醒助手", messageWzFmt))
                 return
-            if (containsAny2025("特惠航线 特惠专场 旅行团 抢票 火车票 心动之旅",messageWzFmt))
+            if (containsAny2025("特惠航线 特惠专场 旅行团 抢票 火车票 心动之旅", messageWzFmt))
                 return
-            if (containsAny2025("登录过期 备用金 ",messageWzFmt))
+            if (containsAny2025("登录过期 备用金 ", messageWzFmt))
                 return
 
-            if (containsAny2025("热点 USB充电 USB调试 自动任务",messageWzFmt))
+            if (containsAny2025
+                    ("热点 USB充电 USB调试 自动任务", messageWzFmt)
+            )
                 return
 
             if (title.startsWith("正在通过USB充电"))
@@ -268,10 +284,10 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             if (title.startsWith("已连接到USB调试"))
                 return
 
-            if (isAllNumber(title)&& title.length>7 && text.isEmpty()) {
+            if (isAllNumber(title) && title.length > 7 && text.isEmpty()) {
                 //tel call
 
-                val nmb22=formatPhoneNumberForTTS(title)
+                val nmb22 = formatPhoneNumberForTTS(title)
                 messageWzFmt = "标题: 电话$nmb22, 内容: $text"
 
             } else {
@@ -280,26 +296,26 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                     return
             }
 
-         if( (!isContainCjkChar(title))  && (!isAllNumber(title))  )
 
-             {
-                 return
-             }
+            if ((!isContainCjkChar(title)) && (!isAllNumber(title))) {
+                return
+            }
 
             if (title == "Choose input method")
                 return
 
 
             //for xm12
-            if(containsAny2025(messageWzFmt,"所有人 抽查  打卡 meet google"))
-            {
+            if (containsAny2025(messageWzFmt, "所有人 抽查  打卡 meet google")) {
                 playNtfyMp3()
-            //playAudio("/storage/emulated/0/Documents/Darin-Be What You Wanna Be HQ.mp3")
+                //playAudio("/storage/emulated/0/Documents/Darin-Be What You Wanna Be HQ.mp3")
             }
 
 
             // 使用 TTS 阅读通知内容
             speakOut(messageWzFmt)
+
+            sendTgTxtMsg(messageWzFmt)
 
             Thread(Runnable {
                 sendNecho(messageWzFmt)
@@ -310,34 +326,124 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         Log.d(tagLog, "endfun onNotificationPosted()")
 
     }
+    fun rdTxtV2(message: String) {
+
+
+
+        //fun rdtxt
+        Log.d(tagLog, "fun rdTxtV2($message)")
+        // 检查 textToSpeech 是否为空
+
+
+        // 执行你的业务逻辑
+        // 动态设置语言
+        val language = Locale.CHINESE;//detectLanguage(message)
+        // textToSpeech?.language = language
+        // 这里可以设置语言、语速等
+        val languageResult = textToSpeech?.setLanguage(language)
+        //
+        //
+        // 检查语言是否支持
+        if (languageResult == TextToSpeech.LANG_MISSING_DATA || languageResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+            Log.d(
+                tagLog,
+                "Language is missing or not supported, attempting to handle this."
+            )
+            // 你可以提示用户安装语言包，或者选择其他可用语言
+        } else {
+            Log.d(tagLog, "Language supported.")
+        }
+        // 使用 TTS 阅读
+        Log.d(tagLog, "tts.spk() msg=" + message)
+
+
+        // 设置语音合成完成后的监听器
+        val utteranceId = getUuid()  // 唯一的ID，用来标识这次语音合成
+//                val params = Bundle().apply {
+//                    putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
+//                }
+
+
+        //  TTS 队列：TextToSpeech.QUEUE_FLUSH 表示清空之前的语音队列，立即播放当前消息。如果你希望多个语音消息依次播放，可以使用 TextToSpeech.QUEUE_ADD。
+
+        textToSpeech?.speak(message, TextToSpeech.QUEUE_ADD, null, utteranceId)
+
+
+        //if here then no spk,bcs cls too early
+        // textToSpeech?.stop()
+        // 设置完成语音合成后的监听器
+//                textToSpeech.setOnUtteranceCompletedListener { utteranceId ->
+//                    Log.d(tagLog, "Speech completed for utteranceId: $utteranceId")
+//                    // 语音合成完成后，关闭 TTS
+//                    textToSpeech.shutdown()
+//                    textToSpeech?.shutdown()
+//
+//                    Log.d(tagLog, "TTS shutdown after speech completion.")
+//                }
+
+        Log.d(tagLog, "endfun rdtxtV2()")
+
+
+
+    }
+
+
+    //bot  .me/ntfycoll2025bot.
+    //grp  ntfy mir coll
+    private  val TOKEN = "8121736741:AAGKUS35nyeTodd7JXIb8u-sNQPN2sh6olw"
+    private  val CHAT_ID = "-1002209160657" // 你的群组 ID
+    private  val TELEGRAM_API_URL = "https://api.telegram.org/bot$TOKEN/sendMessage"
 
     /**
-     * 功能 检测字符串str是否包含任何所列出的单词
-     * containWords 空格分割的字符串，要检测包含的单词表
-     * str 字符串
+     * 调用telegrame bot api 发送文本消息
      */
-    private fun containsAny2025(containWords: String, str: String): Boolean {
+    private fun sendTgTxtMsg(messageWzFmt: String) {
 
-        // 将 containWords 按空格分割成单词列表
-        val words = containWords.split(" ")
-            .filter { it.isNotBlank() }  // 过滤掉空字符串
+//        grpid=-1002209160657  //ntfy mir coll grp
+//
+//// 你的 Telegram 机器人 Token
+//        const token =  "8121736741:AAGKUS35nyeTodd7JXIb8u-sNQPN2sh6olw"
+//
+//        。。。
+        Thread {
+            try {
+                val url = URL(TELEGRAM_API_URL)
+                val conn = url.openConnection() as HttpURLConnection
+                conn.requestMethod = "POST"
+                conn.doOutput = true
+                conn.setRequestProperty("Content-Type", "application/json")
 
-        // 遍历每个单词，检查 str 是否包含该单词
-        for (word in words) {
-            if(word.trim().equals(""))
-                continue
-            if (str.contains(word, ignoreCase = true)) {
-                return true  // 如果 str 包含任意一个单词，返回 true
+                // 构造 JSON 请求体
+                val json = JSONObject().apply {
+                    put("chat_id", CHAT_ID)
+                    put("text", messageWzFmt)
+                    put("parse_mode", "Markdown") // 可选: "HTML" 或 "Markdown"
+                }
+
+                // 发送请求
+                val writer = OutputStreamWriter(conn.outputStream)
+                writer.write(json.toString())
+                writer.flush()
+                writer.close()
+
+                // 读取响应
+                val responseCode = conn.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    Log.d("TelegramBot", "消息发送成功")
+                } else {
+                    Log.e("TelegramBot", "发送失败，状态码: $responseCode")
+                }
+
+                conn.disconnect()
+            } catch (e: Exception) {
+                Log.e("TelegramBot", "发生异常: ${e.message}")
             }
-        }
-
-        // 如果 str 不包含任何一个单词，返回 false
-        return false
+        }.start() // 在子线程中执行网络请求，避免阻塞主线程
     }
 
 
     private fun sendNecho(message: String) {
-        try{
+        try {
             val deviceName2 = getDeviceName(this)
             val time = getTimestampInSecs()
             var msgid = encodeMd5(deviceName2 + message + time)
@@ -363,8 +469,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 scrToButtom(ma.binding.scrvw)
             }
         } catch (e: Exception) {
-        Log.e(tagLog, "Error sendNecho(): ${e.message}")
-    }
+            Log.e(tagLog, "Error sendNecho(): ${e.message}")
+        }
 
     }
 
@@ -378,7 +484,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         Log.d(tagLog, "))")
         try {
             // 初始化 TextToSpeech，避免影响前台通知的启动
-           // initializeTextToSpeech(rdTxt(message))
+            // initializeTextToSpeech(rdTxt(message))
 
             rdTxtV2(message)
             //end  initializeTextToSpeech
@@ -391,142 +497,6 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         Log.d(tagLog, "endfun speakOut()")
     }
 
-
-    private fun rdTxtV2(message: String) {
-
-
-
-            //fun rdtxt
-            Log.d(tagLog, "fun rdTxtV2($message)")
-            // 检查 textToSpeech 是否为空
-
-
-                // 执行你的业务逻辑
-                // 动态设置语言
-                val language = Locale.CHINESE;//detectLanguage(message)
-                // textToSpeech?.language = language
-                // 这里可以设置语言、语速等
-                val languageResult = textToSpeech?.setLanguage(language)
-                //
-                //
-                // 检查语言是否支持
-                if (languageResult == TextToSpeech.LANG_MISSING_DATA || languageResult == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Log.d(
-                        tagLog,
-                        "Language is missing or not supported, attempting to handle this."
-                    )
-                    // 你可以提示用户安装语言包，或者选择其他可用语言
-                } else {
-                    Log.d(tagLog, "Language supported.")
-                }
-                // 使用 TTS 阅读
-                Log.d(tagLog, "tts.spk() msg=" + message)
-
-
-                // 设置语音合成完成后的监听器
-                val utteranceId = getUuid()  // 唯一的ID，用来标识这次语音合成
-//                val params = Bundle().apply {
-//                    putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
-//                }
-
-
-                //  TTS 队列：TextToSpeech.QUEUE_FLUSH 表示清空之前的语音队列，立即播放当前消息。如果你希望多个语音消息依次播放，可以使用 TextToSpeech.QUEUE_ADD。
-
-                textToSpeech?.speak(message, TextToSpeech.QUEUE_ADD, null, utteranceId)
-
-
-                //if here then no spk,bcs cls too early
-                // textToSpeech?.stop()
-                // 设置完成语音合成后的监听器
-//                textToSpeech.setOnUtteranceCompletedListener { utteranceId ->
-//                    Log.d(tagLog, "Speech completed for utteranceId: $utteranceId")
-//                    // 语音合成完成后，关闭 TTS
-//                    textToSpeech.shutdown()
-//                    textToSpeech?.shutdown()
-//
-//                    Log.d(tagLog, "TTS shutdown after speech completion.")
-//                }
-
-                Log.d(tagLog, "endfun rdtxtV2()")
-
-
-
-        }
-
-
-
-    private fun rdTxt(message: String): (textToSpeech22: TextToSpeech?) -> Unit {
-
-        return { textToSpeech ->
-
-            //fun rdtxt
-            Log.d(tagLog, "fun rdtxt()")
-            // 检查 textToSpeech 是否为空
-            if (textToSpeech == null) {
-                Log.d(tagLog, "fun rdtxt()#tts is null")
-                Log.d(tagLog, "endfun rdtxt() ")
-               // return
-            }
-
-
-            if(textToSpeech!=null){
-                // 执行你的业务逻辑
-                // 动态设置语言
-                val language = Locale.CHINESE;//detectLanguage(message)
-                // textToSpeech?.language = language
-                // 这里可以设置语言、语速等
-                val languageResult = textToSpeech?.setLanguage(language)
-                //
-                //
-                // 检查语言是否支持
-                if (languageResult == TextToSpeech.LANG_MISSING_DATA || languageResult == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Log.d(
-                        tagLog,
-                        "Language is missing or not supported, attempting to handle this."
-                    )
-                    // 你可以提示用户安装语言包，或者选择其他可用语言
-                } else {
-                    Log.d(tagLog, "Language supported.")
-                }
-                // 使用 TTS 阅读
-                Log.d(tagLog, "tts.spk() msg=" + message)
-
-
-                // 设置语音合成完成后的监听器
-                val utteranceId = getUuid()  // 唯一的ID，用来标识这次语音合成
-//                val params = Bundle().apply {
-//                    putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
-//                }
-
-
-              //  TTS 队列：TextToSpeech.QUEUE_FLUSH 表示清空之前的语音队列，立即播放当前消息。如果你希望多个语音消息依次播放，可以使用 TextToSpeech.QUEUE_ADD。
-
-                textToSpeech?.speak(message, TextToSpeech.QUEUE_ADD, null, utteranceId)
-
-
-                //if here then no spk,bcs cls too early
-                // textToSpeech?.stop()
-                // 设置完成语音合成后的监听器
-                textToSpeech.setOnUtteranceCompletedListener { utteranceId ->
-                    Log.d(tagLog, "Speech completed for utteranceId: $utteranceId")
-                    // 语音合成完成后，关闭 TTS
-                    textToSpeech.shutdown()
-                    textToSpeech?.shutdown()
-
-                    Log.d(tagLog, "TTS shutdown after speech completion.")
-                }
-
-                Log.d(tagLog, "endfun rdtxt()")
-
-            }
-
-        }
-    }
-
-    private fun getUuid(): String? {
-// 生成一个随机的 UUID，并将其转换为字符串
-        return UUID.randomUUID().toString()
-    }
 
     override fun onInit(status: Int) {
         Log.d(tagLog, "fun onInit()")
