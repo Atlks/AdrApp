@@ -9,7 +9,7 @@ import java.util.UUID
 
 
 /**
- * 功能 检测字符串str是否包含任何所列出的单词
+ * 功能 检测字符串str是否包含任何所列出的单词..
  * containWords 空格分割的字符串，要检测包含的单词表
  * str 字符串
  */
