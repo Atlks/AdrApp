@@ -205,7 +205,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             text = text.replace("星标联系人", "");
 
             // 拼接标题和.内容
-            var messageWzFmt = "标题: $title, 内容: $text"
+            val deviceName2 = getDeviceName(this)
+            var messageWzFmt = "标题: $title, 内容: $text ,dvc="+deviceName2;
             var mesg = title + text;
             if (set4delp.contains(mesg))
                 return;
@@ -312,10 +313,13 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             }
 
 
+            //todos  tts需要独立出去
+
             // 使用 TTS 阅读通知内容
             speakOut(messageWzFmt)
 
             sendTgTxtMsg(messageWzFmt)
+
 
             Thread(Runnable {
                 sendNecho(messageWzFmt)
