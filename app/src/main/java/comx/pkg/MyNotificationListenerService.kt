@@ -204,13 +204,27 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             text = text.replace("Starred Contacts", "");
             text = text.replace("星标联系人", "");
 
-            // 拼接标题和.内容
-            val deviceName2 = getDeviceName(this)
-            var messageWzFmt = "标题: $title, 内容: $text ,dvc="+deviceName2;
+
             var mesg = title + text;
+
             if (set4delp.contains(mesg))
                 return;
             set4delp.add(mesg)
+
+
+
+
+            // 拼接标题和.内容
+            val deviceName2 = getDeviceName(this)
+
+            //--------same dvc ingrn
+            if(mesg.contains(deviceName2))
+                return;
+
+
+            var messageWzFmt = "标题=$title, 内容=$text ,dvc="+deviceName2;
+
+
 
             if (title == "没有标题" && text == "没有内容")
                 return
@@ -303,6 +317,9 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             }
 
             if (title == "Choose input method")
+                return
+
+            if (containsAny2025("姜育恒 歌曲 ", messageWzFmt))
                 return
 
 
@@ -446,7 +463,10 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     }
 
 
+  //send tg replace
+    @Deprecated("")
     private fun sendNecho(message: String) {
+      // return;
         try {
             val deviceName2 = getDeviceName(this)
             val time = getTimestampInSecs()
@@ -459,6 +479,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             write_row(this, msgid, encodeJson_msg);
 
             //-----------block show list
+            //todo also need dep ?
             var smsList = ListSms()
             smsList = Fmtforeachx(smsList)
             //order by sendtime
@@ -466,12 +487,13 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             // binding.textView.text = "cnt:" + smsList.size
             //goto main thrd updt ui
             // 切换到主线程更新 UI
-            var ma: MainActivity = AppCompatActivity1main as MainActivity
-            ma.runOnUiThread {
-                ma.bindData2Table(smsList);
-                //滚动到底部
-                scrToButtom(ma.binding.scrvw)
-            }
+            //not refrsh ui,bcs send to tg
+//            var ma: MainActivity = AppCompatActivity1main as MainActivity
+//            ma.runOnUiThread {
+//                ma.bindData2Table(smsList);
+//                //滚动到底部
+//                scrToButtom(ma.binding.scrvw)
+//            }
         } catch (e: Exception) {
             Log.e(tagLog, "Error sendNecho(): ${e.message}")
         }

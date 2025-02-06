@@ -402,13 +402,14 @@ class MainActivity : AppCompatActivity() {
             setRcvMsgLsnr()
 
 
-            //block show list
+            //------------block show list
             Log.d(tagLog, " block show list ")
             var smsList = ListSms()
             Log.d(tagLog, "smslist.size:" + smsList.size)
             // binding.textView.text = "cnt:" + smsList.size
             smsList = Fmtforeachx(smsList)
 
+            //only here show msg ,bcs only load once
             bindData2Table(smsList);
             binding.txtbx1.setText("")
 
@@ -416,6 +417,7 @@ class MainActivity : AppCompatActivity() {
             var scrollView = binding.scrvw;
             scrToButtom(scrollView)
 
+            //----------endblk show lst
             //  keeplive(this)
 
             Log.d(tagLog, "endfun onCrt()")
@@ -981,13 +983,14 @@ class MainActivity : AppCompatActivity() {
                 Log.d(tagLog, "smslist.size:" + smsList.size)
                 // binding.textView.text = "cnt:" + smsList.size
                 //goto main thrd updt ui
-                withContext(Dispatchers.Main) {
-
-                    bindData2Table(smsList);
-                    //滚动到底部
-                    var scrollView = binding.scrvw;
-                    scrToButtom(scrollView)
-                }
+                //send to tg not need refresh
+//                withContext(Dispatchers.Main) {
+//
+//                    bindData2Table(smsList);
+//                    //滚动到底部
+//                    var scrollView = binding.scrvw;
+//                    scrToButtom(scrollView)
+//                }
             }
 
 
@@ -1059,12 +1062,12 @@ class MainActivity : AppCompatActivity() {
         Log.d(tagLog, "smslist.size:" + smsList.size)
         // binding.textView.text = "cnt:" + smsList.size
         // 切换到主线程更新 UI
-        runOnUiThread {
-            bindData2Table(smsList);
-            //滚动到底部
-            var scrollView = binding.scrvw;
-            scrToButtom(scrollView)
-        }
+//        runOnUiThread {
+//            bindData2Table(smsList);
+//            //滚动到底部
+//            var scrollView = binding.scrvw;
+//            scrToButtom(scrollView)
+//        }
 
 
 
