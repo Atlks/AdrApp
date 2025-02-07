@@ -19,12 +19,19 @@ import lib.containsAny2025
 
 
 import java.util.Locale
-import java.util.UUID
 import android.util.Log
+import lib.Notify2025
+import lib.context8
+import lib.deviceName
 import lib.getUuid
+import lib.iniTTS
+import lib.rdTxtByTTSV2
+import lib.sendNecho
+import lib.sendTgTxtMsg
+import lib.speakOut
+import lib.textToSpeech
 
 import org.json.JSONObject
-import java.io.IOException
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
@@ -39,6 +46,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     override fun onCreate() {
         Log.d(tagLog, "fun MyNotificationListenerService.onCreate()")
         super.onCreate()
+          deviceName = getDeviceName(this)
+        context8=this;
         // 在这里不初始化 TextToSpeech，延迟到 onStartCommand
         // textToSpeech = TextToSpeech(this, this)
         Log.d(tagLog, "endfun MyNotificationListenerService.onCreate()")
@@ -57,7 +66,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         startForeground(1, newNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
 
 
-        iniTTS()
+        iniTTS(this)
 
         Log.d(tagLog, "endfun onStartCommand()")
 
@@ -66,81 +75,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         return START_REDELIVER_INTENT
     }
 
-    var textToSpeech: TextToSpeech? = null
-    private fun initializeTextToSpeech(funx: (textToSpeech22: TextToSpeech?) -> Unit) {
 
-        Log.d(tagLog, "\n\n\n")
-        Log.d(tagLog, "fun iniTTS()")
-
-
-        textToSpeech = TextToSpeech(this, object : TextToSpeech.OnInitListener {
-            override fun onInit(status: Int) {
-                Log.d(tagLog, "\n\n\n")
-                Log.d(tagLog, "fun tts.onini($status)")
-                if (status == TextToSpeech.SUCCESS) {
-                    // 进行 TextToSpeech 的配置和调用
-                    //success in xm135g..but fail in xm12
-                    Log.d(tagLog, "TextToSpeech initialization success..")
-                    //  textToSpeech?.let { funx(it) }
-                } else {
-                    Log.d(tagLog, "TextToSpeech initialization failed with status code: $status")
-
-                    //  Log.d(tagLog, "TextToSpeech initialization failed")
-                }
-                Log.d(tagLog, "endfun tts.onini()")
-            }
-
-            fun onDestroy() {
-                Log.d(tagLog, "fun onDestroy2()")
-
-
-                textToSpeech?.stop()
-                textToSpeech?.shutdown()
-                Log.d(tagLog, "endfun onDestroy2()")
-            }
-
-
-        })
-        Log.d(tagLog, "endfun iniTTS()")
-    }
-
-
-    private fun iniTTS() {
-
-        Log.d(tagLog, "\n\n\n")
-        Log.d(tagLog, "fun iniTTS()")
-
-
-        textToSpeech = TextToSpeech(this, object : TextToSpeech.OnInitListener {
-            override fun onInit(status: Int) {
-                Log.d(tagLog, "\n\n\n")
-                Log.d(tagLog, "fun tts.onini($status)")
-                if (status == TextToSpeech.SUCCESS) {
-                    // 进行 TextToSpeech 的配置和调用
-                    //success in xm135g..but fail in xm12
-                    Log.d(tagLog, "TextToSpeech initialization success..")
-                    //  textToSpeech?.let { funx(it) }
-                } else {
-                    Log.d(tagLog, "TextToSpeech initialization failed with status code: $status")
-
-                    //  Log.d(tagLog, "TextToSpeech initialization failed")
-                }
-                Log.d(tagLog, "endfun tts.onini()")
-            }
-
-//            fun onDestroy() {
-//                Log.d(tagLog, "fun onDestroy2()")
-//
-//
-//                textToSpeech?.stop()
-//                textToSpeech?.shutdown()
-//                Log.d(tagLog, "endfun onDestroy2()")
-//            }
-
-
-        })
-        Log.d(tagLog, "endfun iniTTS()")
-    }
 
     private fun newNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -195,7 +130,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
             val notification = sbn.notification
             Log.d(tagLog, "notification:" + encodeJson(notification));
-
+            val postTime = sbn.postTime // 通知的时间戳
+            val packageName = sbn.packageName // 应用包名，例如 "com.whatsapp"
             val extras = notification.extras
 
             // 获取通知标题和内容
@@ -203,7 +139,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             var text = extras.getString("android.text") ?: "没有内容"
             text = text.replace("Starred Contacts", "");
             text = text.replace("星标联系人", "");
-
+           // val deviceName = getDeviceName(this)
+            val  ntfy1= Notify2025 (title,text,postTime,packageName,deviceName);
 
             var mesg = title + text;
 
@@ -222,7 +159,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return;
 
 
-            var messageWzFmt = "标题=$title, 内容=$text ,dvc="+deviceName2;
+            var messageWzFmt = "标题=$title, 内容=$text ,device="+deviceName2;
 
 
 
@@ -287,6 +224,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             if (containsAny2025("登录过期 备用金 ", messageWzFmt))
                 return
+            if (containsAny2025("尊享 权益 特价 毗邻 日利率 ", messageWzFmt))
+                return
 
             if (containsAny2025
                     ("热点 USB充电 USB调试 自动任务", messageWzFmt)
@@ -299,11 +238,12 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             if (title.startsWith("已连接到USB调试"))
                 return
 
+            var messageWzFmt4readSpk=messageWzFmt
             if (isAllNumber(title) && title.length > 7 && text.isEmpty()) {
                 //tel call
 
                 val nmb22 = formatPhoneNumberForTTS(title)
-                messageWzFmt = "标题: 电话$nmb22, 内容: $text"
+                messageWzFmt4readSpk = "标题: 电话$nmb22, 内容: $text"
 
             } else {
                 //all english
@@ -319,7 +259,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             if (title == "Choose input method")
                 return
 
-            if (containsAny2025("姜育恒 歌曲 ", messageWzFmt))
+            if (containsAny2025("姜育恒 歌曲 醉酒歌 我的唇吻不到我爱的人 再见也是朋友 再见只是陌生人 女人的选择 世纪精选 漫漫人海我遇见了你", messageWzFmt))
                 return
 
 
@@ -332,13 +272,15 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
             //todos  tts需要独立出去
 
-            // 使用 TTS 阅读通知内容
-            speakOut(messageWzFmt)
+            // 使用 TTS 阅读通知内容  tel fmt need fmt
+            speakOut(messageWzFmt4readSpk)
 
             sendTgTxtMsg(messageWzFmt)
 
 
             Thread(Runnable {
+                //here noly log ,not show refesh ui,too slow every time,
+                //maybe timer refresh is better
                 sendNecho(messageWzFmt)
             }).start()
         } catch (e: Exception) {
@@ -347,181 +289,14 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         Log.d(tagLog, "endfun onNotificationPosted()")
 
     }
-    fun rdTxtV2(message: String) {
 
 
-
-        //fun rdtxt
-        Log.d(tagLog, "fun rdTxtV2($message)")
-        // 检查 textToSpeech 是否为空
-
-
-        // 执行你的业务逻辑
-        // 动态设置语言
-        val language = Locale.CHINESE;//detectLanguage(message)
-        // textToSpeech?.language = language
-        // 这里可以设置语言、语速等
-        val languageResult = textToSpeech?.setLanguage(language)
-        //
-        //
-        // 检查语言是否支持
-        if (languageResult == TextToSpeech.LANG_MISSING_DATA || languageResult == TextToSpeech.LANG_NOT_SUPPORTED) {
-            Log.d(
-                tagLog,
-                "Language is missing or not supported, attempting to handle this."
-            )
-            // 你可以提示用户安装语言包，或者选择其他可用语言
-        } else {
-            Log.d(tagLog, "Language supported.")
-        }
-        // 使用 TTS 阅读
-        Log.d(tagLog, "tts.spk() msg=" + message)
-
-
-        // 设置语音合成完成后的监听器
-        val utteranceId = getUuid()  // 唯一的ID，用来标识这次语音合成
-//                val params = Bundle().apply {
-//                    putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
-//                }
-
-
-        //  TTS 队列：TextToSpeech.QUEUE_FLUSH 表示清空之前的语音队列，立即播放当前消息。如果你希望多个语音消息依次播放，可以使用 TextToSpeech.QUEUE_ADD。
-
-        textToSpeech?.speak(message, TextToSpeech.QUEUE_ADD, null, utteranceId)
-
-
-        //if here then no spk,bcs cls too early
-        // textToSpeech?.stop()
-        // 设置完成语音合成后的监听器
-//                textToSpeech.setOnUtteranceCompletedListener { utteranceId ->
-//                    Log.d(tagLog, "Speech completed for utteranceId: $utteranceId")
-//                    // 语音合成完成后，关闭 TTS
-//                    textToSpeech.shutdown()
-//                    textToSpeech?.shutdown()
-//
-//                    Log.d(tagLog, "TTS shutdown after speech completion.")
-//                }
-
-        Log.d(tagLog, "endfun rdtxtV2()")
-
-
-
-    }
-
-
-    //bot  .me/ntfycoll2025bot.
-    //grp  ntfy mir coll
-    private  val TOKEN = "8121736741:AAGKUS35nyeTodd7JXIb8u-sNQPN2sh6olw"
-    private  val CHAT_ID = "-1002209160657" // 你的群组 ID
-    private  val TELEGRAM_API_URL = "https://api.telegram.org/bot$TOKEN/sendMessage"
-
-    /**
-     * 调用telegrame bot api 发送文本消息
-     */
-    private fun sendTgTxtMsg(messageWzFmt: String) {
-
-//        grpid=-1002209160657  //ntfy mir coll grp
-//
-//// 你的 Telegram 机器人 Token
-//        const token =  "8121736741:AAGKUS35nyeTodd7JXIb8u-sNQPN2sh6olw"
-//
-//        。。。
-        Thread {
-            try {
-                val url = URL(TELEGRAM_API_URL)
-                val conn = url.openConnection() as HttpURLConnection
-                conn.requestMethod = "POST"
-                conn.doOutput = true
-                conn.setRequestProperty("Content-Type", "application/json")
-
-                // 构造 JSON 请求体
-                val json = JSONObject().apply {
-                    put("chat_id", CHAT_ID)
-                    put("text", messageWzFmt)
-                    put("parse_mode", "Markdown") // 可选: "HTML" 或 "Markdown"
-                }
-
-                // 发送请求
-                val writer = OutputStreamWriter(conn.outputStream)
-                writer.write(json.toString())
-                writer.flush()
-                writer.close()
-
-                // 读取响应
-                val responseCode = conn.responseCode
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    Log.d("TelegramBot", "消息发送成功")
-                } else {
-                    Log.e("TelegramBot", "发送失败，状态码: $responseCode")
-                }
-
-                conn.disconnect()
-            } catch (e: Exception) {
-                Log.e("TelegramBot", "发生异常: ${e.message}")
-            }
-        }.start() // 在子线程中执行网络请求，避免阻塞主线程
-    }
-
-
-  //send tg replace
-    @Deprecated("")
-    private fun sendNecho(message: String) {
-      // return;
-        try {
-            val deviceName2 = getDeviceName(this)
-            val time = getTimestampInSecs()
-            var msgid = encodeMd5(deviceName2 + message + time)
-            val msg1obj = Msg(deviceName2, message, time, msgid)
-            val encodeJson_msg = encodeJson(msg1obj)
-
-
-            sendMsg(encodeJson_msg)
-            write_row(this, msgid, encodeJson_msg);
-
-            //-----------block show list
-            //todo also need dep ?
-            var smsList = ListSms()
-            smsList = Fmtforeachx(smsList)
-            //order by sendtime
-            Log.d(tagLog, "smslist.size:" + smsList.size)
-            // binding.textView.text = "cnt:" + smsList.size
-            //goto main thrd updt ui
-            // 切换到主线程更新 UI
-            //not refrsh ui,bcs send to tg
-//            var ma: MainActivity = AppCompatActivity1main as MainActivity
-//            ma.runOnUiThread {
-//                ma.bindData2Table(smsList);
-//                //滚动到底部
-//                scrToButtom(ma.binding.scrvw)
-//            }
-        } catch (e: Exception) {
-            Log.e(tagLog, "Error sendNecho(): ${e.message}")
-        }
-
-    }
 
 
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
         // 可选：当通知被移除时执行操作
     }
 
-    private fun speakOut(message: String) {
-        Log.d(tagLog, "fun speakOut((" + message)
-        Log.d(tagLog, "))")
-        try {
-            // 初始化 TextToSpeech，避免影响前台通知的启动
-            // initializeTextToSpeech(rdTxt(message))
-
-            rdTxtV2(message)
-            //end  initializeTextToSpeech
-            //  textToSpeech?.speak(message, TextToSpeech.QUEUE_FLUSH, null, null)
-
-        } catch (e: Exception) {
-            Log.e(tagLog, "Error speakOut(): ${e.message}")
-        }
-
-        Log.d(tagLog, "endfun speakOut()")
-    }
 
 
     override fun onInit(status: Int) {

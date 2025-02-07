@@ -9,7 +9,8 @@ import org.bitcoinj.crypto.MnemonicException
 import org.bouncycastle.util.encoders.Hex
 import java.util.UUID
 
-public val tagLog = "MainActivity1114"
+val tagLog = "MainActivity1114"
+
 fun geneMmnc(hexPrivateKey: String): String {
     // 将十六进制密钥转换为字节数组
     val privateKeyBytes = Hex.decode(hexPrivateKey)
