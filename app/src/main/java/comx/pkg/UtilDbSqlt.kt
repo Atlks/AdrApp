@@ -62,7 +62,7 @@ fun write_row(context: Context, k: String, v: String ): Long {
 
     // 插入数据
     val rowId = db.insert(UtilDbSqlt.tableName, null, values)
-    db.close()
+    //db.close()
     Log.d(tagLog, "endfun write_row()#ret rowId="+rowId)
     return rowId
 }
@@ -86,7 +86,7 @@ fun write_row( db: String,k: String, v: String ,context: Context): Long {
 
     // 插入数据
     val rowId = db.insert(UtilDbSqlt.tableName, null, values)
-    db.close()
+    //db.close()
     Log.d(tagLog, "endfun write_row()#ret rowId="+rowId)
     return rowId
 }
@@ -127,6 +127,6 @@ fun getAllrows(context: Context): List<KVrow> {
         }
         close()
     }
-    db.close()
+    //db.close()
     return messageList
 }

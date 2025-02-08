@@ -88,7 +88,7 @@ fun del_row(id: String,   db: SQLiteDatabase): Int {
     //
 
     val rowId = db.delete(tbNm, "k = ?", arrayOf(id))
-    db.close()
+ //   db.close()
     Log.d(tagLog, "endfun del_row()#ret rowId=" + rowId)
     return rowId
 }
@@ -123,6 +123,6 @@ fun getAllrowsV2(  db: SQLiteDatabase): List<KVrow> {
         }
         close()
     }
-    db.close()
+    //db.close()
     return messageList
 }

@@ -34,15 +34,18 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.ui.AppBarConfiguration
 import com.aaapkg.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import lib.getStackTraceString
 import lib.sendMsgTg
 import lib.sendMsgTgRetry
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Thread.sleep
+import kotlin.system.exitProcess
 
 
 // val tagLog = "MainActivity1114"
@@ -65,27 +68,83 @@ class MainActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val runnableTaskTimer = object : Runnable {
         override fun run() {
-            Log.d(tagLog, "定时器触发：7 秒")
+            try {
+                Log.d(tagLog, "定时器触发：7 秒")
 
-            val dbHelper = UtilDbSqltV2(appContext, "dbIm2025")
-            val db = dbHelper.writableDatabase
-            var lst = getAllrowsV2(db);//List<KVrow>
-            lst.forEachIndexed { index, msg ->
+                val dbHelper = UtilDbSqltV2(applicationContext, "dbIm2025")
+                val db = dbHelper.writableDatabase
+                var lst = getAllrowsV2(db);//List<KVrow>
+                lst.forEachIndexed { index, msg ->
 
-                Thread {
+                    // 直接用全局协程，不要新建 Thread
+                    CoroutineScope(Dispatchers.IO).launch {
+                        sendMsgTgRetry(msg.v)
 
-                    sendMsgTgRetry(msg.v);
-                    del_row(msg.k, db)
-                }.start()
+                        // 删除数据库记录（必须在同一个线程里操作）
+                        synchronized(db) {
+                            del_row(msg.k, db)
+                        }
+                    }
+                    //   } finally {
+                    //            db.close() // 释放数据库连接
+                    //        }
 
+
+                }
+
+
+            } catch (e: Exception) {
+                Log.d(tagLog, "runnableTaskTimer().e=" + getStackTraceString(e))
+
+                e.printStackTrace()
+
+            } finally {
 
             }
 
-            handler.postDelayed(this, 30*1000) // 继续执行
-        }
+            handler.postDelayed(this, 30 * 1000) // 继续执行
+
+        }  //end run()
+    }
+
+    private fun handleUncaughtException(thread: Thread, throwable: Throwable) {
+        // 记录错误日志
+        Log.e(tagLog, "未捕获异常: ", throwable)
+
+        // 可以上传错误日志到服务器
+        uploadCrashReport(throwable)
+
+        // 显示 Toast 提示（需要在主线程中执行）
+        Thread {
+            Looper.prepare()
+            Toast.makeText(applicationContext, "程序发生异常，即将重启", Toast.LENGTH_LONG).show()
+            Looper.loop()
+        }.start()
+
+        // 延迟 2 秒后，重启应用
+        Thread.sleep(15000)
+        restartApp()
+
+        // 结束进程
+        exitProcess(0)
+    }
+
+    private fun uploadCrashReport(throwable: Throwable) {
+        // 在这里上传日志到服务器
+    }
+
+    private fun restartApp() {
+        val intent = packageManager.getLaunchIntentForPackage(packageName)
+        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 设置全局异常处理器
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            handleUncaughtException(thread, throwable)
+        }
+
         appContext = applicationContext
         AppCompatActivity1main = this
 
