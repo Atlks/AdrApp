@@ -4,6 +4,7 @@ package comx.pkg
 
 
 
+import android.annotation.SuppressLint
 import org.bitcoinj.crypto.MnemonicCode
 import org.bitcoinj.crypto.MnemonicException
 import org.bouncycastle.util.encoders.Hex
@@ -54,6 +55,7 @@ fun geneMmncCrpt(seedMd5Hexencode: String): String {
     return s
 }
 
+@SuppressLint("SuspiciousIndentation")
 fun generateMnemonicRdm(): String {
 
   var seed=generateUUID()

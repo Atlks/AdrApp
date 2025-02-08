@@ -14,39 +14,46 @@ import java.net.URL
 
 //bot  .me/ntfycoll2025bot.
 //grp  ntfy mir coll
-   val TOKEN = "8121736741:AAGKUS35nyeTodd7JXIb8u-sNQPN2sh6olw"
-   val CHAT_ID = "-1002209160657" // 你的群组 ID
-   val TELEGRAM_API_URL = "https://api.telegram.org/bot$TOKEN/sendMessage"
+val TOKEN = "8121736741:AAGKUS35nyeTodd7JXIb8u-sNQPN2sh6olw"
+val CHAT_ID = "-1002209160657" // 你的群组 ID
+val TELEGRAM_API_URL = "https://api.telegram.org/bot$TOKEN/sendMessage"
 
 
 fun sendMsgTg(messageWzFmt: String) {
     Thread {
 
         try {
-            sendMsgTgCore(messageWzFmt)
+            sendMsgTgRetry(messageWzFmt)
         } catch (e: Exception) {
-            try {
-                sendMsgTgCore(messageWzFmt)
-            } catch (e: Exception) {
 
-                Log.e("TelegramBot", "发生异常: ${e.message}")
-                //  e.printStackTrace()
-                val stackTraceString = getStackTraceString(e)
-                println(stackTraceString)
-                wrtLib_failMsg(messageWzFmt)
-                //end catch
-            }
+
+            Log.e("TelegramBot", "发生异常: ${e.message}")
+            //  e.printStackTrace()
+            val stackTraceString = getStackTraceString(e)
+            println(stackTraceString)
+            wrtLib_failMsg(messageWzFmt)
+
             //end catch
 
         }
     }.start() // 在子线程中执行网络请求，避免阻塞主线程
+    //   Thread {   }.start()
+}
+
+fun sendMsgTgRetry(messageWzFmt: String) {
+
+    try {
+        sendMsgTgCore(messageWzFmt)
+    } catch (e: Exception) {
+        sendMsgTgCore(messageWzFmt)
+    }
 }
 
 fun wrtLib_failMsg(messageWzFmt: String) {
 
-    val dbHelper = UtilDbSqltV2( appContext, "failMsgs")
+    val dbHelper = UtilDbSqltV2(appContext, "failMsgs")
     val db = dbHelper.writableDatabase
-    write_rowV2(messageWzFmt, messageWzFmt,   db);
+    write_rowV2(messageWzFmt, messageWzFmt, db);
 }
 
 /**

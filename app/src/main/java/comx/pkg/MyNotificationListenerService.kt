@@ -7,6 +7,8 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.speech.tts.TextToSpeech
@@ -188,28 +190,16 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             if (title.contains("输入法"))
                 return
-            if (containsAny2025("奸淫 父女 出轨 大片 人妻 乱伦", messageWzFmt))
-                return
-            if (containsAny2025("环境问题对接 产研 产研中心 救火", messageWzFmt))
-                return
-            if (containsAny2025(
-                    "出境漫游  中国移动 中国联通 联通 美好的一天从收钱开始",
-                    messageWzFmt
-                )
-            )
-                return
-            if (containsAny2025("正在备份照片  产研 产研中心 救火", messageWzFmt))
-                return
+
             if (title.contains("360手机卫士"))
                 return
             if (title.contains("短信") && title.contains("正在运行"))
                 return
             if (title.startsWith("正在下载"))
                 return
-            if (containsAny2025("闹钟 响铃", messageWzFmt))
+            if(chkfltNotOk(messageWzFmt))
                 return
-            if (containsAny2025("降息 备用金 收钱提醒助手", messageWzFmt))
-                return
+
             if (containsAny2025("特惠航线 特惠专场 旅行团 抢票 火车票 心动之旅", messageWzFmt))
                 return
             if (containsAny2025("登录过期 备用金 ", messageWzFmt))
@@ -280,7 +270,33 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
     }
 
+    private fun chkfltNotOk(messageWzFmt: String): Boolean {
+        if (containsAny2025("闹钟 响铃", messageWzFmt))
+            return true;
+        if (containsAny2025("降息 备用金 收钱提醒助手", messageWzFmt))
+            return true;
 
+        //cp sys tips
+        if (containsAny2025("备份正在进行中", messageWzFmt))
+            return true;
+
+
+        if (containsAny2025("奸淫 父女 出轨 大片 人妻 乱伦", messageWzFmt))
+            return true
+        if (containsAny2025("环境问题对接 产研 产研中心 救火", messageWzFmt))
+            return true
+        if (containsAny2025(
+                "出境漫游  中国移动 中国联通 联通 美好的一天从收钱开始",
+                messageWzFmt
+            )
+        )
+            return true
+        if (containsAny2025("正在备份照片  产研 产研中心 救火", messageWzFmt))
+            return true
+
+        return  false;
+
+    }
 
 
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
