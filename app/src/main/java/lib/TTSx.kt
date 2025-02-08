@@ -197,7 +197,7 @@ fun speakOut(message: String) {
         val msg1obj = Msg(deviceName, message, time, msgid)
         val encodeJson_msg = encodeJson(msg1obj)
 
-
+         //our im
         sendMsg(encodeJson_msg)
         write_row(context8, msgid, encodeJson_msg);
 

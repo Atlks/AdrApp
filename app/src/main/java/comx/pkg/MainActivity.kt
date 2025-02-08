@@ -59,6 +59,21 @@ class MainActivity : AppCompatActivity() {
     val REQUEST_CODE_SELECT_DIRECTORY = 895
     val REQUEST_CODE_SELECT_Fil = 896
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
+        try {
+            val dbHelper = UtilDbSqltV2(this, "dbIm2025")
+            val db = dbHelper.writableDatabase
+            write_rowV2("1", "1txt",   db);
+
+            var lst11 = getAllrowsV2(db);
+            println(11)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+
         appContext = applicationContext
         AppCompatActivity1main = this
 
@@ -203,7 +218,7 @@ class MainActivity : AppCompatActivity() {
                 playMp3BtnEvt()
             }
 
-          //  playMp3Btn
+            //  playMp3Btn
 
 
             var menudiv = binding.menudiv
@@ -435,14 +450,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun setNtfyMp3() {
         Log.d(tagLog, "fun setNtfyMp3()")
-        try{
+        try {
 
-         //   val intent = Intent(Intent.ACTION_GET_CONTENT)
+            //   val intent = Intent(Intent.ACTION_GET_CONTENT)
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-          //   intent.addCategory(Intent.CATEGORY_OPENABLE)
+            //   intent.addCategory(Intent.CATEGORY_OPENABLE)
             //  Intent.CATEGORY_OPENABLE 确保用户选择的文件是能够通过应用程序打开的文件，避免选择那些不能操作的文件（例如一些系统文件或无关的文件）。
             intent.type = "*/*"
-          //  intent.type = "audio/mp3"  // 只允许选择 MP3 文件
+            //  intent.type = "audio/mp3"  // 只允许选择 MP3 文件
             //  val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
             startActivityForResult(intent, REQUEST_CODE_SELECT_Fil)
 
@@ -455,8 +470,6 @@ class MainActivity : AppCompatActivity() {
 
 
     }
-
-
 
 
     @SuppressLint("Range")
@@ -599,10 +612,8 @@ class MainActivity : AppCompatActivity() {
                     editor.putString("selected_file_uri", it.toString())
                     editor.apply()
                 }
-            }else
-
-            {
-                Log.d(tagLog, "resultCode not = RESULT_OK " )
+            } else {
+                Log.d(tagLog, "resultCode not = RESULT_OK ")
             }
         }
     }
@@ -871,8 +882,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
     private fun reqSycMsgClk(deviceName1: String) {
         val deviceName2 = getDeviceName(this)
 
@@ -1068,7 +1077,6 @@ class MainActivity : AppCompatActivity() {
 //            var scrollView = binding.scrvw;
 //            scrToButtom(scrollView)
 //        }
-
 
 
         Log.d(tagLog, "endfun msgrecv()#ret=")

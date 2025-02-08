@@ -3,9 +3,10 @@ package lib
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import comx.pkg.tagLog
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.util.Locale
 import java.util.UUID
-
 
 
 /**
@@ -13,7 +14,7 @@ import java.util.UUID
  * containWords 空格分割的v字符串，要检测包含的单词表
  * str 字符串
  */
-  fun containsAny2025(containWords: String, str: String): Boolean {
+fun containsAny2025(containWords: String, str: String): Boolean {
 
     // 将 containWords 按空格分割成单词列表
     val words = containWords.split(" ")
@@ -21,7 +22,7 @@ import java.util.UUID
 
     // 遍历每个单词，检查 str 是否包含该单词
     for (word in words) {
-        if(word.trim().equals(""))
+        if (word.trim().equals(""))
             continue
         if (str.contains(word, ignoreCase = true)) {
             return true  // 如果 str 包含任意一个单词，返回 true
@@ -31,7 +32,8 @@ import java.util.UUID
     // 如果 str 不包含任何一个单词，返回 false
     return false
 }
-  fun rdTxt(message: String): (textToSpeech22: TextToSpeech?) -> Unit {
+
+fun rdTxt(message: String): (textToSpeech22: TextToSpeech?) -> Unit {
 
     return { textToSpeech ->
 
@@ -45,7 +47,7 @@ import java.util.UUID
         }
 
 
-        if(textToSpeech!=null){
+        if (textToSpeech != null) {
             // 执行你的业务逻辑
             // 动态设置语言
             val language = Locale.CHINESE;//detectLanguage(message)
@@ -99,7 +101,15 @@ import java.util.UUID
     }
 }
 
-  fun getUuid(): String? {
+fun getUuid(): String? {
 // 生成一个随机的 UUID，并将其转换为字符串
     return UUID.randomUUID().toString()
+}
+
+
+fun getStackTraceString(throwable: Throwable): String {
+    val stringWriter = StringWriter()
+    val printWriter = PrintWriter(stringWriter)
+    throwable.printStackTrace(printWriter)
+    return stringWriter.toString()
 }

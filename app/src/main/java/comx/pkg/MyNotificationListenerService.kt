@@ -14,27 +14,17 @@ import android.speech.tts.TextToSpeech
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.aaapkg.R
-import comx.pkg.MainActivity.Msg
 import lib.containsAny2025
 
 
-import java.util.Locale
 import android.util.Log
 import lib.Notify2025
 import lib.context8
 import lib.deviceName
-import lib.getUuid
 import lib.iniTTS
-import lib.rdTxtByTTSV2
+import lib.sendMsgTg
 import lib.sendNecho
-import lib.sendTgTxtMsg
 import lib.speakOut
-import lib.textToSpeech
-
-import org.json.JSONObject
-import java.io.OutputStreamWriter
-import java.net.HttpURLConnection
-import java.net.URL
 
 /**
  * ord
@@ -275,7 +265,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             // 使用 TTS 阅读通知内容  tel fmt need fmt
             speakOut(messageWzFmt4readSpk)
 
-            sendTgTxtMsg(messageWzFmt)
+            sendMsgTg(messageWzFmt)
 
 
             Thread(Runnable {

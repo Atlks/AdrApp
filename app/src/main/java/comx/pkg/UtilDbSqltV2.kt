@@ -6,23 +6,25 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 
-class UtilDbSqlt(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class UtilDbSqltV2(context: Context, DATABASE_NAME: String) :
+    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+
+
+
+      val COLUMN_K = "k"
+      val COLUMN_V = "v"
 
     companion object {
-        private const val DATABASE_NAME = "chat5.db"
+        //  private const val DATABASE_NAME = DATABASE_NAME2
         private const val DATABASE_VERSION = 1
 
-        // 表名和字段
-        const val tableName = "tbl1"
 
-        const val COLUMN_K = "k"
-        const val COLUMN_V = "v"
 
     }
 
     override fun onCreate(db: SQLiteDatabase) {
         val createTableQuery = """
-            CREATE TABLE $tableName (
+            CREATE TABLE $tbNm (
                 
                 $COLUMN_K TEXT PRIMARY KEY ,
                 $COLUMN_V TEXT
@@ -33,25 +35,27 @@ class UtilDbSqlt(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, nu
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-       // db.execSQL("DROP TABLE IF EXISTS $TABLE_MESSAGES")
-       // onCreate(db)
+        // db.execSQL("DROP TABLE IF EXISTS $TABLE_MESSAGES")
+        // onCreate(db)
     }
 
 
-
 }
+
+// 表名和字段
+  val tbNm = "tab1"
 
 /**
  * for mysql store engr api spec...read_row()
  */
-fun write_row(context: Context, k: String, v: String ): Long {
-    Log.d(tagLog, "fun write_row((")
-    Log.d(tagLog, "k="+k)
-    Log.d(tagLog, "v="+v)
+fun write_rowV2(k: String, v: String, db: SQLiteDatabase): Long {
+    Log.d(tagLog, "fun write_rowV2((")
+    Log.d(tagLog, "k=" + k)
+    Log.d(tagLog, "v=" + v)
     Log.d(tagLog, ")))")
 
-    val dbHelper = UtilDbSqlt(context)
-    val db = dbHelper.writableDatabase
+    //  val dbHelper = UtilDbSqlt(context)
+    //  val db = dbHelper.writableDatabase
 
     val values = ContentValues().apply {
         put(UtilDbSqlt.COLUMN_K, k)
@@ -61,50 +65,42 @@ fun write_row(context: Context, k: String, v: String ): Long {
     }
 
     // 插入数据
-    val rowId = db.insert(UtilDbSqlt.tableName, null, values)
-    db.close()
-    Log.d(tagLog, "endfun write_row()#ret rowId="+rowId)
+    val rowId = db.insert(tbNm, null, values)
+  //  db.close()
+    Log.d(tagLog, "endfun write_rowV2()#ret rowId=" + rowId)
     return rowId
 }
 
 
-fun write_row( db: String,k: String, v: String ,context: Context): Long {
-    Log.d(tagLog, "fun write_row((")
-    Log.d(tagLog, "db="+db+",k="+k+",v="+v)
-
+/**
+ *
+ */
+fun del_row(id: String, tbNm: String, db: SQLiteDatabase): Int {
+    Log.d(tagLog, "fun del_row((")
+    Log.d(tagLog, "k=" + id)
+    Log.d(tagLog, "tbNm=" + tbNm)
     Log.d(tagLog, ")))")
 
-    val dbHelper = UtilDbSqlt(context)
-    val db = dbHelper.writableDatabase
-
-    val values = ContentValues().apply {
-        put(UtilDbSqlt.COLUMN_K, k)
-        put(UtilDbSqlt.COLUMN_V, v)
+    //  val dbHelper = UtilDbSqlt(context)
+    //  val db = dbHelper.writableDatabase
 
 
-    }
+    //
 
-    // 插入数据
-    val rowId = db.insert(UtilDbSqlt.tableName, null, values)
+    val rowId = db.delete(tbNm, "k = ?", arrayOf(id))
     db.close()
-    Log.d(tagLog, "endfun write_row()#ret rowId="+rowId)
+    Log.d(tagLog, "endfun del_row()#ret rowId=" + rowId)
     return rowId
 }
 
-data class KVrow(
-    val k: String,
-    val v: String
-
-)
-
-
-fun getAllrows(context: Context): List<KVrow> {
-    val dbHelper = UtilDbSqlt(context)
-    val db = dbHelper.readableDatabase
+//, tbNm: String
+fun getAllrowsV2(  db: SQLiteDatabase): List<KVrow> {
+    // val dbHelper = UtilDbSqlt(context)
+    //  val db = dbHelper.readableDatabase
     val messageList = mutableListOf<KVrow>()
 
     val cursor = db.query(
-        UtilDbSqlt.tableName, // 表名
+        tbNm, // 表名
         arrayOf( // 要查询的列
             UtilDbSqlt.COLUMN_K,
             UtilDbSqlt.COLUMN_V
@@ -123,7 +119,7 @@ fun getAllrows(context: Context): List<KVrow> {
             val v = getString(getColumnIndexOrThrow(UtilDbSqlt.COLUMN_V))
 
             // 将结果添加到列表中
-            messageList.add(KVrow(k, v ))
+            messageList.add(KVrow(k, v))
         }
         close()
     }
