@@ -43,6 +43,17 @@ fun setInShrPref(KEY_RINGTONE_URI:String,uri: Uri) {
 
 
 /**
+ * 2️⃣ 预选上次选择的铃声
+ * 📌 当用户打开铃声选择界面时，默认选中上次选择的铃声：
+ *
+ * kotlin
+ * 复制
+ * 编辑
+ * val savedUri = getSavedRingtoneUri()
+ * putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, savedUri)
+ */
+
+/**
  * 加载并播放已存储的铃声（可选）
  */
   fun PlayRingtone(KEY_RINGTONE_URI:String) {

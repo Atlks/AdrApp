@@ -43,6 +43,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import lib.PlayRingtone
+import lib.getSavedRingtoneUri
 import lib.getStackTraceString
 import lib.sendMsgTgRetry
 import lib.setDefaultUncaughtExceptionHandler4thrd
@@ -286,7 +287,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             binding.slktToneBtn.setOnClickListener{
-                setOnClickListenerFun()
+                setOnClickListenerFun4slktTon()
             }
 
             //  playMp3Btn
@@ -519,13 +520,32 @@ class MainActivity : AppCompatActivity() {
     /**
      * 打开选择铃音的界面
      */
-    private fun setOnClickListenerFun() {
+    private fun setOnClickListenerFun4slktTon() {
+
+        /**
+         *
+         *  * 2️⃣ 预选上次选择的铃声
+         *         * 📌 当用户打开铃声选择界面时，默认选中上次选择的铃声：
+         *         *
+         *         * kotlin
+         *         * 复制
+         *         * 编辑
+         *         * val savedUri = getSavedRingtoneUri()
+         *         * putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, savedUri)
+         *         *
+         */
+
         val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
             putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "选择铃声")
             putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
             putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true)
             putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION)
+
+             val savedUri = getSavedRingtoneUri("slkttone1")
+            putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, savedUri)
         }
+
+
         startActivityForResult(intent, REQUEST_CODE_RINGTONE)
 
     }
