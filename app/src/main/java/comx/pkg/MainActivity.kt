@@ -70,8 +70,8 @@ class MainActivity : AppCompatActivity() {
         override fun run() {
             try {
                 Log.d(tagLog, "定时器触发：7 秒")
-
-                val dbHelper = UtilDbSqltV2(applicationContext, "dbIm2025")
+                val dbHelper2 = SQLiteOpenHelper88(applicationContext, "dbIm2025","tb1")
+                val dbHelper = SQLiteOpenHelper2(applicationContext, "dbIm2025")
                 val db = dbHelper.writableDatabase
                 var lst = getAllrowsV2(db);//List<KVrow>
                 lst.forEachIndexed { index, msg ->
@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
         handler.postDelayed(runnableTaskTimer, 0)
 
         try {
-            val dbHelper = UtilDbSqltV2(this, "dbIm2025")
+            val dbHelper = SQLiteOpenHelper2(this, "dbIm2025")
             val db = dbHelper.writableDatabase
             write_rowV2("1", "1txt", db);
 

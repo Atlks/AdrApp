@@ -6,25 +6,24 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 
-class UtilDbSqltV2(context: Context, DATABASE_NAME: String) :
+class SQLiteOpenHelper88(context: Context, DATABASE_NAME: String, tableName1: String) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
 
-
-      val COLUMN_K = "k"
-      val COLUMN_V = "v"
+    var tbNm88 = tableName1
+    val COLUMN_K = "k"
+    val COLUMN_V = "v"
 
     companion object {
         //  private const val DATABASE_NAME = DATABASE_NAME2
         private const val DATABASE_VERSION = 1
 
 
-
     }
 
     override fun onCreate(db: SQLiteDatabase) {
         val createTableQuery = """
-            CREATE TABLE $tbNm (
+            CREATE TABLE $tbNm88 (
                 
                 $COLUMN_K TEXT PRIMARY KEY ,
                 $COLUMN_V TEXT
@@ -42,13 +41,11 @@ class UtilDbSqltV2(context: Context, DATABASE_NAME: String) :
 
 }
 
-// 表名和字段
-  val tbNm = "tab1"
 
 /**
  * for mysql store engr api spec...read_row()
  */
-fun write_rowV2(k: String, v: String, db: SQLiteDatabase): Long {
+fun write_rowV88(k: String, v: String, db: SQLiteDatabase, tbnm: String): Long {
     Log.d(tagLog, "fun write_rowV2((")
     Log.d(tagLog, "k=" + k)
     Log.d(tagLog, "v=" + v)
@@ -65,42 +62,20 @@ fun write_rowV2(k: String, v: String, db: SQLiteDatabase): Long {
     }
 
     // 插入数据
-    val rowId = db.insert(tbNm, null, values)
-  //  db.close()
+    val rowId = db.insert(tbnm, null, values)
+    //  db.close()
     Log.d(tagLog, "endfun write_rowV2()#ret rowId=" + rowId)
     return rowId
 }
 
-
-/**
- *
- */
-fun del_row(id: String,   db: SQLiteDatabase): Int {
-    Log.d(tagLog, "fun del_row((")
-    Log.d(tagLog, "k=" + id)
-    Log.d(tagLog, "tbNm=" + tbNm)
-    Log.d(tagLog, ")))")
-
-    //  val dbHelper = UtilDbSqlt(context)
-    //  val db = dbHelper.writableDatabase
-
-
-    //
-
-    val rowId = db.delete(tbNm, "k = ?", arrayOf(id))
- //   db.close()
-    Log.d(tagLog, "endfun del_row()#ret rowId=" + rowId)
-    return rowId
-}
-
 //, tbNm: String
-fun getAllrowsV2(  db: SQLiteDatabase): List<KVrow> {
+fun getAllrowsV88(db: SQLiteDatabase, tbnm: String): List<KVrow> {
     // val dbHelper = UtilDbSqlt(context)
     //  val db = dbHelper.readableDatabase
     val messageList = mutableListOf<KVrow>()
 
     val cursor = db.query(
-        tbNm, // 表名
+        tbnm, // 表名
         arrayOf( // 要查询的列
             SQLiteOpenHelper1.COLUMN_K,
             SQLiteOpenHelper1.COLUMN_V
@@ -125,4 +100,29 @@ fun getAllrowsV2(  db: SQLiteDatabase): List<KVrow> {
     }
     //db.close()
     return messageList
+}
+
+
+//, tbnm: String
+
+
+/**
+ *
+ */
+fun del_row88(id: String,   db: SQLiteDatabase, tbnm: String): Int {
+    Log.d(tagLog, "fun del_row((")
+    Log.d(tagLog, "k=" + id)
+    Log.d(tagLog, "tbNm=" + tbnm)
+    Log.d(tagLog, ")))")
+
+    //  val dbHelper = UtilDbSqlt(context)
+    //  val db = dbHelper.writableDatabase
+
+
+    //
+
+    val rowId = db.delete(tbnm, "k = ?", arrayOf(id))
+    //   db.close()
+    Log.d(tagLog, "endfun del_row()#ret rowId=" + rowId)
+    return rowId
 }

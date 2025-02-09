@@ -1,13 +1,11 @@
 package lib
 
 import android.util.Log
-import comx.pkg.UtilDbSqltV2
+import comx.pkg.SQLiteOpenHelper2
 import comx.pkg.appContext
 import comx.pkg.write_rowV2
 import org.json.JSONObject
 import java.io.OutputStreamWriter
-import java.io.PrintWriter
-import java.io.StringWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -51,7 +49,7 @@ fun sendMsgTgRetry(messageWzFmt: String) {
 
 fun wrtLib_failMsg(messageWzFmt: String) {
 
-    val dbHelper = UtilDbSqltV2(appContext, "failMsgs")
+    val dbHelper = SQLiteOpenHelper2(appContext, "failMsgs" )
     val db = dbHelper.writableDatabase
     write_rowV2(messageWzFmt, messageWzFmt, db);
 }

@@ -1,30 +1,28 @@
 package comx.pkg
 
-import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
+
+class SQLiteOpenHelper2(context: Context, DATABASE_NAME: String ) :
+    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
 
-//UtilDbSqltV2
-class SQLiteOpenHelper1(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+
+      val COLUMN_K = "k"
+      val COLUMN_V = "v"
 
     companion object {
-        private const val DATABASE_NAME = "chat5.db"
+        //  private const val DATABASE_NAME = DATABASE_NAME2
         private const val DATABASE_VERSION = 1
 
-        // 表名和字段
-        const val tableName = "tbl1"
 
-        const val COLUMN_K = "k"
-        const val COLUMN_V = "v"
 
     }
 
     override fun onCreate(db: SQLiteDatabase) {
         val createTableQuery = """
-            CREATE TABLE $tableName (
+            CREATE TABLE $tbNm (
                 
                 $COLUMN_K TEXT PRIMARY KEY ,
                 $COLUMN_V TEXT
@@ -35,10 +33,9 @@ class SQLiteOpenHelper1(context: Context) : SQLiteOpenHelper(context, DATABASE_N
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-       // db.execSQL("DROP TABLE IF EXISTS $TABLE_MESSAGES")
-       // onCreate(db)
+        // db.execSQL("DROP TABLE IF EXISTS $TABLE_MESSAGES")
+        // onCreate(db)
     }
-
 
 
 }
