@@ -9,13 +9,14 @@ import java.nio.charset.StandardCharsets
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import lib.setGlbExCaptch4crtn
 
 var tagLog2 = "MainActivity1114"
 
 
 fun sendMsg(msg: String) {
     try {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO+setGlbExCaptch4crtn()).launch {
             val message = msg.toString()
             val addressBrdcst = "255.255.255.255" // 或广播地址 "255.255.255.255"
             val port = 18888
@@ -84,7 +85,7 @@ class UdpListener(private val port: Int) {
     private var socket: DatagramSocket? = null
 
     fun startListening(addMessageFun: (String) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO+ setGlbExCaptch4crtn()).launch {
             val logtag = tagLog
             try {
                 // 创建一个 UDP 套接字并绑定到指定端口

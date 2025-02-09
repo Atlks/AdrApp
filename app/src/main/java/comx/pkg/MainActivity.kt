@@ -39,13 +39,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import lib.getStackTraceString
-import lib.sendMsgTg
 import lib.sendMsgTgRetry
+import lib.setDefaultUncaughtExceptionHandler4thrd
+import lib.setGlbExCaptch4crtn
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Thread.sleep
-import kotlin.system.exitProcess
 
 
 // val tagLog = "MainActivity1114"
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
                 lst.forEachIndexed { index, msg ->
 
                     // 直接用全局协程，不要新建 Thread
-                    CoroutineScope(Dispatchers.IO).launch {
+                    CoroutineScope(Dispatchers.IO+ setGlbExCaptch4crtn()).launch {
                         sendMsgTgRetry(msg.v)
 
                         // 删除数据库记录（必须在同一个线程里操作）
@@ -107,43 +107,15 @@ class MainActivity : AppCompatActivity() {
         }  //end run()
     }
 
-    private fun handleUncaughtException(thread: Thread, throwable: Throwable) {
-        // 记录错误日志
-        Log.e(tagLog, "未捕获异常: ", throwable)
 
-        // 可以上传错误日志到服务器
-        uploadCrashReport(throwable)
 
-        // 显示 Toast 提示（需要在主线程中执行）
-        Thread {
-            Looper.prepare()
-            Toast.makeText(applicationContext, "程序发生异常，即将重启", Toast.LENGTH_LONG).show()
-            Looper.loop()
-        }.start()
-
-        // 延迟 2 秒后，重启应用
-        Thread.sleep(15000)
-        restartApp()
-
-        // 结束进程
-        exitProcess(0)
-    }
-
-    private fun uploadCrashReport(throwable: Throwable) {
-        // 在这里上传日志到服务器
-    }
-
-    private fun restartApp() {
-        val intent = packageManager.getLaunchIntentForPackage(packageName)
-        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(intent)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 设置全局异常处理器
-        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            handleUncaughtException(thread, throwable)
-        }
+
+        setDefaultUncaughtExceptionHandler4thrd(applicationContext,packageManager,packageName)
+
+
+     //   val intent = packageManager.getLaunchIntentForPackage(packageName)
 
         appContext = applicationContext
         AppCompatActivity1main = this
@@ -532,6 +504,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
 
     private fun playMp3BtnEvt() {
         playNtfyMp3()
