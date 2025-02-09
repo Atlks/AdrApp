@@ -4,13 +4,17 @@ package comx.pkg
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.media.Ringtone
+import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -38,10 +42,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import lib.PlayRingtone
 import lib.getStackTraceString
 import lib.sendMsgTgRetry
 import lib.setDefaultUncaughtExceptionHandler4thrd
 import lib.setGlbExCaptch4crtn
+import lib.setRingtoneUri
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -279,6 +285,10 @@ class MainActivity : AppCompatActivity() {
                 playMp3BtnEvt()
             }
 
+            binding.slktToneBtn.setOnClickListener{
+                setOnClickListenerFun()
+            }
+
             //  playMp3Btn
 
 
@@ -506,6 +516,21 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * 打开选择铃音的界面
+     */
+    private fun setOnClickListenerFun() {
+        val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "选择铃声")
+            putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
+            putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true)
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION)
+        }
+        startActivityForResult(intent, REQUEST_CODE_RINGTONE)
+
+    }
+
+
     private fun playMp3BtnEvt() {
         playNtfyMp3()
     }
@@ -630,11 +655,33 @@ class MainActivity : AppCompatActivity() {
 //        }
         Log.d(tagLog, "endfun setAuthMngExtStr()")
     }
-
-
+    private lateinit var sharedPreferences: SharedPreferences
+    val REQUEST_CODE_RINGTONE = 1001
+    private var ringtone: Ringtone? = null // 存储当前播放的铃声
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_RINGTONE && resultCode == Activity.RESULT_OK) {
+            val ringtoneUri: Uri? = data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+            if (ringtoneUri != null) {
+                // 你可以把铃声 URI 存入 SharedPreferences，实现持久化存储！
+                AlertDialog.Builder(this)
+                    .setTitle("已选择铃声")
+                    .setMessage("铃声 URI: $ringtoneUri")
+                    .setPositiveButton("确定", null)
+                    .show()
+
+
+                setRingtoneUri("slkttone1",ringtoneUri)
+
+
+                // 播放铃声
+                PlayRingtone("slkttone1")
+
+            }
+        }
+
         if (requestCode == pmscode_MANAGE_EXTERNAL_STORAGE) {
             if (Environment.isExternalStorageManager()) {
                 // 用户已授予权限，可以执行文件管理操作
