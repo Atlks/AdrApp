@@ -58,8 +58,8 @@ fun write_rowV2(k: String, v: String, db: SQLiteDatabase): Long {
     //  val db = dbHelper.writableDatabase
 
     val values = ContentValues().apply {
-        put(UtilDbSqlt.COLUMN_K, k)
-        put(UtilDbSqlt.COLUMN_V, v)
+        put(SQLiteOpenHelper1.COLUMN_K, k)
+        put(SQLiteOpenHelper1.COLUMN_V, v)
 
 
     }
@@ -102,8 +102,8 @@ fun getAllrowsV2(  db: SQLiteDatabase): List<KVrow> {
     val cursor = db.query(
         tbNm, // 表名
         arrayOf( // 要查询的列
-            UtilDbSqlt.COLUMN_K,
-            UtilDbSqlt.COLUMN_V
+            SQLiteOpenHelper1.COLUMN_K,
+            SQLiteOpenHelper1.COLUMN_V
 
         ),
         null, // where 子句
@@ -115,8 +115,8 @@ fun getAllrowsV2(  db: SQLiteDatabase): List<KVrow> {
 
     with(cursor) {
         while (moveToNext()) {
-            val k = getString(getColumnIndexOrThrow(UtilDbSqlt.COLUMN_K))
-            val v = getString(getColumnIndexOrThrow(UtilDbSqlt.COLUMN_V))
+            val k = getString(getColumnIndexOrThrow(SQLiteOpenHelper1.COLUMN_K))
+            val v = getString(getColumnIndexOrThrow(SQLiteOpenHelper1.COLUMN_V))
 
             // 将结果添加到列表中
             messageList.add(KVrow(k, v))

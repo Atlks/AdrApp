@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 
-class UtilDbSqlt(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class SQLiteOpenHelper1(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
         private const val DATABASE_NAME = "chat5.db"
@@ -41,6 +41,7 @@ class UtilDbSqlt(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, nu
 
 }
 
+//---------------util db sqlt.funs ------
 /**
  * for mysql store engr api spec...read_row()
  */
@@ -50,18 +51,18 @@ fun write_row(context: Context, k: String, v: String ): Long {
     Log.d(tagLog, "v="+v)
     Log.d(tagLog, ")))")
 
-    val dbHelper = UtilDbSqlt(context)
+    val dbHelper = SQLiteOpenHelper1(context)
     val db = dbHelper.writableDatabase
 
     val values = ContentValues().apply {
-        put(UtilDbSqlt.COLUMN_K, k)
-        put(UtilDbSqlt.COLUMN_V, v)
+        put(SQLiteOpenHelper1.COLUMN_K, k)
+        put(SQLiteOpenHelper1.COLUMN_V, v)
 
 
     }
 
     // 插入数据
-    val rowId = db.insert(UtilDbSqlt.tableName, null, values)
+    val rowId = db.insert(SQLiteOpenHelper1.tableName, null, values)
     //db.close()
     Log.d(tagLog, "endfun write_row()#ret rowId="+rowId)
     return rowId
@@ -74,18 +75,18 @@ fun write_row( db: String,k: String, v: String ,context: Context): Long {
 
     Log.d(tagLog, ")))")
 
-    val dbHelper = UtilDbSqlt(context)
+    val dbHelper = SQLiteOpenHelper1(context)
     val db = dbHelper.writableDatabase
 
     val values = ContentValues().apply {
-        put(UtilDbSqlt.COLUMN_K, k)
-        put(UtilDbSqlt.COLUMN_V, v)
+        put(SQLiteOpenHelper1.COLUMN_K, k)
+        put(SQLiteOpenHelper1.COLUMN_V, v)
 
 
     }
 
     // 插入数据
-    val rowId = db.insert(UtilDbSqlt.tableName, null, values)
+    val rowId = db.insert(SQLiteOpenHelper1.tableName, null, values)
     //db.close()
     Log.d(tagLog, "endfun write_row()#ret rowId="+rowId)
     return rowId
@@ -99,15 +100,15 @@ data class KVrow(
 
 
 fun getAllrows(context: Context): List<KVrow> {
-    val dbHelper = UtilDbSqlt(context)
+    val dbHelper = SQLiteOpenHelper1(context)
     val db = dbHelper.readableDatabase
     val messageList = mutableListOf<KVrow>()
 
     val cursor = db.query(
-        UtilDbSqlt.tableName, // 表名
+        SQLiteOpenHelper1.tableName, // 表名
         arrayOf( // 要查询的列
-            UtilDbSqlt.COLUMN_K,
-            UtilDbSqlt.COLUMN_V
+            SQLiteOpenHelper1.COLUMN_K,
+            SQLiteOpenHelper1.COLUMN_V
 
         ),
         null, // where 子句
@@ -119,8 +120,8 @@ fun getAllrows(context: Context): List<KVrow> {
 
     with(cursor) {
         while (moveToNext()) {
-            val k = getString(getColumnIndexOrThrow(UtilDbSqlt.COLUMN_K))
-            val v = getString(getColumnIndexOrThrow(UtilDbSqlt.COLUMN_V))
+            val k = getString(getColumnIndexOrThrow(SQLiteOpenHelper1.COLUMN_K))
+            val v = getString(getColumnIndexOrThrow(SQLiteOpenHelper1.COLUMN_V))
 
             // 将结果添加到列表中
             messageList.add(KVrow(k, v ))
