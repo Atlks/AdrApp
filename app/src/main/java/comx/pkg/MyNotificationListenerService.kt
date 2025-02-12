@@ -267,7 +267,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     private fun chkfltNotOk(messageWzFmt: String): Boolean {
         if (containsAny2025("特惠航线 特惠专场 旅行团 抢票 火车票 心动之旅", messageWzFmt))
             return true;
-        if (containsAny2025("登录过期 备用金 ", messageWzFmt))
+        if (containsAny2025("登录过期  备用金 ", messageWzFmt))
             return true;
         if (containsAny2025("积分奖励 订单奖励 尊享 权益 特价 毗邻 日利率 ", messageWzFmt))
             return true;
