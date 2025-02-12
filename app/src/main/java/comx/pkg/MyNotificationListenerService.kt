@@ -201,16 +201,6 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
 
 
-            if (containsAny2025
-                    ("热点 USB充电 USB调试 自动任务", messageWzFmt)
-            )
-                return
-
-            if (title.startsWith("正在通过USB充电"))
-                return
-
-            if (title.startsWith("已连接到USB调试"))
-                return
 
             var messageWzFmt4readSpk=messageWzFmt
             if (isAllNumber(title) && title.length > 7 && text.isEmpty()) {
@@ -265,11 +255,21 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     }
 
     private fun chkfltNotOk(messageWzFmt: String): Boolean {
+
+
+        if (containsAny2025
+                ("已连接到USB调试 正在通过USB充电 热点 USB充电 USB调试 自动任务", messageWzFmt)
+        )
+            return true
+
+
+
+
         if (containsAny2025("特惠航线 特惠专场 旅行团 抢票 火车票 心动之旅", messageWzFmt))
             return true;
         if (containsAny2025("登录过期  备用金 ", messageWzFmt))
             return true;
-        if (containsAny2025("积分奖励 订单奖励 尊享 权益 特价 毗邻 日利率 ", messageWzFmt))
+        if (containsAny2025("还款金 积分奖励 订单奖励 尊享 权益 特价 毗邻 日利率 ", messageWzFmt))
             return true;
 
         if (containsAny2025("彩金专员 天降红包 白资 百家乐 盈利 赌场 迪拜 反水 返水 盈利 佣金", messageWzFmt))
@@ -285,7 +285,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             return true;
 
 
-        if (containsAny2025("奸淫 父女 出轨 大片 人妻 乱伦", messageWzFmt))
+        if (containsAny2025("帝豪 奸淫 父女 出轨 大片 人妻 乱伦", messageWzFmt))
             return true
         if (containsAny2025("环境问题对接 产研 产研中心 救火", messageWzFmt))
             return true
