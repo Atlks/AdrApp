@@ -184,8 +184,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             if (containsAny2025(title, "闹钟 闹铃"))
                 return
-            if (containsAny2025("白资 百家乐 盈利 赌场 迪拜 反水 返水 盈利 佣金", messageWzFmt))
-                return
+
             if (containsAny2025("黑U usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金", messageWzFmt))
                 return
             if (title.contains("输入法"))
@@ -200,12 +199,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             if(chkfltNotOk(messageWzFmt))
                 return
 
-            if (containsAny2025("特惠航线 特惠专场 旅行团 抢票 火车票 心动之旅", messageWzFmt))
-                return
-            if (containsAny2025("登录过期 备用金 ", messageWzFmt))
-                return
-            if (containsAny2025("尊享 权益 特价 毗邻 日利率 ", messageWzFmt))
-                return
+
 
             if (containsAny2025
                     ("热点 USB充电 USB调试 自动任务", messageWzFmt)
@@ -271,7 +265,17 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     }
 
     private fun chkfltNotOk(messageWzFmt: String): Boolean {
-        if (containsAny2025("闹钟 响铃", messageWzFmt))
+        if (containsAny2025("特惠航线 特惠专场 旅行团 抢票 火车票 心动之旅", messageWzFmt))
+            return true;
+        if (containsAny2025("登录过期 备用金 ", messageWzFmt))
+            return true;
+        if (containsAny2025("积分奖励 订单奖励 尊享 权益 特价 毗邻 日利率 ", messageWzFmt))
+            return true;
+
+        if (containsAny2025("彩金专员 天降红包 白资 百家乐 盈利 赌场 迪拜 反水 返水 盈利 佣金", messageWzFmt))
+            return true;
+
+        if (containsAny2025("闹钟 响铃 正在备份", messageWzFmt))
             return true;
         if (containsAny2025("降息 备用金 收钱提醒助手", messageWzFmt))
             return true;
