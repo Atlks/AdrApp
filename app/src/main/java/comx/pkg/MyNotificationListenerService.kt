@@ -21,6 +21,7 @@ import lib.containsAny2025
 
 import android.util.Log
 import lib.Notify2025
+import lib.containsAll
 import lib.context8
 import lib.deviceName
 import lib.iniTTS
@@ -38,8 +39,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     override fun onCreate() {
         Log.d(tagLog, "fun MyNotificationListenerService.onCreate()")
         super.onCreate()
-          deviceName = getDeviceName(this)
-        context8=this;
+        deviceName = getDeviceName(this)
+        context8 = this;
         // 在这里不初始化 TextToSpeech，延迟到 onStartCommand
         // textToSpeech = TextToSpeech(this, this)
         Log.d(tagLog, "endfun MyNotificationListenerService.onCreate()")
@@ -66,7 +67,6 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         //START_REDELIVER_INTENT：服务被终止时，系统会重新启动它，并且会再次传递之前的 Intent。
         return START_REDELIVER_INTENT
     }
-
 
 
     private fun newNotificationChannel() {
@@ -131,8 +131,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             var text = extras.getString("android.text") ?: "没有内容"
             text = text.replace("Starred Contacts", "");
             text = text.replace("星标联系人", "");
-           // val deviceName = getDeviceName(this)
-            val  ntfy1= Notify2025 (title,text,postTime,packageName,deviceName);
+            // val deviceName = getDeviceName(this)
+            val ntfy1 = Notify2025(title, text, postTime, packageName, deviceName);
 
             var mesg = title + text;
 
@@ -141,17 +141,15 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             set4delp.add(mesg)
 
 
-
-
             // 拼接标题和.内容
             val deviceName2 = getDeviceName(this)
 
             //--------same dvc ingrn
-            if(mesg.contains(deviceName2))
+            if (mesg.contains(deviceName2))
                 return;
 
 
-            var messageWzFmt = "标题=$title, 内容=$text ,device="+deviceName2;
+            var messageWzFmt = "标题=$title, 内容=$text ,device=" + deviceName2;
 
 
 
@@ -166,24 +164,6 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
             if (title.toLowerCase() == "im2025")
                 return
-            if (title.contains("下午闹钟"))
-                return
-            if (title.contains("多个应用进行了敏感操作"))
-                return
-            if (title.contains("省电模式"))
-                return
-            if (title.contains("网络共享或热点"))
-                return
-            if (title.contains("正在通过USB充电"))
-                return
-            if (title.contains("正在连接到USB"))
-                return
-            if (title.contains("已连接到USB"))
-                return
-            if (title.contains("正在获取服务信息"))
-                return
-            if (containsAny2025(title, "闹钟 闹铃"))
-                return
 
             if (containsAny2025("黑U usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金", messageWzFmt))
                 return
@@ -196,13 +176,11 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             if (title.startsWith("正在下载"))
                 return
-            if(chkfltNotOk(messageWzFmt))
+            if (chkfltNotOk(messageWzFmt))
                 return
 
 
-
-
-            var messageWzFmt4readSpk=messageWzFmt
+            var messageWzFmt4readSpk = messageWzFmt
             if (isAllNumber(title) && title.length > 7 && text.isEmpty()) {
                 //tel call
 
@@ -223,7 +201,11 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             if (title == "Choose input method")
                 return
 
-            if (containsAny2025("姜育恒 歌曲 醉酒歌 我的唇吻不到我爱的人 再见也是朋友 再见只是陌生人 女人的选择 世纪精选 漫漫人海我遇见了你", messageWzFmt))
+            if (containsAny2025(
+                    "姜育恒 歌曲 醉酒歌 我的唇吻不到我爱的人 再见也是朋友 再见只是陌生人 女人的选择 世纪精选 漫漫人海我遇见了你",
+                    messageWzFmt
+                )
+            )
                 return
 
 
@@ -256,13 +238,40 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
     private fun chkfltNotOk(messageWzFmt: String): Boolean {
 
+        if (containsAll("微信 功能 还剩",messageWzFmt))
+            return true;
 
-        if (containsAny2025
-                ("已连接到USB调试 正在通过USB充电 热点 USB充电 USB调试 自动任务", messageWzFmt)
+        if (containsAll("大麻 麻姑",messageWzFmt))
+            return true;
+
+        if (containsAll("免息   折起",messageWzFmt))
+            return true;
+
+
+        if (containsAny2025(
+                "机票劵 优惠价 优惠劵 优惠升级卡  刮刮乐 公司内部频道 免单城市 购物满额 美团支付劵 财富路径 美好的节日里  定制贷款 大额产品 优惠活动 提醒您多次了  办卡优惠 以审为准 拒收回复 拒收请回复",
+                messageWzFmt
+            )
         )
             return true
 
 
+        if (containsAny2025(
+                "所有未接电话 全场景音乐服务  应用正在后台运行 下午闹钟 多个应用进行了敏感操作 省电模式 网络共享或热点 正在通过USB充电 正在连接到USB 已连接到USB 闹钟 闹铃 正在获取服务信息",
+                messageWzFmt
+            )
+        )
+            return true
+
+
+
+        if (containsAny2025
+                ("已连接到USB调试 正在通过USB充电 重要应用会自动更新 热点 USB充电 USB调试 自动任务", messageWzFmt)
+        )
+            return true
+
+        if (containsAny2025("帝豪 阿梦 再次提醒", messageWzFmt))
+            return true;
 
 
         if (containsAny2025("特惠航线 特惠专场 旅行团 抢票 火车票 心动之旅", messageWzFmt))
@@ -272,7 +281,11 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         if (containsAny2025("还款金 积分奖励 订单奖励 尊享 权益 特价 毗邻 日利率 ", messageWzFmt))
             return true;
 
-        if (containsAny2025("彩金专员 天降红包 白资 百家乐 盈利 赌场 迪拜 反水 返水 盈利 佣金", messageWzFmt))
+        if (containsAny2025(
+                " 幸运注单 新人首存 最高奖励 送不停 彩金专员 天降红包 白资 百家乐 盈利 赌场 迪拜 反水 返水 盈利 佣金",
+                messageWzFmt
+            )
+        )
             return true;
 
         if (containsAny2025("闹钟 响铃 正在备份", messageWzFmt))
@@ -298,7 +311,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         if (containsAny2025("正在备份照片  产研 产研中心 救火", messageWzFmt))
             return true
 
-        return  false;
+        return false;
 
     }
 
@@ -306,7 +319,6 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
         // 可选：当通知被移除时执行操作
     }
-
 
 
     override fun onInit(status: Int) {
