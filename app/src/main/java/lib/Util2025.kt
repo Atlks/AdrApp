@@ -9,13 +9,16 @@ import java.util.Locale
 import java.util.UUID
 
 
-
 /**
  * 功能 检测字符串str是否包含所有所列出的单词..
  * containWords 空格分割的v字符串，要检测包含的单词表
  * str 字符串
  */
 fun containsAll(containWords: String, str: String): Boolean {
+    if (containWords.trim().equals(""))
+        return false;
+    if (str.trim().equals(""))
+        return false;
 
     // 将 containWords 按空格分割成单词列表
     val words = containWords.split(" ")
