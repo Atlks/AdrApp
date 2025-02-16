@@ -165,13 +165,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             if (title.toLowerCase() == "im2025")
                 return
 
-            if (containsAny2025("黑U usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金", messageWzFmt))
-                return
-            if (title.contains("输入法"))
-                return
 
-            if (title.contains("360手机卫士"))
-                return
             if (title.contains("短信") && title.contains("正在运行"))
                 return
             if (title.startsWith("正在下载"))
@@ -246,6 +240,13 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
         if (containsAll("免息   折起",messageWzFmt))
             return true;
+
+        if (containsAny2025("省呗 预审成功 拒收请回复 usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金", messageWzFmt))
+            return true;
+
+        if (containsAny2025("输入法 360手机卫士 黑U usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金", messageWzFmt))
+            return true;
+
 
 
         if (containsAny2025(
