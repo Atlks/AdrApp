@@ -2,6 +2,7 @@ package comx.pkg
 
 import comx.pkg.MainActivity.Msg
 
+//
 fun orderMsgList(smsList: MutableList<MainActivity.Msg>): MutableList<Msg> {
     val toMutableList = smsList.sortedBy { it.time }.toMutableList()
    // return toMutableList.takeLast(minOf(1000, toMutableList.size))
