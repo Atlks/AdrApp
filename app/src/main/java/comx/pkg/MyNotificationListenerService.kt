@@ -168,8 +168,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
             if (title.contains("短信") && title.contains("正在运行"))
                 return
-            if (title.startsWith("正在下载"))
-                return
+
             if (chkfltNotOk(messageWzFmt))
                 return
 
@@ -250,7 +249,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
 
         if (containsAny2025(
-                "机票劵 优惠价 优惠劵 优惠升级卡  刮刮乐 公司内部频道 免单城市 购物满额 美团支付劵 财富路径 美好的节日里  定制贷款 大额产品 优惠活动 提醒您多次了  办卡优惠 以审为准 拒收回复 拒收请回复",
+                "新款韩版 淘宝同款 景区门票 包车旅游 有意者私信飞机 机票劵 优惠价 优惠劵 优惠升级卡  刮刮乐 公司内部频道 免单城市 购物满额 美团支付劵 财富路径 美好的节日里  定制贷款 大额产品 优惠活动 提醒您多次了  办卡优惠 以审为准 拒收回复 拒收请回复",
                 messageWzFmt
             )
         )
@@ -258,7 +257,9 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
 
         if (containsAny2025(
-                "所有未接电话 全场景音乐服务  应用正在后台运行 下午闹钟 多个应用进行了敏感操作 省电模式 网络共享或热点 正在通过USB充电 正在连接到USB 已连接到USB 闹钟 闹铃 正在获取服务信息",
+
+
+                "正在下载 所有未接电话 全场景音乐服务  应用正在后台运行 下午闹钟 多个应用进行了敏感操作 省电模式 网络共享或热点 正在通过USB充电 正在连接到USB 已连接到USB 闹钟 闹铃 正在获取服务信息",
                 messageWzFmt
             )
         )
