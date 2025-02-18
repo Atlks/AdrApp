@@ -42,6 +42,7 @@ fun ListSms(): List<MainActivity.Msg> {
 
     var smsList = mutableListOf<MainActivity.Msg>()
     val messages = getAllrows(newContext()) // 传入 Context
+   //  map fld
     messages.forEach { message ->
         var v = message.v;
         var jsonobj = decodeJson(v)
