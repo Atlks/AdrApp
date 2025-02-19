@@ -153,21 +153,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
 
 
-            if (title == "没有标题" && text == "没有内容")
-                return
-
-            if (title == "" && text == "")
-                return
-
-            if (title.toLowerCase() == "timer")
-                return
-
-            if (title.toLowerCase() == "im2025")
-                return
-
-
-            if (title.contains("短信") && title.contains("正在运行"))
-                return
+            if (chkNotOk(title, text)) return
 
             if (chkfltNotOk(messageWzFmt))
                 return
@@ -187,19 +173,9 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             }
 
 
-            if ((!isContainCjkChar(title)) && (!isAllNumber(title))) {
-                return
-            }
 
-            if (title == "Choose input method")
-                return
 
-            if (containsAny2025(
-                    "姜育恒 歌曲 醉酒歌 我的唇吻不到我爱的人 再见也是朋友 再见只是陌生人 女人的选择 世纪精选 漫漫人海我遇见了你",
-                    messageWzFmt
-                )
-            )
-                return
+
 
 
             //for xm12
@@ -212,6 +188,9 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             //todos  tts需要独立出去
 
             // 使用 TTS 阅读通知内容  tel fmt need fmt
+           //kotlin ,截取字符串前200个字符。如果不足200个，则不截取
+           //防止过长消息阅读 ad msg
+            messageWzFmt4readSpk=messageWzFmt4readSpk.take(200)
             speakOut(messageWzFmt4readSpk)
 
             sendMsgTg(messageWzFmt)
@@ -229,7 +208,45 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
     }
 
+    private fun chkNotOk(title: String, text: String): Boolean {
+        if (title == "没有标题" && text == "没有内容")
+            return true
+
+        if (title == "" && text == "")
+            return true
+
+        if (title.toLowerCase() == "timer")
+            return true
+
+        if (title.toLowerCase() == "im2025")
+            return true
+
+
+        if (title.contains("短信") && title.contains("正在运行"))
+            return true
+
+        //all english ... no chnchar ,not phone
+        if ((!isContainCjkChar(title)) && (!isAllNumber(title))) {
+            return true
+        }
+
+        if (title == "Choose input method")
+            return true
+        return false
+    }
+
     private fun chkfltNotOk(messageWzFmt: String): Boolean {
+
+        if (containsAny2025(
+                "姜育恒 歌曲 醉酒歌 我的唇吻不到我爱的人 再见也是朋友 再见只是陌生人 女人的选择 世纪精选 漫漫人海我遇见了你",
+                messageWzFmt
+            )
+        )
+            return true
+
+        if (containsAny2025("游戏氛围 担保地址 广大玩家 点击地址自动复制 无需实名 七天担保 出款完毕",messageWzFmt))
+            return true;
+
 
         if (containsAll("微信 功能 还剩",messageWzFmt))
             return true;
