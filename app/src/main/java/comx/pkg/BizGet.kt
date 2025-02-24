@@ -56,6 +56,7 @@ fun ListSms(): List<MainActivity.Msg> {
 
         // println("Device: ${message.deviceName}, Message: ${message.msg}, Time: ${message.time}")
     }
+    ///order wz lmit
     smsList = orderMsgList(smsList)
     // Convert MutableList to List (Immutable)
    // return smsList.toList()

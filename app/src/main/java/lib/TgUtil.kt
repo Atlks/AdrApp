@@ -17,6 +17,7 @@ val CHAT_ID = "-1002209160657" // 你的群组 ID
 val TELEGRAM_API_URL = "https://api.telegram.org/bot$TOKEN/sendMessage"
 
 
+//retry wz wrt msg fail db
 fun sendMsgTg(messageWzFmt: String) {
     Thread {
 

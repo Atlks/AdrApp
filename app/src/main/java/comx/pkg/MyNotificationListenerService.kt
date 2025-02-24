@@ -173,11 +173,6 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             }
 
 
-
-
-
-
-
             //for xm12
             if (containsAny2025(messageWzFmt, "所有人 抽查  打卡 meet google")) {
                 playNtfyMp3()
@@ -188,9 +183,9 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             //todos  tts需要独立出去
 
             // 使用 TTS 阅读通知内容  tel fmt need fmt
-           //kotlin ,截取字符串前200个字符。如果不足200个，则不截取
-           //防止过长消息阅读 ad msg
-            messageWzFmt4readSpk=messageWzFmt4readSpk.take(200)
+            //kotlin ,截取字符串前200个字符。如果不足200个，则不截取
+            //防止过长消息阅读 ad msg
+            messageWzFmt4readSpk = messageWzFmt4readSpk.take(200)
             speakOut(messageWzFmt4readSpk)
 
             sendMsgTg(messageWzFmt)
@@ -244,29 +239,50 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         )
             return true
 
-        if (containsAny2025("游戏氛围 担保地址 广大玩家 点击地址自动复制 无需实名 七天担保 出款完毕",messageWzFmt))
+        if (containsAny2025(
+                "游戏氛围 担保地址 广大玩家 点击地址自动复制 无需实名 七天担保 出款完毕",
+                messageWzFmt
+            )
+        )
             return true;
 
 
-        if (containsAll("微信 功能 还剩",messageWzFmt))
+        if (containsAll("微信 功能 还剩", messageWzFmt))
             return true;
 
-        if (containsAll("大麻 麻姑",messageWzFmt))
+        if (containsAll("大麻 麻姑", messageWzFmt))
             return true;
 
-        if (containsAll("免息   折起",messageWzFmt))
-            return true;
-
-        if (containsAny2025("省呗 预审成功 拒收请回复 usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金", messageWzFmt))
-            return true;
-
-        if (containsAny2025("输入法 360手机卫士 黑U usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金", messageWzFmt))
+        if (containsAll("免息   折起", messageWzFmt))
             return true;
 
 
+        if (containsAll("音乐 还剩", messageWzFmt))
+            return true;
 
         if (containsAny2025(
-                "新款韩版 淘宝同款 景区门票 包车旅游 有意者私信飞机 机票劵 优惠价 优惠劵 优惠升级卡  刮刮乐 公司内部频道 免单城市 购物满额 美团支付劵 财富路径 美好的节日里  定制贷款 大额产品 优惠活动 提醒您多次了  办卡优惠 以审为准 拒收回复 拒收请回复",
+                "专属提额特权 限时福利 省呗 预审成功 拒收请回复 usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金",
+                messageWzFmt
+            )
+        )
+            return true;
+
+        if (containsAny2025(
+                "已连接到USB 已隐藏敏感通知 正在启动导航 正在重新规划路线 正在通过USB充电 输入法 360手机卫士 黑U usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金",
+                messageWzFmt
+            )
+        )
+            return true;
+
+        if (containsAny2025(
+                "杨小曼 云菲菲 梦然 高安  杭娇-慕容晓晓 何鹏 李翊君 张韶涵 龙梅子 谢军 劉若英 思小玥 蒋雪儿 刘若英 庄心妍 蔡依林 蒋雪儿 陶钰玉 张冬玲 云飞儿 贺敬轩 魏新雨 雪无影 王心凌 乌兰托娅 莫露露- 李潇潇 孙艺琪 孙语赛 关淑怡 徐誉滕 冯曦妤 容祖儿 丽江小倩 张冬玲  罗百吉 S翼乐团 T.R.Y ",
+                messageWzFmt
+            )
+        )
+            return true
+
+        if (containsAny2025(
+                "需要的可以联系 发现更低价 火热抢购中 新款韩版 淘宝同款 景区门票 包车旅游 有意者私信飞机 机票劵 优惠价 优惠劵 优惠升级卡  刮刮乐 公司内部频道 免单城市 购物满额 美团支付劵 财富路径 美好的节日里  定制贷款 大额产品 优惠活动 提醒您多次了  办卡优惠 以审为准 拒收回复 拒收请回复",
                 messageWzFmt
             )
         )
@@ -285,7 +301,10 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
 
         if (containsAny2025
-                ("已连接到USB调试 正在通过USB充电 重要应用会自动更新 热点 USB充电 USB调试 自动任务", messageWzFmt)
+                (
+                "已连接到USB调试 正在通过USB充电 重要应用会自动更新 热点 USB充电 USB调试 自动任务",
+                messageWzFmt
+            )
         )
             return true
 
@@ -293,7 +312,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             return true;
 
 
-        if (containsAny2025("特惠航线 特惠专场 旅行团 抢票 火车票 心动之旅", messageWzFmt))
+        if (containsAny2025("急速退款 特惠航线 特惠专场 旅行团 抢票 火车票 心动之旅", messageWzFmt))
             return true;
         if (containsAny2025("登录过期  备用金 ", messageWzFmt))
             return true;
