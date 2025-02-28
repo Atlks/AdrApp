@@ -207,6 +207,12 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         if (title == "没有标题" && text == "没有内容")
             return true
 
+        if (containsAny2025(
+                "遇见了你",
+                title
+            )
+        )
+            return true
         if (title == "" && text == "")
             return true
 
@@ -240,6 +246,18 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             return true
 
         if (containsAny2025(
+                " 白条额度秀 周周返现\n" +
+                        "                爆品酒店 省时又省心 省钱秘籍 最高可省 自由财经\n" +
+                        "        急速退款 代收代付  金流\n" +
+                        "        备份完成 即开即用\n" +
+                        "                不要在我寂寞的时候说爱我  白狐",
+                messageWzFmt
+            )
+        )
+            return true
+
+
+                if (containsAny2025(
                 "游戏氛围 担保地址 广大玩家 点击地址自动复制 无需实名 七天担保 出款完毕",
                 messageWzFmt
             )
@@ -248,6 +266,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
 
         if (containsAll("微信 功能 还剩", messageWzFmt))
+            return true;
+        if (containsAll("y 还剩", messageWzFmt))
             return true;
 
         if (containsAll("大麻 麻姑", messageWzFmt))
