@@ -117,17 +117,22 @@ class MainActivity : AppCompatActivity() {
 
             try{
                 val minute = LocalDateTime.now().minute
+                var sec=LocalDateTime.now().second
                  if(minute==1 || minute==30 )
                 {
 //|| minute>0
+                     if( sec<30)
+                     { // 直接用全局协程，不要新建 Thread
+                         CoroutineScope(Dispatchers.IO+ setGlbExCaptch4crtn()).launch {
+                             var rzt= callCoinRank();
+                             sendMsgTgRetry(encodeJson(rzt))
 
-                    // 直接用全局协程，不要新建 Thread
-                    CoroutineScope(Dispatchers.IO+ setGlbExCaptch4crtn()).launch {
-                        var rzt= callCoinRank();
-                        sendMsgTgRetry(encodeJson(rzt))
+
+                         }
+
+                     }
 
 
-                    }
                 }
 
             }catch (e: Exception){
