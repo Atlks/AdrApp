@@ -49,10 +49,15 @@ import lib.sendMsgTgRetry
 import lib.setDefaultUncaughtExceptionHandler4thrd
 import lib.setGlbExCaptch4crtn
 import lib.setRingtoneUri
+import org.json.JSONArray
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Thread.sleep
+import java.net.HttpURLConnection
+import java.net.URL
+import java.time.LocalDateTime
+import java.util.Scanner
 
 
 // val tagLog = "MainActivity1114"
@@ -74,6 +79,7 @@ class MainActivity : AppCompatActivity() {
 
     private val handler = Handler(Looper.getMainLooper())
     private val runnableTaskTimer = object : Runnable {
+        @RequiresApi(Build.VERSION_CODES.O)
         override fun run() {
             try {
                 Log.d(tagLog, "定时器触发：7 秒")
@@ -109,13 +115,78 @@ class MainActivity : AppCompatActivity() {
 
             }
 
-            handler.postDelayed(this, 30 * 1000) // 继续执行
+            try{
+                val minute = LocalDateTime.now().minute
+                 if(minute==1 || minute==30 )
+                {
+//|| minute>0
+
+                    // 直接用全局协程，不要新建 Thread
+                    CoroutineScope(Dispatchers.IO+ setGlbExCaptch4crtn()).launch {
+                        var rzt= callCoinRank();
+                        sendMsgTgRetry(encodeJson(rzt))
+
+
+                    }
+                }
+
+            }catch (e: Exception){
+                Log.d(tagLog, "runnableTaskTimer().e=" + getStackTraceString(e))
+
+                e.printStackTrace()
+
+            }
+
+            // 启动定时任务
+            handler.postDelayed(this, 15 * 1000) // 继续执行
 
         }  //end run()
     }
 
 
+    @Throws(IOException::class)
+    fun callCoinRank(): List<lib.Coin> {
+        val API_URL =
+            "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1"
+        val coins: MutableList<lib.Coin> = ArrayList()
+        val string: String = getStrFrmUrl(API_URL)
+        println(string)
 
+        val jsonArray = JSONArray(string)
+        for (i in 0 until jsonArray.length()) {
+            val obj = jsonArray.getJSONObject(i)
+            val name = obj.getString("id")
+            val price = obj.getDouble("current_price")
+            coins.add(lib.Coin(name, price.toLong()))
+        }
+        return coins
+    }
+
+
+    @Throws(IOException::class)
+    private fun getStrFrmUrl(API_URL: String): String {
+        Log.d(tagLog, "getStrFrmUrl().prm=" + API_URL)
+
+        val url = URL(API_URL)
+        val conn = url.openConnection() as HttpURLConnection
+        conn.requestMethod = "GET"
+        conn.setRequestProperty("Accept", "application/json")
+
+        if (conn.responseCode != 200) {
+            throw IOException("Failed to fetch data: HTTP error code " + conn.responseCode)
+        }
+
+        val scanner = Scanner(conn.inputStream)
+        val jsonStr = StringBuilder()
+        while (scanner.hasNext()) {
+            jsonStr.append(scanner.nextLine())
+        }
+        scanner.close()
+        conn.disconnect()
+
+        val string = jsonStr.toString()
+        return string
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
