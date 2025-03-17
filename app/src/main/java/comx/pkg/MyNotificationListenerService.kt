@@ -239,7 +239,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     private fun chkfltNotOk(messageWzFmt: String): Boolean {
 
         if (containsAny2025(
-                "姜育恒 歌曲 醉酒歌 我的唇吻不到我爱的人 再见也是朋友 再见只是陌生人 女人的选择 世纪精选 漫漫人海我遇见了你",
+                "我来人间一趟 小小新娘花 姜育恒 歌曲 醉酒歌 我的唇吻不到我爱的人 再见也是朋友 再见只是陌生人 女人的选择 世纪精选 漫漫人海我遇见了你",
                 messageWzFmt
             )
         )
@@ -281,14 +281,14 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             return true;
 
         if (containsAny2025(
-                "专属提额特权 限时福利 省呗 预审成功 拒收请回复 usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金",
+                "已下载更新 新货速发 额外赠送 专属充值活动 专属邀请 专属福利 爆款抢购 共度美好时光 限时提额 时尚新品 限時秒殺 满减更优惠 魅力四射 购物券包 专享福利 给您定制 积分加倍 送完為止 優惠中 专属提额特权 限时福利 省呗 预审成功 拒收请回复 usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金",
                 messageWzFmt
             )
         )
             return true;
 
         if (containsAny2025(
-                "已连接到USB 已隐藏敏感通知 正在启动导航 正在重新规划路线 正在通过USB充电 输入法 360手机卫士 黑U usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金",
+                "已下载更新 已连接到USB 已隐藏敏感通知 正在启动导航 正在重新规划路线 正在通过USB充电 输入法 360手机卫士 黑U usdt USDT  高仿 虚拟币 反水 返水 盈利 佣金",
                 messageWzFmt
             )
         )
