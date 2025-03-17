@@ -236,14 +236,18 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
         return false
     }
 
-    private fun chkfltNotOk(messageWzFmt: String): Boolean {
+    var notOk: Boolean = true // 修正类型拼写
+    public fun chkfltNotOk(messageWzFmt: String): Boolean {
 
         if (containsAny2025(
                 "我来人间一趟 小小新娘花 姜育恒 歌曲 醉酒歌 我的唇吻不到我爱的人 再见也是朋友 再见只是陌生人 女人的选择 世纪精选 漫漫人海我遇见了你",
                 messageWzFmt
             )
         )
-            return true
+        {
+            return notOk
+        }
+
 
         if (containsAny2025(
                 " 白条额度秀 周周返现\n" +
