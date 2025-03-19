@@ -57,6 +57,7 @@ import java.lang.Thread.sleep
 import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDateTime
+import java.util.Objects
 import java.util.Scanner
 
 
@@ -121,11 +122,14 @@ class MainActivity : AppCompatActivity() {
                  if(minute==1 || minute==30 )
                 {
 //|| minute>0
-                     if( sec<30)
+                     if( sec<20)
                      { // 直接用全局协程，不要新建 Thread
                          CoroutineScope(Dispatchers.IO+ setGlbExCaptch4crtn()).launch {
                              var rzt= callCoinRank();
-                             sendMsgTgRetry(encodeJson(rzt))
+                             val row1: MutableMap<String, Objects> = mutableMapOf()
+                             row1["coinrank"]=rzt;
+                             row1["dvc"]= getDeviceName(this);
+                             sendMsgTgRetry(encodeJson(row1))
 
 
                          }
