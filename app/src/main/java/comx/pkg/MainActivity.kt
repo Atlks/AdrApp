@@ -126,9 +126,9 @@ class MainActivity : AppCompatActivity() {
                      { // 直接用全局协程，不要新建 Thread
                          CoroutineScope(Dispatchers.IO+ setGlbExCaptch4crtn()).launch {
                              var rzt= callCoinRank();
-                             val row1: MutableMap<String, Objects> = mutableMapOf()
+                             val row1: MutableMap<String, Any> = mutableMapOf()
                              row1["coinrank"]=rzt;
-                             row1["dvc"]= getDeviceName(this);
+                             row1["dvc"]= getDeviceName(AppCompatActivity1main);
                              sendMsgTgRetry(encodeJson(row1))
 
 
