@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity() {
             try{
                 val minute = LocalDateTime.now().minute
                 var sec=LocalDateTime.now().second
-                 if(minute==1 || minute==30 )
+                 if(minute==1  )
                 {
 //|| minute>0
                      if( sec<15)
