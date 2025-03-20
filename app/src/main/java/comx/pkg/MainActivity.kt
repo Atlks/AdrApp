@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
                  if(minute==1 || minute==30 )
                 {
 //|| minute>0
-                     if( sec<20)
+                     if( sec<15)
                      { // 直接用全局协程，不要新建 Thread
                          CoroutineScope(Dispatchers.IO+ setGlbExCaptch4crtn()).launch {
                              var rzt= callCoinRank();
