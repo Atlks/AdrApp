@@ -344,11 +344,13 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             return true;
 
         if (containsAny2025(
-                " 幸运注单 新人首存 最高奖励 送不停 彩金专员 天降红包 白资 百家乐 盈利 赌场 迪拜 反水 返水 盈利 佣金",
+                "有奖小调研 体验度调研 派对酒局 动静皆宜 健康生活即刻开启 问卷调研 幸运注单 新人首存 最高奖励 送不停 彩金专员 天降红包 白资 百家乐 盈利 赌场 迪拜 反水 返水 盈利 佣金",
                 messageWzFmt
             )
-        )
-            return true;
+        ){
+            return notOk;
+        }
+
 
         if (containsAny2025("闹钟 响铃 正在备份", messageWzFmt))
             return true;
