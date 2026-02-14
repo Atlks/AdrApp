@@ -149,7 +149,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return;
 
 
-            var messageWzFmt = "标题=$title, 内容=$text ,device=" + deviceName2;
+            var messageWzFmt = "标题$title, 内容$text ,device=" + deviceName2;
 
 
 
