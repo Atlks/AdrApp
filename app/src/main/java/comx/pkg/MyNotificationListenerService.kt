@@ -204,6 +204,11 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     }
 
     private fun chkNotOk(title: String, text: String): Boolean {
+        //小时 总计
+        if (text.contains("平均") && text.contains("mA"))
+            return dontSpk
+
+
         if (title == "没有标题" && text == "没有内容")
             return true
 
@@ -220,8 +225,13 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             return true
 
         if (title.toLowerCase() == "im2025")
-            return true
+            return dontSpk
 
+        if(title.contains("当前") && title.contains("mA")&& title.contains("剩余"))
+return  dontSpk
+
+        if(title.contains("当前") && title.contains("mA")  )
+            return  dontSpk
 
         if (title.contains("短信") && title.contains("正在运行"))
             return true
@@ -235,7 +245,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             return true
         return false
     }
-
+    var dontSpk: Boolean = true
     var notOk: Boolean = true // 修正类型拼写
     public fun chkfltNotOk(messageWzFmt: String): Boolean {
 
@@ -278,7 +288,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             return true;
 
         if (containsAll("免息   折起", messageWzFmt))
-            return true;
+            return dontSpk;
 
 
         if (containsAll("音乐 还剩", messageWzFmt))
