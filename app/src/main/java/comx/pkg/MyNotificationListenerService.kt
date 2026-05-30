@@ -142,6 +142,15 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
             var mesg = title + text;
 
+            var messageWzFmt6 = "标题$title, 内容$text ";
+            if(mesg.toLowerCase().contains("scot") )
+            {
+                speakOut(messageWzFmt6)
+            }
+
+            //====================send tg n  myIm
+
+            //dont sent dulp
             if (set4delp.contains(mesg))
             {
                 Log.d(tagLog6, " dulp msg ")
@@ -158,11 +167,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             //--------same dvc ingrn
             if (mesg.contains(deviceName2))
             {
-                var messageWzFmt6 = "标题$title, 内容$text ,device=" + deviceName2;
-                if(messageWzFmt6.toLowerCase().contains("scot") )
-                {
-                    speakOut(messageWzFmt6)
-                }
+
 
                 Log.d(tagLog6, " same dvc ")
                 //not
@@ -175,12 +180,23 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
             var messageWzFmt = "标题$title, 内容$text ,device=" + deviceName2;
 
+//            if(mesg.toLowerCase().contains("scot") )
+//            {   speakOut(messageWzFmt)
+//            }
+
+//            else
+//            {
+//                Log.d(tagLog6, " not cotain Scot ")
+//                Log.d(tagLog6, "endfun onNotificationPosted()")
+//
+//                return
+//            }
 
 
             if (chkNotOk(title, text))
             {
 
-                Log.d(tagLog6, " not cotain Scot ")
+                Log.d(tagLog6, " not chkpass (msg),maybe grab txt ")
                 Log.d(tagLog6, "endfun onNotificationPosted()")
 
                 return
@@ -228,7 +244,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             //kotlin ,截取字符串前200个字符。如果不足200个，则不截取
             //防止过长消息阅读 ad msg
             messageWzFmt4readSpk = messageWzFmt4readSpk.take(200)
-            speakOut(messageWzFmt4readSpk)
+          //  speakOut(messageWzFmt4readSpk)
 
             sendMsgTg(messageWzFmt)
 
@@ -247,13 +263,13 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
     private fun chkNotOk(title: String, text: String): Boolean {
 
-        if (title.contains("scot")  || text.contains("scot"))
-
-            return spkEnable
+//        if (title.contains("scot")  || text.contains("scot"))
+//
+//            return spkEnable
 
         //小时 总计
         if (text.contains("平均") && text.contains("mA"))
-            return dontSpk
+            return true
 
 
         if (title == "没有标题" && text == "没有内容")
