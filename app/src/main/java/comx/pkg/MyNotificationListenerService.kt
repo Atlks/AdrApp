@@ -143,6 +143,8 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             var mesg = title + text;
 
             var messageWzFmt6 = "标题$title, 内容$text ";
+
+            // =============only spk scot
             if(mesg.toLowerCase().contains("scot") )
             {
                 speakOut(messageWzFmt6)
@@ -232,7 +234,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
 
             //for xm12
-            if (containsAny2025(messageWzFmt, "所有人 抽查  打卡 meet google")) {
+            if (containsAny2025(messageWzFmt, "所有人 抽查  打卡 scot")) {
                 playNtfyMp3()
                 //playAudio("/storage/emulated/0/Documents/Darin-Be What You Wanna Be HQ.mp3")
             }
