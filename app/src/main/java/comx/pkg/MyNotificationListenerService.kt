@@ -204,6 +204,11 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
     }
 
     private fun chkNotOk(title: String, text: String): Boolean {
+
+        if (title.contains("scot")  || text.contains("scot"))
+
+            return spkEnable
+
         //小时 总计
         if (text.contains("平均") && text.contains("mA"))
             return dontSpk
@@ -246,6 +251,7 @@ return  dontSpk
         return false
     }
     var dontSpk: Boolean = true
+    var spkEnable: Boolean = false
     var notOk: Boolean = true // 修正类型拼写
     public fun chkfltNotOk(messageWzFmt: String): Boolean {
 

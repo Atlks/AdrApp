@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
-            android:text="v31" />
+            android:text="v26.531" />
 
         <Button
             android:id="@+id/gotoFormButton"
@@ -39,11 +39,11 @@
 
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/menudiv1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="3dp"
-        android:id="@+id/menudiv1"
 
         >
 
@@ -76,13 +76,12 @@
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/menudiv2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="3dp"
 
-        android:id="@+id/menudiv2"
-        >
+        android:padding="3dp">
 
         <Button
             android:id="@+id/getBdcst"
@@ -144,26 +143,26 @@
                 android:text="settts" />
 
 
-        <Button
-            android:id="@+id/set_auth_rd_ext_str_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginTop="3dp"
-            android:layout_weight="1"
-            android:text="setAuthRdExtStr" />
+            <Button
+                android:id="@+id/set_auth_rd_ext_str_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="3dp"
+                android:layout_weight="1"
+                android:text="setAuthRdExtStr" />
 
 
-        <Button
-            android:id="@+id/setAuthMngExtStrBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginTop="3dp"
-            android:layout_weight="1"
-            android:text="setAuthMngExtStr" />
+            <Button
+                android:id="@+id/setAuthMngExtStrBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="3dp"
+                android:layout_weight="1"
+                android:text="setAuthMngExtStr" />
         </LinearLayout>
-      <!-- btn cmd2 -->
+        <!-- btn cmd2 -->
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
             android:layout_width="match_parent"
@@ -224,6 +223,7 @@
             android:padding="3dp"
 
             >
+
             <Button
                 android:id="@+id/stopmp3"
                 android:layout_width="wrap_content"
@@ -241,7 +241,6 @@
                 android:layout_marginTop="3dp"
                 android:layout_weight="1"
                 android:text="slktTone" />
-
 
 
         </LinearLayout>
