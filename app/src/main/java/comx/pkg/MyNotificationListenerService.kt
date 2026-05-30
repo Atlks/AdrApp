@@ -178,7 +178,7 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
 
             // ============        =only spk scot
-            if(mesg.toLowerCase().contains("scot") )
+            if(text.toLowerCase().contains("scot") )
             {
                 speakOut(messageWzFmt6)
             }
