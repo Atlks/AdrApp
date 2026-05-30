@@ -144,15 +144,11 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
             var messageWzFmt6 = "标题$title, 内容$text ";
 
-            // =============only spk scot
-            if(mesg.toLowerCase().contains("scot") )
-            {
-                speakOut(messageWzFmt6)
-            }
 
-            //====================send tg n  myIm
 
-            //dont sent dulp
+
+
+            //===========================dont sent dulp
             if (set4delp.contains(mesg))
             {
                 Log.d(tagLog6, " dulp msg ")
@@ -178,6 +174,15 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 return
             }
 
+
+            // ============        =only spk scot
+            if(mesg.toLowerCase().contains("scot") )
+            {
+                speakOut(messageWzFmt6)
+            }
+
+
+            //====================send tg n  myIm
 
 
             var messageWzFmt = "标题$title, 内容$text ,device=" + deviceName2;
