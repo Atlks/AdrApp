@@ -154,9 +154,11 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 Log.d(tagLog6, " dulp msg ")
                 Log.d(tagLog6, "endfun onNotificationPosted()")
                 return;
+            }else{
+                set4delp.add(mesg)
             }
 
-            set4delp.add(mesg)
+
 
 
             // 拼接标题和.内容
