@@ -19,6 +19,8 @@ val TELEGRAM_API_URL = "https://api.telegram.org/bot$TOKEN/sendMessage"
 
 //retry wz wrt msg fail db
 fun sendMsgTg(messageWzFmt: String) {
+
+    Log.e("TelegramBot", "fun sendMsgTg,msg= ${messageWzFmt}")
     Thread {
 
         try {
@@ -37,15 +39,24 @@ fun sendMsgTg(messageWzFmt: String) {
         }
     }.start() // 在子线程中执行网络请求，避免阻塞主线程
     //   Thread {   }.start()
+    Log.e("TelegramBot", "endfun sendMsgTg()")
 }
 
 fun sendMsgTgRetry(messageWzFmt: String) {
 
+    Log.e("TelegramBot", "fun sendMsgTgRetry,msg= ${messageWzFmt}")
     try {
         sendMsgTgCore(messageWzFmt)
     } catch (e: Exception) {
-        sendMsgTgCore(messageWzFmt)
+        try{
+            sendMsgTgCore(messageWzFmt)
+        }catch (e2: Exception)
+        {
+            Log.e("TelegramBot", " e=${e2.message}")
+        }
+
     }
+    Log.e("TelegramBot", "endfun sendMsgTgRetry()")
 }
 
 fun wrtLib_failMsg(messageWzFmt: String) {
@@ -67,7 +78,7 @@ fun sendMsgTgCore(messageWzFmt: String) {
 //
 //        。。。
 
-
+    Log.e("TelegramBot", "fun sendMsgTgCore,msg= ${messageWzFmt}")
     val url = URL(TELEGRAM_API_URL)
     val conn = url.openConnection() as HttpURLConnection
     conn.requestMethod = "POST"
@@ -98,6 +109,8 @@ fun sendMsgTgCore(messageWzFmt: String) {
     }
 //            throw RuntimeException("这是一个示例异常")
     conn.disconnect()
+
+    Log.e("TelegramBot", "endfun sendMsgTgCore")
 
 
 }

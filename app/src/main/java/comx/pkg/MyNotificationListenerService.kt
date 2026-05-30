@@ -7,8 +7,6 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.speech.tts.TextToSpeech
@@ -114,14 +112,17 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
 //       if(!isTimeInDaytim())
 //           return
-
+        val tagLog6 = "onNotificationPostedFunTag"
         try {
-            Log.d(tagLog, "fun onNotificationPosted(")
-            Log.d(tagLog, "StatusBarNotification:" + encodeJson(sbn));
-            Log.d(tagLog, "))");
+            Log.d(tagLog6, "\n\n\n")
+            Log.d(tagLog6, "\n\n\n")
+            Log.d(tagLog6, "\n\n\n")
+            Log.d(tagLog6, "fun onNotificationPosted(")
+            Log.d(tagLog6, "StatusBarNotification:" + encodeJson(sbn));
+            Log.d(tagLog6, "))");
 
             val notification = sbn.notification
-            Log.d(tagLog, "notification:" + encodeJson(notification));
+            Log.d(tagLog6, "notification:" + encodeJson(notification));
             val postTime = sbn.postTime // 通知的时间戳
             val packageName = sbn.packageName // 应用包名，例如 "com.whatsapp"
             val extras = notification.extras
@@ -132,12 +133,22 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             text = text.replace("Starred Contacts", "");
             text = text.replace("星标联系人", "");
             // val deviceName = getDeviceName(this)
+            Log.d(tagLog6, "title:${title}");
+
+            Log.d(tagLog6, "text:${text}"  );
+
+
             val ntfy1 = Notify2025(title, text, postTime, packageName, deviceName);
 
             var mesg = title + text;
 
             if (set4delp.contains(mesg))
+            {
+                Log.d(tagLog6, " dulp msg ")
+                Log.d(tagLog6, "endfun onNotificationPosted()")
                 return;
+            }
+
             set4delp.add(mesg)
 
 
@@ -146,17 +157,43 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
 
             //--------same dvc ingrn
             if (mesg.contains(deviceName2))
-                return;
+            {
+                var messageWzFmt6 = "标题$title, 内容$text ,device=" + deviceName2;
+                if(messageWzFmt6.toLowerCase().contains("scot") )
+                {
+                    speakOut(messageWzFmt6)
+                }
+
+                Log.d(tagLog6, " same dvc ")
+                //not
+                Log.d(tagLog6, "endfun onNotificationPosted()")
+
+                return
+            }
+
 
 
             var messageWzFmt = "标题$title, 内容$text ,device=" + deviceName2;
 
 
 
-            if (chkNotOk(title, text)) return
+            if (chkNotOk(title, text))
+            {
+
+                Log.d(tagLog6, " not cotain Scot ")
+                Log.d(tagLog6, "endfun onNotificationPosted()")
+
+                return
+            }
 
             if (chkfltNotOk(messageWzFmt))
+            {
+                Log.d(tagLog6, "   cotain grab word ")
+                Log.d(tagLog6, "endfun onNotificationPosted()")
+
                 return
+            }
+
 
 
             var messageWzFmt4readSpk = messageWzFmt
@@ -169,7 +206,12 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             } else {
                 //all english
                 if (!isContainCjkChar(title) && (!isContainCjkChar(text)))
+                {
+                    Log.d(tagLog6, "  not  cotain cjk char")
+                    Log.d(tagLog6, "endfun onNotificationPosted()")
                     return
+                }
+
             }
 
 
@@ -197,9 +239,9 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
                 sendNecho(messageWzFmt)
             }).start()
         } catch (e: Exception) {
-            Log.e(tagLog, "Error onNotificationPosted(): ${e.message}")
+            Log.e(tagLog6, "Error onNotificationPosted(): ${e.message}")
         }
-        Log.d(tagLog, "endfun onNotificationPosted()")
+        Log.d(tagLog6, "endfun onNotificationPosted()")
 
     }
 
