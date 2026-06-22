@@ -180,7 +180,15 @@ class MyNotificationListenerService : NotificationListenerService(), TextToSpeec
             // ============        =only spk scot
             if(text.toLowerCase().contains("scot") )
             {
-                speakOut(messageWzFmt6)
+                if(messageWzFmt6.toLowerCase().contains("tenxun-hk-pro-dc-db-doris"))
+                {
+                    //not spk
+                }else
+                {
+                    var  messageWzFmt4readSpk = messageWzFmt6.take(50)
+                    speakOut(messageWzFmt4readSpk)
+                }
+
             }
 
 
